@@ -39,6 +39,78 @@ h1 {
   line-height: 1.1;
 }
 
+/* HEADER AREA */
+header {
+  display: flex;
+  width: 100vw;
+  /* height: 3rem; */
+  margin: 0 auto;
+  line-height: 3rem;
+  /* background-color: aqua; */
+  background: linear-gradient(
+    to bottom,
+    rgb(0, 3, 32),
+    rgba(0, 3, 32, 0.784),
+    rgba(0, 0, 0, 0.714)
+  );
+  text-align: center;
+  align-items: center;
+  top: 0;
+  position: sticky;
+  z-index: 1000;
+}
+
+header {
+  color: rgb(228, 235, 255);
+}
+
+header nav a {
+  color: rgb(228, 235, 255);
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  margin: 0 0.5rem;
+  border-radius: 5px;
+  position: relative;
+  transition: background-color 0.3s;
+}
+
+header nav a::after {
+  content: "";
+  position: absolute;
+  bottom: 15px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #fff;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.3s ease-in-out;
+}
+
+header nav a:hover {
+  background-color: rgba(0, 0, 0, 0);
+}
+
+/* MAIN AREA */
+.main {
+  display: flex;
+  min-height: 90vh;
+  width: 100vw;
+  position: relative;
+}
+
+/* FOOTER AREA */
+
+.footer {
+  line-height: 1.5rem;
+  background-color: rgba(50, 50, 50, 0.8);
+  color: #dad9d9;
+  text-align: center;
+  align-items: center;
+
+  margin-top: auto;
+}
+
 button {
   border-radius: 8px;
   border: 1px solid transparent;

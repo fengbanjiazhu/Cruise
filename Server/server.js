@@ -1,15 +1,13 @@
 import dotenv from "dotenv";
 import cors from "cors";
-
-// import errorController from "./Controller/errorController.js";
-// dotenv.config({ path: "./Server/config.env" });
 import express from "express";
+import dotenv from "dotenv";
+import cors from "cors";
+import mongoose from "mongoose";
 
 const app = express();
 
-// import userRoute from "./Route/userRoute.js";
-
-dotenv.config({ path: "./Server/config.env" });
+dotenv.config({ path: "./config.env" });
 
 app.use(
   cors({
@@ -17,19 +15,22 @@ app.use(
   })
 );
 
-app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: true, limit: "10kb" }));
 
-app.use(function (req, res, next) {
-  console.log("Query:", req.query);
-  console.log("Params:", req.params);
-  console.log("Body:", req.body);
-  next();
-});
+// Routes
+// app.use('/', someRoute);
 
-// app.use("/api/user", userRoute);
+const DB = process.env.DATABASE.replace("<PASSWORD>", process.env.DATABASE_PASSWORD);
 
-// app.use(errorController);
+mongoose
+  .connect(DB, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useFindAndModify: false,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("DB connection successful"))
+  .catch((err) => console.log("Connection ERROR💥:", err));
 
 // Server
 const port = 8000 || process.env.PORT;
