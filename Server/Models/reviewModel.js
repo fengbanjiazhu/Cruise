@@ -1,5 +1,4 @@
-const mongoose = require("mongoose");
-const Tour = require("./pathModel");
+import mongoose from "mongoose";
 
 const reviewSchema = new mongoose.Schema(
   {

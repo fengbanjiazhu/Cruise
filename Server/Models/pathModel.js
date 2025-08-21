@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const slugify = require("slugify");
+import mongoose from "mongoose";
+import slugify from "slugify";
 // const User = require('./userModel');
 
 // create a new schema
