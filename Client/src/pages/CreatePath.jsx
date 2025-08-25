@@ -1,120 +1,11 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet";
-import L from "leaflet";
 import { v4 as uuidv4 } from "uuid";
-import "leaflet/dist/leaflet.css";
-import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
-import "leaflet-routing-machine";
+import { toast } from "react-hot-toast";
 
-// Leaflet marker icon fix for default icon not showing in some bundlers
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
-  iconUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
-  shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
-});
-
-function WaypointMarkers({ waypoints, setWaypoints }) {
-  // Allow each marker to be draggable
-  return waypoints.map((wp, idx) => (
-    <Marker
-      key={wp.id}
-      position={wp.position}
-      draggable={true}
-      eventHandlers={{
-        dragend: (e) => {
-          const newPos = [e.target.getLatLng().lat, e.target.getLatLng().lng];
-          setWaypoints((wps) =>
-            wps.map((w, i) =>
-              i === idx ? { ...w, position: newPos } : w
-            )
-          );
-        },
-      }}
-    >
-      <Popup>
-        <div className="space-y-1">
-          <div className="text-sm font-medium">{wp.label?.trim() || `Waypoint ${idx + 1}`}</div>
-          <div className="text-xs text-gray-600">Lat: {wp.position[0].toFixed(5)}</div>
-          <div className="text-xs text-gray-600">Lng: {wp.position[1].toFixed(5)}</div>
-        </div>
-      </Popup>
-    </Marker>
-  ));
-}
-
-function AddWaypointOnClick({ addWaypoint }) {
-  useMapEvents({
-    click(e) {
-      addWaypoint([e.latlng.lat, e.latlng.lng]);
-    },
-  });
-  return null;
-}
-
-function RouteBetweenWaypoints({ waypoints, profile = 'foot', scenic = true }) {
-  const map = useMapEvents({});
-  const routeRef = useRef(null);
-
-  useEffect(() => {
-    if (!map) return;
-
-    // Remove existing control if present
-    if (routeRef.current) {
-      try { map.removeControl(routeRef.current); } catch {}
-      routeRef.current = null;
-    }
-
-    // Need at least 2 waypoints to draw a route
-    if (!waypoints || waypoints.length < 2) return;
-
-    const latLngs = waypoints.map((w) => L.latLng(w.position[0], w.position[1]));
-
-    // Create routing control using public OSRM demo server
-    routeRef.current = L.Routing.control({
-      waypoints: latLngs,
-      router: L.Routing.osrmv1({
-        serviceUrl: "https://router.project-osrm.org/route/v1",
-        profile, // 'car' | 'bike' | 'foot'
-      }),
-      addWaypoints: false,          // disable UI waypoint dragging (we manage markers)
-      draggableWaypoints: false,
-      fitSelectedRoutes: true,      // auto-zoom to route
-      show: false,                  // hide the default itinerary panel
-      routeWhileDragging: false,
-      showAlternatives: scenic,
-      altLineOptions: {
-        styles: [
-          { color: "#6B7280", opacity: 0.7, weight: 4 }, // alt line
-        ],
-      },
-      // OSRM alternatives count
-      // LRM passes "alternatives" to OSRM under the hood when true
-      // We'll set it by passing options on the control:
-      routerOptions: { alternatives: scenic },
-      lineOptions: {
-        styles: [
-          { color: "#111827", opacity: 0.95, weight: 5 },   // dark gray main line
-          { color: "#9CA3AF", opacity: 0.4, weight: 8 },    // subtle halo
-        ],
-        extendToWaypoints: true,
-      },
-      createMarker: () => null,     // we render our own markers
-    }).addTo(map);
-
-    return () => {
-      if (routeRef.current) {
-        try { map.removeControl(routeRef.current); } catch {}
-        routeRef.current = null;
-      }
-    };
-  }, [map, waypoints, profile, scenic]);
-
-  return null;
-}
+import RouteBetweenWaypoints from "../components/Paths/RouteBetweenWaypoints";
+import WaypointMarkers from "../components/Paths/WaypointMarkers";
+import { fetchPost, optionMaker } from "../utils/api";
 
 function CreatePath() {
   const [routeName, setRouteName] = useState("");
@@ -124,10 +15,34 @@ function CreatePath() {
   const [showPreview, setShowPreview] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   const mapRef = useRef();
+  const [routeSteps, setRouteSteps] = useState(null);
 
   const [routingProfile, setRoutingProfile] = useState("foot"); // 'car' | 'bike' | 'foot'
-  const [scenicMode, setScenicMode] = useState(true);            // show alternatives for scenic choices
+  const [scenicMode, setScenicMode] = useState(true); // show alternatives for scenic choices
 
+  const handleCreatePath = async () => {
+    const sendData = {
+      name: routeName,
+      description,
+      creator: "68abbad440fef1e01fe82b34",
+      locations: routeSteps?.coordinates,
+      profile: routingProfile,
+      distance: routeSteps?.summary.totalDistance,
+      duration: routeSteps?.summary.totalTime,
+      waypoints: waypoints.map((wp, i) => ({
+        label: wp.label && wp.label.trim() ? wp.label.trim() : `Waypoint ${i + 1}`,
+        lat: wp.position[0],
+        lng: wp.position[1],
+      })),
+    };
+    try {
+      await fetchPost("path/", optionMaker(sendData));
+      toast.success("Congrats! You have created a new path!");
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to create path, try again later");
+    }
+  };
   // Add a waypoint at position
   const addWaypoint = (latlng) => {
     setWaypoints((wps) => [
@@ -157,8 +72,7 @@ function CreatePath() {
   const validate = () => {
     const errs = {};
     if (!routeName.trim()) errs.routeName = "Route name is required";
-    if (waypoints.length < 2)
-      errs.waypoints = "At least 2 waypoints are required";
+    if (waypoints.length < 2) errs.waypoints = "At least 2 waypoints are required";
     return errs;
   };
 
@@ -175,6 +89,7 @@ function CreatePath() {
   // Handle map click: set pending waypoint position
   const handleMapClick = (e) => {
     setPendingLatLng([e.latlng.lat, e.latlng.lng]);
+    // console.log(e.latlng.lat, e.latlng.lng);
   };
 
   // Custom map events for adding waypoint with confirmation popup
@@ -195,12 +110,15 @@ function CreatePath() {
           {/* Card: Form */}
           <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm text-gray-900">
             <p className="text-sm text-gray-600 mb-4">
-              Click on the map to add waypoints. Label each point, then submit to preview the ordered coordinates.
+              Click on the map to add waypoints. Label each point, then submit to preview the
+              ordered coordinates.
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-800">Route name <span className="text-red-500">*</span></label>
+                <label className="block text-sm font-medium text-gray-800">
+                  Route name <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="text"
                   value={routeName}
@@ -227,30 +145,41 @@ function CreatePath() {
               <div>
                 <div className="flex items-center gap-2">
                   <h2 className="text-sm font-medium text-gray-800">Waypoints</h2>
-                  <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-700">{waypoints.length}</span>
+                  <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-700">
+                    {waypoints.length}
+                  </span>
                   {formErrors.waypoints && (
                     <span className="text-xs text-red-600">{formErrors.waypoints}</span>
                   )}
                 </div>
 
                 {waypoints.length === 0 ? (
-                  <p className="mt-2 text-sm text-gray-500">Click on the map to add your first waypoint.</p>
+                  <p className="mt-2 text-sm text-gray-500">
+                    Click on the map to add your first waypoint.
+                  </p>
                 ) : (
                   <ul className="mt-2 space-y-2">
                     {waypoints.map((wp, idx) => (
-                      <li key={wp.id} className="flex items-center justify-between gap-3 rounded-xl border border-gray-200 p-2">
+                      <li
+                        key={wp.id}
+                        className="flex items-center justify-between gap-3 rounded-xl border border-gray-200 p-2"
+                      >
                         <div className="min-w-0">
                           <div className="text-sm font-medium text-gray-900 mb-1">
                             {idx + 1}. {wp.label?.trim() || `Waypoint ${idx + 1}`}
                           </div>
-                          <div className="text-xs text-gray-600 mb-2">{wp.position[0].toFixed(6)}, {wp.position[1].toFixed(6)}</div>
+                          <div className="text-xs text-gray-600 mb-2">
+                            {wp.position[0].toFixed(6)}, {wp.position[1].toFixed(6)}
+                          </div>
                           <label className="block text-xs text-gray-700 mb-1">Rename</label>
                           <input
                             type="text"
                             value={wp.label || ""}
                             onChange={(e) => {
                               const val = e.target.value;
-                              setWaypoints((wps) => wps.map((w, i) => (i === idx ? { ...w, label: val } : w)));
+                              setWaypoints((wps) =>
+                                wps.map((w, i) => (i === idx ? { ...w, label: val } : w))
+                              );
                             }}
                             placeholder={`Waypoint ${idx + 1}`}
                             className="w-full rounded-lg border border-gray-300 px-2 py-1 text-xs outline-none focus:border-gray-900"
@@ -262,18 +191,24 @@ function CreatePath() {
                             onClick={() => moveWaypoint(idx, -1)}
                             disabled={idx === 0}
                             className="rounded-lg border px-2 py-1 text-xs bg-black text-white disabled:opacity-40"
-                          >↑</button>
+                          >
+                            ↑
+                          </button>
                           <button
                             type="button"
                             onClick={() => moveWaypoint(idx, 1)}
                             disabled={idx === waypoints.length - 1}
                             className="rounded-lg border px-2 py-1 text-xs bg-black text-white disabled:opacity-40"
-                          >↓</button>
+                          >
+                            ↓
+                          </button>
                           <button
                             type="button"
                             onClick={() => removeWaypoint(idx)}
                             className="rounded-lg border px-2 py-1 text-xs bg-black text-white"
-                          >Remove</button>
+                          >
+                            Remove
+                          </button>
                         </div>
                       </li>
                     ))}
@@ -308,8 +243,17 @@ function CreatePath() {
               </div>
 
               <div className="pt-2">
-                <button type="submit" className="inline-flex items-center rounded-xl bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-900">
+                <button
+                  type="submit"
+                  className="inline-flex items-center rounded-xl bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-900"
+                >
                   Preview JSON
+                </button>
+                <button
+                  onClick={handleCreatePath}
+                  className="inline-flex items-center rounded-xl  bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-900 ml-4"
+                >
+                  Create Path
                 </button>
               </div>
             </form>
@@ -320,17 +264,33 @@ function CreatePath() {
             <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm text-gray-900">
               <div className="mb-3 flex items-center justify-between">
                 <h3 className="text-sm font-semibold text-gray-900">Submission Preview</h3>
-                <button onClick={() => setShowPreview(false)} className="rounded-lg border px-2 py-1 text-xs bg-black text-white">Edit</button>
+                <button
+                  onClick={() => setShowPreview(false)}
+                  className="rounded-lg border px-2 py-1 text-xs bg-black text-white"
+                >
+                  Edit
+                </button>
               </div>
-              <pre className="max-h-80 overflow-auto rounded-xl bg-gray-50 p-3 text-xs text-gray-800">{JSON.stringify({
-                name: routeName,
-                description,
-                waypoints: waypoints.map((wp, i) => ({
-                  label: (wp.label && wp.label.trim()) ? wp.label.trim() : `Waypoint ${i + 1}`,
-                  lat: wp.position[0],
-                  lng: wp.position[1],
-                })),
-              }, null, 2)}</pre>
+              <pre className="max-h-80 overflow-auto rounded-xl bg-gray-50 p-3 text-xs text-gray-800">
+                {JSON.stringify(
+                  {
+                    name: routeName,
+                    description,
+                    creator: "68abbad440fef1e01fe82b34",
+                    locations: routeSteps?.coordinates,
+                    profile: routingProfile,
+                    distance: routeSteps?.summary.totalDistance,
+                    duration: routeSteps?.summary.totalTime,
+                    waypoints: waypoints.map((wp, i) => ({
+                      label: wp.label && wp.label.trim() ? wp.label.trim() : `Waypoint ${i + 1}`,
+                      lat: wp.position[0],
+                      lng: wp.position[1],
+                    })),
+                  },
+                  null,
+                  2
+                )}
+              </pre>
             </div>
           )}
         </div>
@@ -339,11 +299,13 @@ function CreatePath() {
         <div className="lg:col-span-3">
           <div className="h-[60vh] w-full overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm text-gray-900">
             <MapContainer
-              center={waypoints[0]?.position || [ -33.8688, 151.2093 ]}
+              center={waypoints[0]?.position || [-33.8688, 151.2093]}
               zoom={12}
               scrollWheelZoom
               className="h-full w-full"
-              whenCreated={(mapInstance) => { mapRef.current = mapInstance; }}
+              whenCreated={(mapInstance) => {
+                mapRef.current = mapInstance;
+              }}
             >
               <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -353,7 +315,12 @@ function CreatePath() {
               {/* Existing components */}
               <WaypointMarkers waypoints={waypoints} setWaypoints={setWaypoints} />
               <PendingWaypointHandler />
-              <RouteBetweenWaypoints waypoints={waypoints} profile={routingProfile} scenic={scenicMode} />
+              <RouteBetweenWaypoints
+                waypoints={waypoints}
+                profile={routingProfile}
+                scenic={scenicMode}
+                handleSave={setRouteSteps}
+              />
 
               {pendingLatLng && (
                 <Marker position={pendingLatLng}>
@@ -362,8 +329,20 @@ function CreatePath() {
                       <div className="text-sm font-medium text-gray-900">Add waypoint here?</div>
                       <p className="text-xs text-gray-600">You can rename it below in the list.</p>
                       <div className="flex justify-end gap-2">
-                        <button type="button" onClick={() => setPendingLatLng(null)} className="rounded-lg border px-3 py-1 text-sm bg-black text-white">Cancel</button>
-                        <button type="button" onClick={() => addWaypoint(pendingLatLng)} className="rounded-lg bg-black px-3 py-1 text-sm text-white">Add</button>
+                        <button
+                          type="button"
+                          onClick={() => setPendingLatLng(null)}
+                          className="rounded-lg border px-3 py-1 text-sm bg-black text-white"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => addWaypoint(pendingLatLng)}
+                          className="rounded-lg bg-black px-3 py-1 text-sm text-white"
+                        >
+                          Add
+                        </button>
                       </div>
                     </div>
                   </Popup>
@@ -371,7 +350,16 @@ function CreatePath() {
               )}
             </MapContainer>
           </div>
-          <p className="mt-2 text-xs text-gray-500">Tip: click anywhere on the map to place a waypoint. Drag markers to fine‑tune positions.</p>
+          <p className="mt-2 text-xs text-gray-500">
+            Tip: click anywhere on the map to place a waypoint. Drag markers to fine‑tune positions.
+          </p>
+          <button
+            onClick={() => {
+              console.log(routeSteps);
+            }}
+          >
+            Click
+          </button>
         </div>
       </div>
     </div>

@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 
 // Routes
 import userRoute from "./Routes/userRoute.js";
+import pathRoute from "./Routes/pathRoute.js";
 import errorController from "./Controllers/errorController.js";
 
 const app = express();
@@ -29,6 +30,7 @@ app.use(function (req, res, next) {
 
 // Routes
 app.use("/api/user", userRoute);
+app.use("/api/path", pathRoute);
 
 //
 app.use(errorController);
