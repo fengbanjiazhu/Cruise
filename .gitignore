@@ -25,3 +25,6 @@ dist-ssr
 *.sw?
 /Server/config.env
 .gitattributes
+
+# Hide dummy data
+/Client/*/*/dummy*

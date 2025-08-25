@@ -82,6 +82,10 @@ userSchema.methods.changesPasswordAfter = function (JWTTimestamp) {
   return false;
 };
 
+userSchema.statics.findAllIncludingInactive = function () {
+  return this.find();
+};
+
 const User = mongoose.model("User", userSchema);
 
 export default User;
