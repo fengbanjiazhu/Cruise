@@ -3,6 +3,10 @@ import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 
+// Routes
+import userRoute from "./Routes/userRoute.js";
+import errorController from "./Controllers/errorController.js";
+
 const app = express();
 
 dotenv.config({ path: "./Server/config.env" });
@@ -13,10 +17,21 @@ app.use(
   })
 );
 
+app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: true, limit: "10kb" }));
 
+app.use(function (req, res, next) {
+  console.log("Query:", req.query);
+  console.log("Params:", req.params);
+  console.log("Body:", req.body);
+  next();
+});
+
 // Routes
-// app.use('/', someRoute);
+app.use("/api/user", userRoute);
+
+//
+app.use(errorController);
 
 const DB = process.env.DATABASE.replace("<db_password>", process.env.DATABASE_PASSWORD);
 

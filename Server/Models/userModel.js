@@ -20,9 +20,15 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["user", "guide", "lead-guide", "admin"],
+    enum: ["user", "admin"],
     default: "user",
   },
+  savedList: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Path",
+    },
+  ],
   password: {
     type: String,
     required: [true, "A user must have a password"],
@@ -67,10 +73,6 @@ userSchema.pre("save", function (next) {
   next();
 });
 
-userSchema.methods.correctPassword = async function (typedInPassword, dbSavedPassword) {
-  return await bcrypt.compare(typedInPassword, dbSavedPassword);
-};
-
 userSchema.methods.changesPasswordAfter = function (JWTTimestamp) {
   if (this.passwordChangedAt) {
     const changedTimestamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
@@ -82,4 +84,4 @@ userSchema.methods.changesPasswordAfter = function (JWTTimestamp) {
 
 const User = mongoose.model("User", userSchema);
 
-module.exports = User;
+export default User;
