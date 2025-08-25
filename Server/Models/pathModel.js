@@ -1,9 +1,8 @@
 import mongoose from "mongoose";
 import slugify from "slugify";
-// const User = require('./userModel');
+// import validator from "validator";
 
-// create a new schema
-// states out required or not, has default value or not, etc
+
 const pathSchema = new mongoose.Schema(
   {
     name: {
@@ -76,6 +75,11 @@ const pathSchema = new mongoose.Schema(
       },
     ],
     creator: { type: mongoose.Schema.ObjectId, ref: "User" },
+    blocked: {
+      type: Boolean,
+      default: false,
+      select: false,
+    },
   },
 
   {
@@ -102,4 +106,4 @@ pathSchema.pre("save", function (next) {
 
 const Path = mongoose.model("Path", pathSchema);
 
-module.exports = Path;
+export default Path;
