@@ -1,8 +1,10 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import { v4 as uuidv4 } from "uuid";
 import "leaflet/dist/leaflet.css";
+import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
+import "leaflet-routing-machine";
 
 // Leaflet marker icon fix for default icon not showing in some bundlers
 delete L.Icon.Default.prototype._getIconUrl;
@@ -50,6 +52,53 @@ function AddWaypointOnClick({ addWaypoint }) {
       addWaypoint([e.latlng.lat, e.latlng.lng]);
     },
   });
+  return null;
+}
+
+function RouteBetweenWaypoints({ waypoints }) {
+  const map = useMapEvents({});
+  const routeRef = useRef(null);
+
+  useEffect(() => {
+    if (!map) return;
+
+    // Remove existing control if present
+    if (routeRef.current) {
+      try { map.removeControl(routeRef.current); } catch {}
+      routeRef.current = null;
+    }
+
+    // Need at least 2 waypoints to draw a route
+    if (!waypoints || waypoints.length < 2) return;
+
+    const latLngs = waypoints.map((w) => L.latLng(w.position[0], w.position[1]));
+
+    // Create routing control using public OSRM demo server
+    routeRef.current = L.Routing.control({
+      waypoints: latLngs,
+      router: L.Routing.osrmv1({ serviceUrl: "https://router.project-osrm.org/route/v1" }),
+      addWaypoints: false,          // disable UI waypoint dragging (we manage markers)
+      draggableWaypoints: false,
+      fitSelectedRoutes: true,      // auto-zoom to route
+      show: false,                  // hide the default itinerary panel
+      lineOptions: {
+        styles: [
+          { color: "#111827", opacity: 0.95, weight: 5 },   // dark gray main line
+          { color: "#9CA3AF", opacity: 0.4, weight: 8 },    // subtle halo
+        ],
+        extendToWaypoints: true,
+      },
+      createMarker: () => null,     // we render our own markers
+    }).addTo(map);
+
+    return () => {
+      if (routeRef.current) {
+        try { map.removeControl(routeRef.current); } catch {}
+        routeRef.current = null;
+      }
+    };
+  }, [map, waypoints]);
+
   return null;
 }
 
@@ -247,6 +296,7 @@ function CreatePath() {
               {/* Existing components */}
               <WaypointMarkers waypoints={waypoints} setWaypoints={setWaypoints} />
               <PendingWaypointHandler />
+              <RouteBetweenWaypoints waypoints={waypoints} />
 
               {pendingLatLng && (
                 <Marker position={pendingLatLng}>
