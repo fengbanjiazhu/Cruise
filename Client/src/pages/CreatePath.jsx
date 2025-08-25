@@ -193,7 +193,7 @@ function CreatePath() {
         {/* Left column: form + waypoints + preview */}
         <div className="space-y-6 lg:col-span-2">
           {/* Card: Form */}
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm text-gray-900">
             <p className="text-sm text-gray-600 mb-4">
               Click on the map to add waypoints. Label each point, then submit to preview the ordered coordinates.
             </p>
@@ -257,9 +257,23 @@ function CreatePath() {
                           />
                         </div>
                         <div className="flex items-center gap-1">
-                          <button type="button" onClick={() => moveWaypoint(idx, -1)} disabled={idx === 0} className="rounded-lg border px-2 py-1 text-xs disabled:opacity-40">↑</button>
-                          <button type="button" onClick={() => moveWaypoint(idx, 1)} disabled={idx === waypoints.length - 1} className="rounded-lg border px-2 py-1 text-xs disabled:opacity-40">↓</button>
-                          <button type="button" onClick={() => removeWaypoint(idx)} className="rounded-lg border px-2 py-1 text-xs">Remove</button>
+                          <button
+                            type="button"
+                            onClick={() => moveWaypoint(idx, -1)}
+                            disabled={idx === 0}
+                            className="rounded-lg border px-2 py-1 text-xs bg-black text-white disabled:opacity-40"
+                          >↑</button>
+                          <button
+                            type="button"
+                            onClick={() => moveWaypoint(idx, 1)}
+                            disabled={idx === waypoints.length - 1}
+                            className="rounded-lg border px-2 py-1 text-xs bg-black text-white disabled:opacity-40"
+                          >↓</button>
+                          <button
+                            type="button"
+                            onClick={() => removeWaypoint(idx)}
+                            className="rounded-lg border px-2 py-1 text-xs bg-black text-white"
+                          >Remove</button>
                         </div>
                       </li>
                     ))}
@@ -277,7 +291,7 @@ function CreatePath() {
                   >
                     <option value="car">Driving</option>
                     <option value="bike">Cycling</option>
-                    <option value="foot">Walking (often waterfront)</option>
+                    <option value="foot">Walking</option>
                   </select>
                 </div>
                 <div className="flex items-end">
@@ -303,10 +317,10 @@ function CreatePath() {
 
           {/* Card: Preview */}
           {showPreview && (
-            <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+            <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm text-gray-900">
               <div className="mb-3 flex items-center justify-between">
                 <h3 className="text-sm font-semibold text-gray-900">Submission Preview</h3>
-                <button onClick={() => setShowPreview(false)} className="rounded-lg border px-2 py-1 text-xs">Edit</button>
+                <button onClick={() => setShowPreview(false)} className="rounded-lg border px-2 py-1 text-xs bg-black text-white">Edit</button>
               </div>
               <pre className="max-h-80 overflow-auto rounded-xl bg-gray-50 p-3 text-xs text-gray-800">{JSON.stringify({
                 name: routeName,
@@ -323,7 +337,7 @@ function CreatePath() {
 
         {/* Right column: Map */}
         <div className="lg:col-span-3">
-          <div className="h-[60vh] w-full overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+          <div className="h-[60vh] w-full overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm text-gray-900">
             <MapContainer
               center={waypoints[0]?.position || [ -33.8688, 151.2093 ]}
               zoom={12}
@@ -348,7 +362,7 @@ function CreatePath() {
                       <div className="text-sm font-medium text-gray-900">Add waypoint here?</div>
                       <p className="text-xs text-gray-600">You can rename it below in the list.</p>
                       <div className="flex justify-end gap-2">
-                        <button type="button" onClick={() => setPendingLatLng(null)} className="rounded-lg border px-3 py-1 text-sm">Cancel</button>
+                        <button type="button" onClick={() => setPendingLatLng(null)} className="rounded-lg border px-3 py-1 text-sm bg-black text-white">Cancel</button>
                         <button type="button" onClick={() => addWaypoint(pendingLatLng)} className="rounded-lg bg-black px-3 py-1 text-sm text-white">Add</button>
                       </div>
                     </div>
