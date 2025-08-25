@@ -55,7 +55,7 @@ function AddWaypointOnClick({ addWaypoint }) {
   return null;
 }
 
-function RouteBetweenWaypoints({ waypoints }) {
+function RouteBetweenWaypoints({ waypoints, profile = 'foot', scenic = true }) {
   const map = useMapEvents({});
   const routeRef = useRef(null);
 
@@ -76,11 +76,25 @@ function RouteBetweenWaypoints({ waypoints }) {
     // Create routing control using public OSRM demo server
     routeRef.current = L.Routing.control({
       waypoints: latLngs,
-      router: L.Routing.osrmv1({ serviceUrl: "https://router.project-osrm.org/route/v1" }),
+      router: L.Routing.osrmv1({
+        serviceUrl: "https://router.project-osrm.org/route/v1",
+        profile, // 'car' | 'bike' | 'foot'
+      }),
       addWaypoints: false,          // disable UI waypoint dragging (we manage markers)
       draggableWaypoints: false,
       fitSelectedRoutes: true,      // auto-zoom to route
       show: false,                  // hide the default itinerary panel
+      routeWhileDragging: false,
+      showAlternatives: scenic,
+      altLineOptions: {
+        styles: [
+          { color: "#6B7280", opacity: 0.7, weight: 4 }, // alt line
+        ],
+      },
+      // OSRM alternatives count
+      // LRM passes "alternatives" to OSRM under the hood when true
+      // We'll set it by passing options on the control:
+      routerOptions: { alternatives: scenic },
       lineOptions: {
         styles: [
           { color: "#111827", opacity: 0.95, weight: 5 },   // dark gray main line
@@ -97,7 +111,7 @@ function RouteBetweenWaypoints({ waypoints }) {
         routeRef.current = null;
       }
     };
-  }, [map, waypoints]);
+  }, [map, waypoints, profile, scenic]);
 
   return null;
 }
@@ -110,6 +124,9 @@ function CreatePath() {
   const [showPreview, setShowPreview] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   const mapRef = useRef();
+
+  const [routingProfile, setRoutingProfile] = useState("foot"); // 'car' | 'bike' | 'foot'
+  const [scenicMode, setScenicMode] = useState(true);            // show alternatives for scenic choices
 
   // Add a waypoint at position
   const addWaypoint = (latlng) => {
@@ -250,6 +267,32 @@ function CreatePath() {
                 )}
               </div>
 
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div>
+                  <label className="block text-sm font-medium text-gray-800">Routing profile</label>
+                  <select
+                    className="mt-1 w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-gray-900"
+                    value={routingProfile}
+                    onChange={(e) => setRoutingProfile(e.target.value)}
+                  >
+                    <option value="car">Driving</option>
+                    <option value="bike">Cycling</option>
+                    <option value="foot">Walking (often waterfront)</option>
+                  </select>
+                </div>
+                <div className="flex items-end">
+                  <label className="inline-flex items-center gap-2 text-sm text-gray-800">
+                    <input
+                      type="checkbox"
+                      className="h-4 w-4 rounded border-gray-300"
+                      checked={scenicMode}
+                      onChange={(e) => setScenicMode(e.target.checked)}
+                    />
+                    Scenic mode (show alternatives)
+                  </label>
+                </div>
+              </div>
+
               <div className="pt-2">
                 <button type="submit" className="inline-flex items-center rounded-xl bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-900">
                   Preview JSON
@@ -296,7 +339,7 @@ function CreatePath() {
               {/* Existing components */}
               <WaypointMarkers waypoints={waypoints} setWaypoints={setWaypoints} />
               <PendingWaypointHandler />
-              <RouteBetweenWaypoints waypoints={waypoints} />
+              <RouteBetweenWaypoints waypoints={waypoints} profile={routingProfile} scenic={scenicMode} />
 
               {pendingLatLng && (
                 <Marker position={pendingLatLng}>
