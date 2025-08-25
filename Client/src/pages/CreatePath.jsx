@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet";
 import L from "leaflet";
@@ -35,11 +34,11 @@ function WaypointMarkers({ waypoints, setWaypoints }) {
       }}
     >
       <Popup>
-        Waypoint {idx + 1}
-        <br />
-        Lat: {wp.position[0].toFixed(5)}
-        <br />
-        Lng: {wp.position[1].toFixed(5)}
+        <div className="space-y-1">
+          <div className="text-sm font-medium">{wp.label?.trim() || `Waypoint ${idx + 1}`}</div>
+          <div className="text-xs text-gray-600">Lat: {wp.position[0].toFixed(5)}</div>
+          <div className="text-xs text-gray-600">Lng: {wp.position[1].toFixed(5)}</div>
+        </div>
       </Popup>
     </Marker>
   ));
@@ -67,7 +66,7 @@ function CreatePath() {
   const addWaypoint = (latlng) => {
     setWaypoints((wps) => [
       ...wps,
-      { id: uuidv4(), position: latlng },
+      { id: uuidv4(), position: latlng, label: `Waypoint ${wps.length + 1}` },
     ]);
     setPendingLatLng(null);
   };
@@ -121,156 +120,153 @@ function CreatePath() {
   }
 
   return (
-    <div style={{ maxWidth: 900, margin: "0 auto" }}>
-      <h1>Create Path</h1>
-      <form onSubmit={handleSubmit} style={{ marginBottom: 24 }}>
-        <div style={{ marginBottom: 12 }}>
-          <label>
-            Route Name:{" "}
-            <input
-              type="text"
-              value={routeName}
-              onChange={(e) => setRouteName(e.target.value)}
-              style={{ width: 250 }}
-            />
-          </label>
-          {formErrors.routeName && (
-            <span style={{ color: "red", marginLeft: 8 }}>
-              {formErrors.routeName}
-            </span>
-          )}
-        </div>
-        <div style={{ marginBottom: 12 }}>
-          <label>
-            Description:{" "}
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={2}
-              style={{ width: 350 }}
-            />
-          </label>
-        </div>
-        <div>
-          <strong>Waypoints:</strong>
-          {formErrors.waypoints && (
-            <span style={{ color: "red", marginLeft: 8 }}>
-              {formErrors.waypoints}
-            </span>
-          )}
-          <ol>
-            {waypoints.map((wp, idx) => (
-              <li key={wp.id} style={{ marginBottom: 4 }}>
-                <span>
-                  <b>Waypoint {idx + 1}:</b>{" "}
-                  {wp.position[0].toFixed(5)}, {wp.position[1].toFixed(5)}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => removeWaypoint(idx)}
-                  style={{ marginLeft: 8 }}
-                >
-                  Remove
-                </button>
-                <button
-                  type="button"
-                  onClick={() => moveWaypoint(idx, -1)}
-                  disabled={idx === 0}
-                  style={{ marginLeft: 4 }}
-                >
-                  ↑
-                </button>
-                <button
-                  type="button"
-                  onClick={() => moveWaypoint(idx, 1)}
-                  disabled={idx === waypoints.length - 1}
-                  style={{ marginLeft: 2 }}
-                >
-                  ↓
-                </button>
-              </li>
-            ))}
-          </ol>
-          <div style={{ color: "#555", fontSize: 13 }}>
-            Click on the map to add a waypoint.
-          </div>
-        </div>
-        <button type="submit" style={{ marginTop: 20 }}>
-          Preview JSON
-        </button>
-      </form>
-      <div style={{ height: 400, marginBottom: 24 }}>
-        <MapContainer
-          center={waypoints[0]?.position || [51.505, -0.09]}
-          zoom={13}
-          style={{ height: "100%", width: "100%" }}
-          whenCreated={(mapInstance) => {
-            mapRef.current = mapInstance;
-          }}
-        >
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          />
-          <WaypointMarkers waypoints={waypoints} setWaypoints={setWaypoints} />
-          <PendingWaypointHandler />
-          {pendingLatLng && (
-            <Marker position={pendingLatLng}>
-              <Popup
-                position={pendingLatLng}
-                closeButton={false}
-                closeOnClick={false}
-                autoClose={false}
-                autoPan={false}
-              >
-                <div>
-                  <div>
-                    Add waypoint here? <br />
-                    <button
-                      type="button"
-                      onClick={() => addWaypoint(pendingLatLng)}
-                      style={{ marginRight: 6 }}
-                    >
-                      Yes
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setPendingLatLng(null)}
-                    >
-                      No
-                    </button>
-                  </div>
+    <div className="mx-auto max-w-7xl px-4 py-6 lg:px-6">
+      <h1 className="text-2xl font-semibold tracking-tight text-white mb-4">Create Path</h1>
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
+        {/* Left column: form + waypoints + preview */}
+        <div className="space-y-6 lg:col-span-2">
+          {/* Card: Form */}
+          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+            <p className="text-sm text-gray-600 mb-4">
+              Click on the map to add waypoints. Label each point, then submit to preview the ordered coordinates.
+            </p>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-800">Route name <span className="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  value={routeName}
+                  onChange={(e) => setRouteName(e.target.value)}
+                  placeholder="e.g. Coastal Sunrise Run"
+                  className="mt-1 w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm outline-none ring-0 focus:border-gray-900"
+                />
+                {formErrors.routeName && (
+                  <p className="mt-1 text-xs text-red-600">{formErrors.routeName}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-800">Description</label>
+                <textarea
+                  rows={3}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Short description for this path"
+                  className="mt-1 w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm outline-none ring-0 focus:border-gray-900"
+                />
+              </div>
+
+              <div>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-sm font-medium text-gray-800">Waypoints</h2>
+                  <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-700">{waypoints.length}</span>
+                  {formErrors.waypoints && (
+                    <span className="text-xs text-red-600">{formErrors.waypoints}</span>
+                  )}
                 </div>
-              </Popup>
-            </Marker>
-          )}
-        </MapContainer>
-      </div>
-      {showPreview && (
-        <div style={{
-          background: "#f4f4f4",
-          border: "1px solid #ccc",
-          padding: 16,
-          borderRadius: 6,
-        }}>
-          <h3>JSON Preview</h3>
-          <pre style={{ whiteSpace: "pre-wrap" }}>
-            {JSON.stringify(
-              {
+
+                {waypoints.length === 0 ? (
+                  <p className="mt-2 text-sm text-gray-500">Click on the map to add your first waypoint.</p>
+                ) : (
+                  <ul className="mt-2 space-y-2">
+                    {waypoints.map((wp, idx) => (
+                      <li key={wp.id} className="flex items-center justify-between gap-3 rounded-xl border border-gray-200 p-2">
+                        <div className="min-w-0">
+                          <div className="text-sm font-medium text-gray-900 mb-1">
+                            {idx + 1}. {wp.label?.trim() || `Waypoint ${idx + 1}`}
+                          </div>
+                          <div className="text-xs text-gray-600 mb-2">{wp.position[0].toFixed(6)}, {wp.position[1].toFixed(6)}</div>
+                          <label className="block text-xs text-gray-700 mb-1">Rename</label>
+                          <input
+                            type="text"
+                            value={wp.label || ""}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setWaypoints((wps) => wps.map((w, i) => (i === idx ? { ...w, label: val } : w)));
+                            }}
+                            placeholder={`Waypoint ${idx + 1}`}
+                            className="w-full rounded-lg border border-gray-300 px-2 py-1 text-xs outline-none focus:border-gray-900"
+                          />
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <button type="button" onClick={() => moveWaypoint(idx, -1)} disabled={idx === 0} className="rounded-lg border px-2 py-1 text-xs disabled:opacity-40">↑</button>
+                          <button type="button" onClick={() => moveWaypoint(idx, 1)} disabled={idx === waypoints.length - 1} className="rounded-lg border px-2 py-1 text-xs disabled:opacity-40">↓</button>
+                          <button type="button" onClick={() => removeWaypoint(idx)} className="rounded-lg border px-2 py-1 text-xs">Remove</button>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+
+              <div className="pt-2">
+                <button type="submit" className="inline-flex items-center rounded-xl bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-900">
+                  Preview JSON
+                </button>
+              </div>
+            </form>
+          </div>
+
+          {/* Card: Preview */}
+          {showPreview && (
+            <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+              <div className="mb-3 flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-gray-900">Submission Preview</h3>
+                <button onClick={() => setShowPreview(false)} className="rounded-lg border px-2 py-1 text-xs">Edit</button>
+              </div>
+              <pre className="max-h-80 overflow-auto rounded-xl bg-gray-50 p-3 text-xs text-gray-800">{JSON.stringify({
                 name: routeName,
                 description,
-                waypoints: waypoints.map((wp) => ({
+                waypoints: waypoints.map((wp, i) => ({
+                  label: (wp.label && wp.label.trim()) ? wp.label.trim() : `Waypoint ${i + 1}`,
                   lat: wp.position[0],
                   lng: wp.position[1],
                 })),
-              },
-              null,
-              2
-            )}
-          </pre>
-          <button onClick={() => setShowPreview(false)}>Edit</button>
+              }, null, 2)}</pre>
+            </div>
+          )}
         </div>
-      )}
+
+        {/* Right column: Map */}
+        <div className="lg:col-span-3">
+          <div className="h-[60vh] w-full overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+            <MapContainer
+              center={waypoints[0]?.position || [ -33.8688, 151.2093 ]}
+              zoom={12}
+              scrollWheelZoom
+              className="h-full w-full"
+              whenCreated={(mapInstance) => { mapRef.current = mapInstance; }}
+            >
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              />
+
+              {/* Existing components */}
+              <WaypointMarkers waypoints={waypoints} setWaypoints={setWaypoints} />
+              <PendingWaypointHandler />
+
+              {pendingLatLng && (
+                <Marker position={pendingLatLng}>
+                  <Popup closeButton={false} closeOnClick={false} autoClose={false} autoPan={false}>
+                    <div className="w-56 space-y-2">
+                      <div className="text-sm font-medium text-gray-900">Add waypoint here?</div>
+                      <p className="text-xs text-gray-600">You can rename it below in the list.</p>
+                      <div className="flex justify-end gap-2">
+                        <button type="button" onClick={() => setPendingLatLng(null)} className="rounded-lg border px-3 py-1 text-sm">Cancel</button>
+                        <button type="button" onClick={() => addWaypoint(pendingLatLng)} className="rounded-lg bg-black px-3 py-1 text-sm text-white">Add</button>
+                      </div>
+                    </div>
+                  </Popup>
+                </Marker>
+              )}
+            </MapContainer>
+          </div>
+          <p className="mt-2 text-xs text-gray-500">Tip: click anywhere on the map to place a waypoint. Drag markers to fine‑tune positions.</p>
+        </div>
+      </div>
     </div>
   );
 }
