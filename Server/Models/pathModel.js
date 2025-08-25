@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import slugify from "slugify";
 // import validator from "validator";
 
+
 const pathSchema = new mongoose.Schema(
   {
     name: {
