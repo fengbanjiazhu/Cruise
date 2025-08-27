@@ -9,6 +9,7 @@ import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import Path from "./pages/Path";
 import Profile from "./pages/Profile";
+import Admin from "./pages/Admin";
 
 function App() {
   return (
@@ -19,13 +20,17 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/path" element={<Path />} />
             <Route path="/profile" element={<Profile />} />
-
+            <Route path="/admin" element={<Admin />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
       </BrowserRouter>
 
-      <Toaster position="top-center" gutter={12} containerStyle={{ margin: "1rem" }} />
+      <Toaster
+        position="top-center"
+        gutter={12}
+        containerStyle={{ margin: "1rem" }}
+      />
     </>
   );
 }
