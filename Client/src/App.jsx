@@ -9,7 +9,7 @@ import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import Path from "./pages/Path";
 import Profile from "./pages/Profile";
-import Admin from "./pages/Admin";
+import Admin from "./pages/AdminPage/page";
 
 function App() {
   return (
