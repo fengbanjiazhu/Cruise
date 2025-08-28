@@ -25,6 +25,11 @@ const reviewSchema = new mongoose.Schema(
       ref: "User",
       require: [true, "A review must belong to a user"],
     },
+    blocked: {
+      type: Boolean,
+      default: false,
+      select: false,
+    },
   },
   {
     toJSON: { virtuals: true },
@@ -46,4 +51,4 @@ reviewSchema.pre(/^find/, function (next) {
 
 const Review = mongoose.model("Review", reviewSchema);
 
-module.exports = Review;
+export default Review;
