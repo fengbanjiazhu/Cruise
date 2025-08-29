@@ -76,7 +76,9 @@ export const fetchPost = async (endpoint, options) => {
   const resData = await response.json();
 
   if (!successCodes.includes(response.status) || !response.ok) {
-    throw new Error(resData.message);
+    // Throw an error with the backend error message (if available)
+    const errorMsg = resData.errors ? resData.errors.join(", ") : resData.message || "Unknown error";
+    throw new Error(errorMsg);
   }
   return resData;
 };
