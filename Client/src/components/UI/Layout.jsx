@@ -8,7 +8,7 @@ const Layout = ({ props }) => {
     <>
       <Header {...props} />
       <div className="container">
-        <div className="main">
+        <div className="main h-screen">
           <Outlet />
         </div>
       </div>

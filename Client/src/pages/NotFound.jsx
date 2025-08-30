@@ -1,31 +1,21 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+// import { useEffect } from "react";
+// import { useNavigate } from "react-router-dom";
 
 function NotFound() {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
-  useEffect(() => {
-    let timer = setTimeout(() => {
-      navigate("/");
-    }, 2500);
-    return () => clearTimeout(timer);
-  }, []);
+  // useEffect(() => {
+  //   let timer = setTimeout(() => {
+  //     navigate("/");
+  //   }, 2500);
+  //   return () => clearTimeout(timer);
+  // }, []);
 
   return (
-    <div
-      style={{
-        width: "100%",
-        color: "white",
-        textAlign: "center",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        minHeight: "90vh",
-      }}
-    >
+    <div className="flex text-center text-slate-70 w-full justify-center items-center">
       <div>
-        <h1>The Page is Not Found</h1>
-        <p>You will be redirect to main page shortly</p>
+        <h1 className="mb-2">{"You probably took a wrong turn".toUpperCase()}</h1>
+        <p className="font-bold">Try another route instead</p>
       </div>
     </div>
   );

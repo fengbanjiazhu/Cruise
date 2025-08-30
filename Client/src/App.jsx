@@ -10,6 +10,7 @@ import NotFound from "./pages/NotFound";
 import Path from "./pages/Path";
 import CreatePath from "./pages/CreatePath";
 import Profile from "./pages/Profile";
+import Login from "./pages/Login";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
             <Route path="/path" element={<Path />} />
             <Route path="/createpath" element={<CreatePath />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/login" element={<Login />} />
 
             <Route path="*" element={<NotFound />} />
           </Route>

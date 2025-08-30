@@ -5,9 +5,9 @@ function Header() {
     <>
       <header className="header">
         {/* <img src={SomeLogo} alt="Logo" /> */}
-        <h1>
+        {/* <h1>
           <Link to="/">Cruise</Link>
-        </h1>
+        </h1> */}
         <nav>
           <NavLink to="/">Home</NavLink>
           <NavLink to="/profile">Profile</NavLink>
