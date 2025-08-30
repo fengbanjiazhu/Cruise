@@ -10,8 +10,10 @@ import React, { useRef } from "react";
 import Card from "../components/UI/Card";
 import { Parallax, ParallaxLayer } from "@react-spring/parallax";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 function Home() {
+  const { isLoggedIn } = useSelector((state) => state.userInfo);
   const parallax = useRef();
 
   return (
@@ -103,10 +105,12 @@ function Home() {
             onClick={() => {}}
           >
             <Card>
-              <p className="text-xl">Login to start your journey</p>
-              <Link to="/login">
+              <p className="text-xl">
+                {isLoggedIn ? "Create a new path now" : "Login to start your journey"}
+              </p>
+              <Link to={isLoggedIn ? "/createpath" : "/login"}>
                 <button className="btn text-slate-900 mt-4 w-full hover:bg-transparent hover:text-white">
-                  Login
+                  {isLoggedIn ? "Create" : "Login"}
                 </button>
               </Link>
             </Card>
