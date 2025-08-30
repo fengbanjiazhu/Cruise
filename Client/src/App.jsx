@@ -1,5 +1,5 @@
 import { Route, Routes, BrowserRouter } from "react-router-dom";
-
+import { useDispatch, useSelector } from "react-redux";
 import { Toaster } from "react-hot-toast";
 import "./index.css";
 import "./App.css";
@@ -12,7 +12,19 @@ import CreatePath from "./pages/CreatePath";
 import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 
+import { fetchUserInfoUntilSuccess } from "./store/slices/userInfoSlice";
+import { useEffect } from "react";
+
 function App() {
+  const dispatch = useDispatch();
+  const { isLoggedIn, token } = useSelector((state) => state.userInfo);
+
+  useEffect(() => {
+    if (token && !isLoggedIn) {
+      dispatch(fetchUserInfoUntilSuccess());
+    }
+  }, [token, dispatch, isLoggedIn]);
+
   return (
     <>
       <BrowserRouter>
@@ -21,8 +33,9 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/path" element={<Path />} />
             <Route path="/createpath" element={<CreatePath />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/login" element={<Login />} />
+
+            {isLoggedIn && <Route path="/profile" element={<Profile />} />}
+            {!isLoggedIn && <Route path="/login" element={<Login />} />}
 
             <Route path="*" element={<NotFound />} />
           </Route>

@@ -1,10 +1,13 @@
 import React from "react";
+import { useSelector } from "react-redux";
 
 function Profile() {
+  const { user } = useSelector((state) => state.userInfo);
+  const { name } = user;
   return (
     <div>
       <h1>Profile</h1>
-      <p>This is the user page</p>
+      <p>Welcome back, {name}</p>
     </div>
   );
 }
