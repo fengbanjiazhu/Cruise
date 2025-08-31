@@ -14,6 +14,7 @@ import Login from "./pages/Login";
 
 import { fetchUserInfoUntilSuccess } from "./store/slices/userInfoSlice";
 import { useEffect } from "react";
+import Review from "./pages/Review";
 
 function App() {
   const dispatch = useDispatch();
@@ -33,6 +34,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/path" element={<Path />} />
             <Route path="/createpath" element={<CreatePath />} />
+            <Route path="/review" element={<Review />} />
 
             {isLoggedIn && <Route path="/profile" element={<Profile />} />}
             {!isLoggedIn && <Route path="/login" element={<Login />} />}

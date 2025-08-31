@@ -82,3 +82,5 @@ export const getAll = (Model) =>
       },
     });
   });
+
+
