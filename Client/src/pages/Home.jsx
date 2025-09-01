@@ -17,7 +17,7 @@ function Home() {
   const parallax = useRef();
 
   return (
-    <>
+    <div className="w-full h-screen">
       <div
         className="w-full h-screen bg-cover fixed top-0 left-0"
         style={{ backgroundImage: `url(${bg})` }}
@@ -117,7 +117,7 @@ function Home() {
           </ParallaxLayer>
         </Parallax>
       </div>
-    </>
+    </div>
   );
 }
 

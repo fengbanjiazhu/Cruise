@@ -21,6 +21,10 @@ function CreatePath() {
   const [scenicMode, setScenicMode] = useState(true); // show alternatives for scenic choices
 
   const handleCreatePath = async () => {
+    if (!routeSteps || waypoints.length < 2) {
+      return toast.error("Please add at least 2 waypoints");
+    }
+
     const sendData = {
       name: routeName,
       description,
