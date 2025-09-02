@@ -1,13 +1,14 @@
 import express from "express";
-import { protect, restrictTo, login } from "../Controllers/authController.js";
-import { getMe } from "../Controllers/userController.js";
+import { protect, restrictTo, login ,signup} from "../Controllers/authController.js";
+import { getMe,updateUser } from "../Controllers/userController.js";
 
 const userRoute = express.Router();
 
 userRoute.route("/").get(protect, getMe);
-//   .post(signup).patch(protect, updateUser);
+// .post(signup).patch(protect, updateUser);
 
 userRoute.route("/login").post(login);
+userRoute.route("/register").post(signup);
 // userRoute.route("/all").get(protect, restrictTo("admin"),getAllUser);
 
 export default userRoute;
