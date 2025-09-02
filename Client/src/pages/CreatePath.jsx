@@ -46,6 +46,7 @@ function CreatePath() {
       const payload = buildPayload();
       await fetchPost("path/", optionMaker(payload));
       // success logic...
+      return { ok: true };
     } catch (error) {
       setServerErrors([error.message]);
       toast.error(error.message); // Show error as popup
@@ -382,13 +383,6 @@ function CreatePath() {
           <p className="mt-2 text-xs text-gray-500">
             Tip: click anywhere on the map to place a waypoint. Drag markers to fine‑tune positions.
           </p>
-          <button
-            onClick={() => {
-              console.log(routeSteps);
-            }}
-          >
-            Click
-          </button>
         </div>
       </div>
     </div>
