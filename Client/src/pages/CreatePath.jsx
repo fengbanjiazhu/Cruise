@@ -14,13 +14,53 @@ function CreatePath() {
   const [pendingLatLng, setPendingLatLng] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
   const [formErrors, setFormErrors] = useState({});
+  const [serverErrors, setServerErrors] = useState([]);
+  const [isValidating, setIsValidating] = useState(false);
   const mapRef = useRef();
   const [routeSteps, setRouteSteps] = useState(null);
 
   const [routingProfile, setRoutingProfile] = useState("foot"); // 'car' | 'bike' | 'foot'
   const [scenicMode, setScenicMode] = useState(true); // show alternatives for scenic choices
 
+  // Helper to build the payload for validation and creation
+  const buildPayload = () => ({
+    name: routeName,
+    description,
+    creator: "68abbad440fef1e01fe82b34",
+    locations: routeSteps?.coordinates,
+    profile: routingProfile,
+    distance: routeSteps?.summary.totalDistance,
+    duration: routeSteps?.summary.totalTime,
+    waypoints: waypoints.map((wp, i) => ({
+      label: wp.label && wp.label.trim() ? wp.label.trim() : `Waypoint ${i + 1}`,
+      lat: wp.position[0],
+      lng: wp.position[1],
+    })),
+  });
+
+  // Calls the server-side validation endpoint
+  const validateServerSide = async () => {
+    setIsValidating(true);
+    setServerErrors([]);
+    try {
+      const payload = buildPayload();
+      await fetchPost("path/", optionMaker(payload));
+      // success logic...
+      return { ok: true };
+    } catch (error) {
+      setServerErrors([error.message]);
+      toast.error(error.message); // Show error as popup
+      return { ok: false };
+    } finally {
+      setIsValidating(false);
+    }
+  };
+
   const handleCreatePath = async () => {
+    if (serverErrors.length > 0) {
+      return toast.error("Resolve validation errors first");
+    }
+
     if (!routeSteps || waypoints.length < 2) {
       return toast.error("Please add at least 2 waypoints");
     }
@@ -39,14 +79,16 @@ function CreatePath() {
         lng: wp.position[1],
       })),
     };
+
     try {
+      const sendData = buildPayload();
       await fetchPost("path/", optionMaker(sendData));
       toast.success("Congrats! You have created a new path!");
     } catch (error) {
-      console.log(error);
-      toast.error("Failed to create path, try again later");
+      toast.error(error.message); // Show error as popup
     }
   };
+
   // Add a waypoint at position
   const addWaypoint = (latlng) => {
     setWaypoints((wps) => [
@@ -85,9 +127,16 @@ function CreatePath() {
     e.preventDefault();
     const errs = validate();
     setFormErrors(errs);
-    if (Object.keys(errs).length === 0) {
-      setShowPreview(true);
-    }
+    if (Object.keys(errs).length !== 0) return;
+
+    validateServerSide().then((result) => {
+      if (result.ok) {
+        setShowPreview(true);
+        toast.success("Validated – ready to submit");
+      } else {
+        toast.error("Please fix the errors below");
+      }
+    });
   };
 
   // Handle map click: set pending waypoint position
@@ -246,16 +295,29 @@ function CreatePath() {
                 </div>
               </div>
 
+              {serverErrors.length > 0 && (
+                <div className="rounded-xl border border-red-200 bg-red-50 p-3">
+                  <h4 className="mb-1 text-sm font-semibold text-red-700">Server validation errors</h4>
+                  <ul className="list-disc pl-5 text-sm text-red-700">
+                    {serverErrors.map((e, i) => (
+                      <li key={i}>{e}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
               <div className="pt-2">
                 <button
                   type="submit"
-                  className="inline-flex items-center rounded-xl bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-900"
+                  disabled={isValidating}
+                  className="inline-flex items-center rounded-xl bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-900 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  Preview JSON
+                  {isValidating ? "Validating…" : "Preview JSON"}
                 </button>
                 <button
+                  type="button"
                   onClick={handleCreatePath}
-                  className="inline-flex items-center rounded-xl  bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-900 ml-4"
+                  disabled={isValidating || Object.keys(validate()).length !== 0 || serverErrors.length > 0}
+                  className="inline-flex items-center rounded-xl bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-900 ml-4 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   Create Path
                 </button>
@@ -276,24 +338,7 @@ function CreatePath() {
                 </button>
               </div>
               <pre className="max-h-80 overflow-auto rounded-xl bg-gray-50 p-3 text-xs text-gray-800">
-                {JSON.stringify(
-                  {
-                    name: routeName,
-                    description,
-                    creator: "68abbad440fef1e01fe82b34",
-                    locations: routeSteps?.coordinates,
-                    profile: routingProfile,
-                    distance: routeSteps?.summary.totalDistance,
-                    duration: routeSteps?.summary.totalTime,
-                    waypoints: waypoints.map((wp, i) => ({
-                      label: wp.label && wp.label.trim() ? wp.label.trim() : `Waypoint ${i + 1}`,
-                      lat: wp.position[0],
-                      lng: wp.position[1],
-                    })),
-                  },
-                  null,
-                  2
-                )}
+                {JSON.stringify(buildPayload(), null, 2)}
               </pre>
             </div>
           )}
@@ -357,13 +402,6 @@ function CreatePath() {
           <p className="mt-2 text-xs text-gray-500">
             Tip: click anywhere on the map to place a waypoint. Drag markers to fine‑tune positions.
           </p>
-          <button
-            onClick={() => {
-              console.log(routeSteps);
-            }}
-          >
-            Click
-          </button>
         </div>
       </div>
     </div>
