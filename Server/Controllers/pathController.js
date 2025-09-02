@@ -2,6 +2,7 @@ import Path from "../Models/pathModel.js";
 import { updateOne, getOne, getAll, deleteOne, createOne } from "./centralController.js";
 
 // Existing create
+// export const createOnePath = createOne(Path);
 export const createOnePath = async (req, res, next) => {
   const errors = [];
   const { name, locations, profile, waypoints, distance, duration } = req.body;
@@ -44,3 +45,7 @@ export const createOnePath = async (req, res, next) => {
     next(err);
   }
 };
+
+export const getOnePath = getOne(Path);
+
+

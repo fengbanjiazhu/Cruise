@@ -58,9 +58,28 @@ function CreatePath() {
 
   const handleCreatePath = async () => {
     if (serverErrors.length > 0) {
-      toast.error("Resolve validation errors first");
-      return;
+      return toast.error("Resolve validation errors first");
     }
+
+    if (!routeSteps || waypoints.length < 2) {
+      return toast.error("Please add at least 2 waypoints");
+    }
+
+    const sendData = {
+      name: routeName,
+      description,
+      creator: "68abbad440fef1e01fe82b34",
+      locations: routeSteps?.coordinates,
+      profile: routingProfile,
+      distance: routeSteps?.summary.totalDistance,
+      duration: routeSteps?.summary.totalTime,
+      waypoints: waypoints.map((wp, i) => ({
+        label: wp.label && wp.label.trim() ? wp.label.trim() : `Waypoint ${i + 1}`,
+        lat: wp.position[0],
+        lng: wp.position[1],
+      })),
+    };
+
     try {
       const sendData = buildPayload();
       await fetchPost("path/", optionMaker(sendData));

@@ -104,6 +104,7 @@ export const fetchPatch = async (url, options = {}) => {
 export const fetchGet = async (endpoint, options) => {
   const response = await fetch(urlMaker(endpoint), options);
   const resData = await response.json();
+  //console.log(resData);
 
   if (!successCodes.includes(response.status) || !response.ok) {
     throw new Error(resData.message);

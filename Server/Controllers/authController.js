@@ -16,15 +16,16 @@ const correctPassword = async function (typedInPassword, dbSavedPassword) {
 };
 
 const signToken = (user) => {
-  return jwt.sign({ id: user.userid }, process.env.JWT_SECRET, {
+  const { _id } = user;
+  return jwt.sign({ id: _id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 };
 
 const createSendToken = (user, statusCode, res) => {
   const token = signToken(user);
-
   user.password = undefined;
+  user.active = undefined;
 
   const cookieOptions = {
     expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
@@ -89,6 +90,7 @@ export const logout = catchAsync(async (req, res, next) => {
 
 export const protect = catchAsync(async (req, res, next) => {
   let token = req.headers.authorization;
+  // console.log(token);
   if (!token || !token.startsWith("Bearer"))
     return next(new cusError("You are not logged in, please login first", 401));
 
@@ -98,6 +100,7 @@ export const protect = catchAsync(async (req, res, next) => {
     return next(new cusError("There is a token issue, please report it to us", 401));
 
   const result = await jwt.verify(token, process.env.JWT_SECRET);
+
   const currentUser = await User.findById(result.id);
 
   if (!currentUser) {
