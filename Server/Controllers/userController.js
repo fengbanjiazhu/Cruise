@@ -16,3 +16,13 @@ export const getMe = catchAsync(async (req, res, next) => {
     data: user,
   });
 });
+
+export const checkEmail = catchAsync(async (req, res, next) => {
+  const { email } = req.query;
+
+  const user = await User.findOne({ email });
+
+  res.status(200).json({
+    exists: !!user, // true if user exists, false otherwise
+  });
+});

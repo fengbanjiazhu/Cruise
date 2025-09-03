@@ -11,6 +11,8 @@ import Path from "./pages/Path";
 import CreatePath from "./pages/CreatePath";
 import Profile from "./pages/Profile";
 import Login from "./pages/Login";
+import Register from "./pages/Registration";
+
 
 import { fetchUserInfoUntilSuccess } from "./store/slices/userInfoSlice";
 import { useEffect } from "react";
@@ -38,7 +40,8 @@ function App() {
 
             {isLoggedIn && <Route path="/profile" element={<Profile />} />}
             {!isLoggedIn && <Route path="/login" element={<Login />} />}
-
+            <Route path="/register" element={<Register />} />
+    
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

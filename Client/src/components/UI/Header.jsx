@@ -21,6 +21,8 @@ function Header() {
         <nav className="align-center">
             <NavLink to="/">Home</NavLink>
             <NavLink to="/path">Path</NavLink>
+            <NavLink to="/register">Register</NavLink>
+
             {isLoggedIn && <NavLink to="/createpath">Create Path</NavLink>}
             {isLoggedIn && <NavLink to="/review">Reviews</NavLink>}
             {isLoggedIn && <NavLink to="/profile">Profile</NavLink>}
@@ -33,6 +35,7 @@ function Header() {
             )}
 
             {!isLoggedIn && <NavLink to="/login">Login</NavLink>}
+            
             {/* {!isLoggedIn && <NavLink to="/login">Register</NavLink>} */}
         </nav>
       </header>

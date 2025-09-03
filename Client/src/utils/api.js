@@ -112,3 +112,9 @@ export const fetchGet = async (endpoint, options) => {
 
   return resData;
 };
+
+export const checkEmail = async (email) => {
+  const response = await fetchGet(`${API_ROUTES.user.checkEmail}?email=${email}`);
+  return response;
+};
+
