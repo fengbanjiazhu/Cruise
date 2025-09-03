@@ -11,7 +11,7 @@ import reviewRoute from "./Routes/reviewRoute.js";
 
 const app = express();
 
-dotenv.config({ path: "./config.env" });
+dotenv.config({ path: "./Server/config.env" });
 
 app.use(
   cors({
