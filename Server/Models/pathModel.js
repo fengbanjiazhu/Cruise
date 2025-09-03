@@ -2,29 +2,23 @@ import mongoose from "mongoose";
 import slugify from "slugify";
 // import validator from "validator";
 
-
 const pathSchema = new mongoose.Schema(
   {
     name: {
       type: String,
       required: [true, "A path must have a name"],
-      unique: true,
       trim: true,
       maxlength: [40, "A path name must not more than 40 characters"],
-      minlength: [10, "A path name must not less than 10 characters"],
+      minlength: [8, "A path name must not less than 10 characters"],
     },
     slug: String,
+    distance: {
+      type: Number,
+      required: [true, "A path must have a total distance"],
+    },
     duration: {
       type: Number,
       required: [true, "A path must have a duration"],
-    },
-    difficulty: {
-      type: String,
-      required: [true, "A path must have a difficulty"],
-      enum: {
-        values: ["easy", "medium", "difficult"],
-        message: "difficulty is either: easy, medium, or difficult",
-      },
     },
     rating: {
       type: Number,
@@ -51,29 +45,39 @@ const pathSchema = new mongoose.Schema(
       select: false,
     },
     startLocation: {
-      // GeoJSON
       type: {
         type: String,
         default: "Point",
         enum: ["Point"],
       },
       coordinates: [Number],
-      address: String,
-      description: String,
     },
-    locations: [
-      {
-        type: {
-          type: String,
-          default: "Point",
-          enum: ["Point"],
+    profile: {
+      type: String,
+      enum: ["car", "bike", "foot"],
+      required: true,
+    },
+    locations: {
+      type: [
+        {
+          lat: { type: Number, required: true },
+          lng: { type: Number, required: true },
         },
-        coordinates: [Number],
-        address: String,
-        description: String,
-        day: Number,
-      },
-    ],
+      ],
+      required: true,
+      validate: (v) => v.length > 0,
+    },
+    waypoints: {
+      type: [
+        {
+          label: { type: String, required: true },
+          lat: { type: Number, required: true },
+          lng: { type: Number, required: true },
+        },
+      ],
+      required: true,
+      validate: (v) => v.length > 0,
+    },
     creator: { type: mongoose.Schema.ObjectId, ref: "User" },
     blocked: {
       type: Boolean,
@@ -101,6 +105,18 @@ const pathSchema = new mongoose.Schema(
 
 pathSchema.pre("save", function (next) {
   this.slug = slugify(this.name, { lower: true });
+  next();
+});
+
+pathSchema.pre("save", function (next) {
+  if (this.locations && this.locations.length > 0) {
+    const loc = this.locations[0];
+    if (loc.lat != null && loc.lng != null) {
+      this.startLocation.type = "Point";
+      this.startLocation.coordinates = [loc.lng, loc.lat];
+    }
+  }
+
   next();
 });
 

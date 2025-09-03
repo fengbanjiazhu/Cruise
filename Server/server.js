@@ -5,7 +5,9 @@ import mongoose from "mongoose";
 
 // Routes
 import userRoute from "./Routes/userRoute.js";
+import pathRoute from "./Routes/pathRoute.js";
 import errorController from "./Controllers/errorController.js";
+import reviewRoute from "./Routes/reviewRoute.js";
 
 const app = express();
 
@@ -17,8 +19,8 @@ app.use(
   })
 );
 
-app.use(express.json({ limit: "10kb" }));
-app.use(express.urlencoded({ extended: true, limit: "10kb" }));
+app.use(express.json({ limit: "1mb" }));
+app.use(express.urlencoded({ extended: true, limit: "100kb" }));
 
 app.use(function (req, res, next) {
   console.log("Query:", req.query);
@@ -29,6 +31,8 @@ app.use(function (req, res, next) {
 
 // Routes
 app.use("/api/user", userRoute);
+app.use("/api/path", pathRoute);
+app.use("/api/review", reviewRoute);
 
 //
 app.use(errorController);

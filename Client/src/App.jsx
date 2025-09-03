@@ -1,5 +1,5 @@
 import { Route, Routes, BrowserRouter } from "react-router-dom";
-
+import { useDispatch, useSelector } from "react-redux";
 import { Toaster } from "react-hot-toast";
 import "./index.css";
 import "./App.css";
@@ -10,8 +10,23 @@ import NotFound from "./pages/NotFound";
 import Path from "./pages/Path";
 import Profile from "./pages/Profile";
 import Admin from "./pages/AdminPage/page";
+import Login from "./pages/Login";
+import Register from "./pages/Registration";
+
+import { fetchUserInfoUntilSuccess } from "./store/slices/userInfoSlice";
+import { useEffect } from "react";
+import Review from "./pages/Review";
 
 function App() {
+  const dispatch = useDispatch();
+  const { isLoggedIn, token } = useSelector((state) => state.userInfo);
+
+  useEffect(() => {
+    if (token && !isLoggedIn) {
+      dispatch(fetchUserInfoUntilSuccess());
+    }
+  }, [token, dispatch, isLoggedIn]);
+
   return (
     <>
       <BrowserRouter>
@@ -21,16 +36,19 @@ function App() {
             <Route path="/path" element={<Path />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/createpath" element={<CreatePath />} />
+            <Route path="/review" element={<Review />} />
+
+            {isLoggedIn && <Route path="/profile" element={<Profile />} />}
+            {!isLoggedIn && <Route path="/login" element={<Login />} />}
+            <Route path="/register" element={<Register />} />
+
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
       </BrowserRouter>
 
-      <Toaster
-        position="top-center"
-        gutter={12}
-        containerStyle={{ margin: "1rem" }}
-      />
+      <Toaster position="top-center" gutter={12} containerStyle={{ margin: "1rem" }} />
     </>
   );
 }
