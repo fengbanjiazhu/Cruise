@@ -8,7 +8,7 @@ function UsersTab() {
     <div>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold text-gray-950">User Management</h2>
-        <button className="rounded-md border px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
+        <button className="rounded-lg bg-blue-600 text-white px-4 py-2 text-sm font-medium shadow-sm hover:bg-blue-700 transition-colors duration-200">
           + Add User
         </button>
       </div>
@@ -54,7 +54,7 @@ function UsersTab() {
                   {formatDate(u.lastActive)}
                 </td>
                 <td className="whitespace-nowrap px-4 py-3 text-right">
-                  <button className="rounded-md border px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-50">
+                  <button className="rounded-lg bg-white border border-blue-300 px-3 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-50 transition-colors duration-200">
                     View
                   </button>
                 </td>
