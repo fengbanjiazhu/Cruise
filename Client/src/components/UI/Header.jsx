@@ -17,16 +17,22 @@ function Header() {
         {/* <img src={SomeLogo} alt="Logo" /> */}
         {/* <h1>
           <Link to="/">Cruise</Link>
+        </h1>
+        <nav>
+          <NavLink to="/">Home</NavLink>
+          <NavLink to="/profile">Profile</NavLink>
+          <NavLink to="/path">Path</NavLink>
+          
         </h1> */}
         <nav className="align-center">
             <NavLink to="/">Home</NavLink>
             <NavLink to="/path">Path</NavLink>
             <NavLink to="/register">Register</NavLink>
+            <NavLink to="/admin">Admin</NavLink>
 
             {isLoggedIn && <NavLink to="/createpath">Create Path</NavLink>}
             {isLoggedIn && <NavLink to="/review">Reviews</NavLink>}
             {isLoggedIn && <NavLink to="/profile">Profile</NavLink>}
-            
                 
             {isLoggedIn && (
                 <a onClick={logout} role="button">

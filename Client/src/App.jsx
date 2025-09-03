@@ -7,12 +7,12 @@ import "./App.css";
 import Layout from "./components/UI/Layout";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
-import Path from "./pages/Path";
 import CreatePath from "./pages/CreatePath";
+import Path from "./pages/Path";
 import Profile from "./pages/Profile";
+import Admin from "./pages/AdminPage/page";
 import Login from "./pages/Login";
 import Register from "./pages/Registration";
-
 
 import { fetchUserInfoUntilSuccess } from "./store/slices/userInfoSlice";
 import { useEffect } from "react";
@@ -35,13 +35,15 @@ function App() {
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
             <Route path="/path" element={<Path />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/admin" element={<Admin />} />
             <Route path="/createpath" element={<CreatePath />} />
             <Route path="/review" element={<Review />} />
 
             {isLoggedIn && <Route path="/profile" element={<Profile />} />}
             {!isLoggedIn && <Route path="/login" element={<Login />} />}
             <Route path="/register" element={<Register />} />
-    
+
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
