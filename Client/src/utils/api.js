@@ -77,7 +77,9 @@ export const fetchPost = async (endpoint, options) => {
 
   if (!successCodes.includes(response.status) || !response.ok) {
     // Throw an error with the backend error message (if available)
-    const errorMsg = resData.errors ? resData.errors.join(", ") : resData.message || "Unknown error";
+    const errorMsg = resData.errors
+      ? resData.errors.join(", ")
+      : resData.message || "Unknown error";
     throw new Error(errorMsg);
   }
   return resData;
@@ -117,4 +119,3 @@ export const checkEmail = async (email) => {
   const response = await fetchGet(`${API_ROUTES.user.checkEmail}?email=${email}`);
   return response;
 };
-

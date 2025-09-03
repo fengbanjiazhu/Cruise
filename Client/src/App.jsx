@@ -13,7 +13,6 @@ import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import Register from "./pages/Registration";
 
-
 import { fetchUserInfoUntilSuccess } from "./store/slices/userInfoSlice";
 import { useEffect } from "react";
 import Review from "./pages/Review";
@@ -35,13 +34,17 @@ function App() {
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
             <Route path="/path" element={<Path />} />
-            <Route path="/createpath" element={<CreatePath />} />
-            <Route path="/review" element={<Review />} />
 
+            {/* Only logged in users can access these */}
+            {isLoggedIn && <Route path="/createpath" element={<CreatePath />} />}
+            {isLoggedIn && <Route path="/review" element={<Review />} />}
             {isLoggedIn && <Route path="/profile" element={<Profile />} />}
+
+            {/* Only logged out users can access these */}
             {!isLoggedIn && <Route path="/login" element={<Login />} />}
-            <Route path="/register" element={<Register />} />
-    
+            {!isLoggedIn && <Route path="/login" element={<Login />} />}
+            {!isLoggedIn && <Route path="/register" element={<Register />} />}
+
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

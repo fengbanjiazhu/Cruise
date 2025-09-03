@@ -1,6 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import Card from "../components/UI/Card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 function Profile() {
   const { user } = useSelector((state) => state.userInfo);
@@ -13,7 +14,12 @@ function Profile() {
 
   return (
     <Card className="text-center text-slate-70 justify-center items-center m-10">
-      <h1 className="mb-2">Profile</h1>
+      <h1 className="mb-10">Profile</h1>
+
+      <Avatar className="mb-10">
+        <AvatarImage src="https://github.com/shadcn.png" />
+        <AvatarFallback>CN</AvatarFallback>
+      </Avatar>
 
       <p>Welcome back, {name}</p>
       <p>Email: {email}</p>
