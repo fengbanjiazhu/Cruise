@@ -7,6 +7,7 @@ import "./App.css";
 import Layout from "./components/UI/Layout";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
+import CreatePath from "./pages/CreatePath";
 import Path from "./pages/Path";
 import Profile from "./pages/Profile";
 import Admin from "./pages/AdminPage/page";
