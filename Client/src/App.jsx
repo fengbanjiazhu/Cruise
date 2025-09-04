@@ -35,14 +35,15 @@ function App() {
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
             <Route path="/path" element={<Path />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/createpath" element={<CreatePath />} />
-            <Route path="/review" element={<Review />} />
+            {/* <Route path="/profile" element={<Profile />} /> */}
 
             {isLoggedIn && <Route path="/profile" element={<Profile />} />}
+            {isLoggedIn && <Route path="/review" element={<Review />} />}
+            {isLoggedIn && <Route path="/admin" element={<Admin />} />}
+            {isLoggedIn && <Route path="/createpath" element={<CreatePath />} />}
+
             {!isLoggedIn && <Route path="/login" element={<Login />} />}
-            <Route path="/register" element={<Register />} />
+            {!isLoggedIn && <Route path="/register" element={<Register />} />}
 
             <Route path="*" element={<NotFound />} />
           </Route>

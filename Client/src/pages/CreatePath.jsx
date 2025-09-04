@@ -155,7 +155,7 @@ function CreatePath() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 lg:px-6">
-      <h1 className="text-2xl font-semibold tracking-tight text-white mb-4">Create Path</h1>
+      <h1 className="text-2xl font-semibold tracking-tight text-black mb-4">Create Path</h1>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
         {/* Left column: form + waypoints + preview */}
@@ -297,7 +297,9 @@ function CreatePath() {
 
               {serverErrors.length > 0 && (
                 <div className="rounded-xl border border-red-200 bg-red-50 p-3">
-                  <h4 className="mb-1 text-sm font-semibold text-red-700">Server validation errors</h4>
+                  <h4 className="mb-1 text-sm font-semibold text-red-700">
+                    Server validation errors
+                  </h4>
                   <ul className="list-disc pl-5 text-sm text-red-700">
                     {serverErrors.map((e, i) => (
                       <li key={i}>{e}</li>
@@ -316,7 +318,9 @@ function CreatePath() {
                 <button
                   type="button"
                   onClick={handleCreatePath}
-                  disabled={isValidating || Object.keys(validate()).length !== 0 || serverErrors.length > 0}
+                  disabled={
+                    isValidating || Object.keys(validate()).length !== 0 || serverErrors.length > 0
+                  }
                   className="inline-flex items-center rounded-xl bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-900 ml-4 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   Create Path
