@@ -1,5 +1,11 @@
 import Path from "../Models/pathModel.js";
-import { updateOne, getOne, getAll, deleteOne, createOne } from "./centralController.js";
+import {
+  updateOne,
+  getOne,
+  getAll,
+  deleteOne,
+  createOne,
+} from "./centralController.js";
 
 // Existing create
 // export const createOnePath = createOne(Path);
@@ -47,5 +53,3 @@ export const createOnePath = async (req, res, next) => {
 };
 
 export const getOnePath = getOne(Path);
-
-
