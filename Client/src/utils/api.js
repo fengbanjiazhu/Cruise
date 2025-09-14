@@ -27,6 +27,7 @@ export const API_ROUTES = {
     getById: (id) => `incidents/${id}`,
     create: "incidents/",
     update: (id) => `incidents/${id}`,
+    delete: (id) => `incidents/${id}`,
   },
   payment: {
     getPaymentCards: "payment/card/",

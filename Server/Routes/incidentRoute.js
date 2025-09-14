@@ -5,13 +5,15 @@ import {
   getIncident,
   createIncident,
   updateIncident,
+  deleteIncident,
 } from "../Controllers/incidentController.js";
 
 const router = express.Router();
 
-router.get("/", listIncidents); // GET /incidents?status=open&severity=high
-router.post("/", createIncident); // POST /incidents
-router.get("/:id", getIncident); // GET /incidents/INC-2403
-router.patch("/:id", updateIncident); // PATCH /incidents/INC-2403
+router.get("/", listIncidents);
+router.post("/", createIncident);
+router.get("/:id", getIncident);
+router.patch("/:id", updateIncident);
+router.delete("/:id", deleteIncident);
 
 export default router;

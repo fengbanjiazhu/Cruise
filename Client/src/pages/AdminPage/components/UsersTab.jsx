@@ -12,7 +12,6 @@ function UsersTab() {
     (state) => state.userInfo
   );
 
-  // Fallback to localStorage if Redux token is not available
   const getToken = () => {
     if (reduxToken) return reduxToken;
     return localStorage.getItem("jwt");

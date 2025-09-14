@@ -5,7 +5,13 @@ import {
   incidentSeverityClass,
   incidentStatusClass,
 } from "../utils/formatters";
-import { API_ROUTES, fetchGet, fetchPost, API_URL } from "../../../utils/api";
+import {
+  API_ROUTES,
+  fetchGet,
+  fetchPost,
+  fetchDelete,
+  API_URL,
+} from "../../../utils/api";
 
 function IncidentsTab() {
   const [incidents, setIncidents] = useState([]);
@@ -18,6 +24,8 @@ function IncidentsTab() {
     severity: "medium",
     assignee: "Unassigned",
   });
+  const [processingAction, setProcessingAction] = useState(null);
+  const [confirmingDelete, setConfirmingDelete] = useState(null);
 
   useEffect(() => {
     fetchIncidents();
@@ -37,6 +45,8 @@ function IncidentsTab() {
         },
       });
       console.log("Incidents data received:", data);
+      console.log("Number of incidents:", data.length);
+      console.log("First incident sample:", data[0]);
       setIncidents(data);
       setError(null);
     } catch (err) {
@@ -58,6 +68,69 @@ function IncidentsTab() {
       console.error("Test connection error:", err);
       setTestResponse(`Test failed: ${err.message}`);
     }
+  };
+
+  const handleApproveIncident = async (incidentId) => {
+    try {
+      setProcessingAction(incidentId);
+      const endpoint = API_ROUTES.incident.update(incidentId);
+      console.log(`Approving incident ${incidentId} at endpoint ${endpoint}`);
+
+      await fetchPost(endpoint, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: "resolved" }),
+      });
+
+      // Refresh incidents after update
+      fetchIncidents();
+
+      // Show success message
+      setTestResponse(`Incident ${incidentId} approved successfully`);
+    } catch (err) {
+      console.error(`Error approving incident ${incidentId}:`, err);
+      setError(`Failed to approve incident: ${err.message || "Unknown error"}`);
+    } finally {
+      setProcessingAction(null);
+    }
+  };
+
+  const initiateRejectIncident = (incidentId) => {
+    // Set the incident ID in state to show confirmation dialog
+    setConfirmingDelete(incidentId);
+  };
+
+  const handleRejectIncident = async (incidentId) => {
+    try {
+      setProcessingAction(incidentId);
+      setConfirmingDelete(null); // Clear confirmation dialog
+
+      const endpoint = API_ROUTES.incident.delete(incidentId);
+      console.log(`Deleting incident ${incidentId} at endpoint ${endpoint}`);
+
+      await fetchDelete(endpoint, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      // Refresh incidents after deletion
+      fetchIncidents();
+
+      // Show success message
+      setTestResponse(`Incident ${incidentId} deleted successfully`);
+    } catch (err) {
+      console.error(`Error deleting incident ${incidentId}:`, err);
+      setError(`Failed to delete incident: ${err.message || "Unknown error"}`);
+    } finally {
+      setProcessingAction(null);
+    }
+  };
+
+  const cancelDelete = () => {
+    setConfirmingDelete(null);
   };
 
   const handleCreateIncident = () => {
@@ -121,6 +194,8 @@ function IncidentsTab() {
     });
   };
 
+  // Removed unused showActionButtons function
+
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
@@ -150,6 +225,35 @@ function IncidentsTab() {
       {testResponse && (
         <div className="mb-4 px-4 py-3 bg-blue-50 border border-blue-200 text-blue-700 rounded-lg">
           {testResponse}
+        </div>
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      {confirmingDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md mx-auto">
+            <h3 className="text-lg font-medium mb-4 text-gray-900">
+              Confirm Deletion
+            </h3>
+            <p className="mb-6 text-gray-700">
+              Are you sure you want to delete incident {confirmingDelete}? This
+              action cannot be undone.
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={cancelDelete}
+                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleRejectIncident(confirmingDelete)}
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+              >
+                Delete Incident
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -264,7 +368,7 @@ function IncidentsTab() {
                 <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                   Updated
                 </th>
-                <th className="px-4 py-3"></th>
+                <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 bg-white">
@@ -297,12 +401,37 @@ function IncidentsTab() {
                       {formatDate(i.updatedAt)}
                     </td>
                     <td className="whitespace-nowrap px-4 py-3 text-right">
-                      <button
-                        onClick={() => console.log("View incident", i.id)}
-                        className="rounded-lg bg-white border border-blue-300 px-3 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-50 transition-colors duration-200"
-                      >
-                        View
-                      </button>
+                      <div className="flex items-center justify-end space-x-2">
+                        {/* View button */}
+                        <button
+                          onClick={() => console.log("View incident", i.id)}
+                          className="rounded-lg bg-white border border-blue-300 px-3 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-50 transition-colors duration-200"
+                        >
+                          View
+                        </button>
+
+                        {/* Approve button - always visible */}
+                        <button
+                          onClick={() => handleApproveIncident(i.id)}
+                          disabled={processingAction === i.id}
+                          className="rounded-lg px-3 py-1.5 text-xs font-medium bg-green-600 text-white hover:bg-green-700 transition-colors duration-200"
+                        >
+                          {processingAction === i.id
+                            ? "Processing..."
+                            : "Approve"}
+                        </button>
+
+                        {/* Delete button - always visible */}
+                        <button
+                          onClick={() => initiateRejectIncident(i.id)}
+                          disabled={processingAction === i.id}
+                          className="rounded-lg px-3 py-1.5 text-xs font-medium bg-red-600 text-white hover:bg-red-700 transition-colors duration-200"
+                        >
+                          {processingAction === i.id
+                            ? "Processing..."
+                            : "Delete"}
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
