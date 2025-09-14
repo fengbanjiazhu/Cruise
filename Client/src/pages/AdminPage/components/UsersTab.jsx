@@ -1,7 +1,7 @@
 import React from "react";
 import Pill from "./Pill";
 import { mockUsers } from "../utils/mockData";
-import { formatDate, statusPillClass } from "../utils/formatters";
+import { statusPillClass } from "../utils/formatters";
 
 function UsersTab() {
   return (
@@ -27,12 +27,8 @@ function UsersTab() {
                 Role
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                Status
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                 Last Active
               </th>
-              <th className="px-4 py-3"></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 bg-white">
@@ -44,17 +40,12 @@ function UsersTab() {
                 <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">
                   {u.email}
                 </td>
-                <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">
+                <td className="whitespace-nowrap py-3 text-sm text-gray-700">
                   {u.role}
                 </td>
-                <td className="whitespace-nowrap px-4 py-3">
+                <td className="whitespace-nowrap px-4 py-3 flex items-center justify-between">
                   <Pill className={statusPillClass(u.status)}>{u.status}</Pill>
-                </td>
-                <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">
-                  {formatDate(u.lastActive)}
-                </td>
-                <td className="whitespace-nowrap px-4 py-3 text-right">
-                  <button className="rounded-lg bg-white border border-blue-300 px-3 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-50 transition-colors duration-200">
+                  <button className="ml-4 rounded-lg bg-white border border-blue-300 px-3 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-50 transition-colors duration-200">
                     View
                   </button>
                 </td>
