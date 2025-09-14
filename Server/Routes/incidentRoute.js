@@ -1,12 +1,17 @@
+// routes/incidentRoute.js
 import express from "express";
 import {
-  getOnePath,
-  createOneIncident,
-  getAllIncidents,
+  listIncidents,
+  getIncident,
+  createIncident,
+  updateIncident,
 } from "../Controllers/incidentController.js";
 
-const incidentRoute = express.Router();
+const router = express.Router();
 
-incidentRoute.route("/:id").get(getAllIncidents);
-incidentRoute.route("/CreateIncident").post(createOneIncident);
-export default incidentRoute;
+router.get("/", listIncidents); // GET /incidents?status=open&severity=high
+router.post("/", createIncident); // POST /incidents
+router.get("/:id", getIncident); // GET /incidents/INC-2403
+router.patch("/:id", updateIncident); // PATCH /incidents/INC-2403
+
+export default router;

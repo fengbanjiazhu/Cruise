@@ -21,6 +21,12 @@ export const API_ROUTES = {
     update: (id) => `supplier/${id}`, //
     delete: (id) => `supplier/${id}`,
   },
+  incident: {
+    getAll: "incidents/",
+    getById: (id) => `incidents/${id}`,
+    create: "incidents/",
+    update: (id) => `incidents/${id}`,
+  },
   payment: {
     getPaymentCards: "payment/card/",
     updatePaymentCard: "payment/card/",
@@ -77,7 +83,9 @@ export const fetchPost = async (endpoint, options) => {
 
   if (!successCodes.includes(response.status) || !response.ok) {
     // Throw an error with the backend error message (if available)
-    const errorMsg = resData.errors ? resData.errors.join(", ") : resData.message || "Unknown error";
+    const errorMsg = resData.errors
+      ? resData.errors.join(", ")
+      : resData.message || "Unknown error";
     throw new Error(errorMsg);
   }
   return resData;
@@ -102,19 +110,33 @@ export const fetchPatch = async (url, options = {}) => {
 };
 
 export const fetchGet = async (endpoint, options) => {
-  const response = await fetch(urlMaker(endpoint), options);
-  const resData = await response.json();
-  //console.log(resData);
+  try {
+    console.log(`Fetching from: ${API_URL}${endpoint}`);
+    const response = await fetch(urlMaker(endpoint), options);
 
-  if (!successCodes.includes(response.status) || !response.ok) {
-    throw new Error(resData.message);
+    // Log the response status
+    console.log(`Response status: ${response.status}`);
+
+    const resData = await response.json();
+    console.log("Response data:", resData);
+
+    if (!successCodes.includes(response.status) || !response.ok) {
+      console.error(
+        `API Error: ${response.status} - ${resData.message || "Unknown error"}`
+      );
+      throw new Error(resData.message || `Error ${response.status}`);
+    }
+
+    return resData;
+  } catch (err) {
+    console.error(`Error in fetchGet for ${endpoint}:`, err);
+    throw err;
   }
-
-  return resData;
 };
 
 export const checkEmail = async (email) => {
-  const response = await fetchGet(`${API_ROUTES.user.checkEmail}?email=${email}`);
+  const response = await fetchGet(
+    `${API_ROUTES.user.checkEmail}?email=${email}`
+  );
   return response;
 };
-

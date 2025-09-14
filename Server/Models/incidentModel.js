@@ -1,4 +1,4 @@
-// models/incident.model.js
+// models/incidentModel.js
 import mongoose from "mongoose";
 
 const IncidentSchema = new mongoose.Schema(
