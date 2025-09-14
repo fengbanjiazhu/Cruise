@@ -8,6 +8,7 @@ export const API_ROUTES = {
     checkEmail: "user/checkEmail",
     getUser: "user/getUser",
     updateUser: "user/updateUser",
+    getAllUsers: "user/admin",
   },
   product: {
     getProducts: "product/getProducts",
@@ -109,15 +110,45 @@ export const fetchPatch = async (url, options = {}) => {
   }
 };
 
-export const fetchGet = async (endpoint, options) => {
+export const fetchGet = async (endpoint, options = {}) => {
   try {
     console.log(`Fetching from: ${API_URL}${endpoint}`);
-    const response = await fetch(urlMaker(endpoint), options);
+    const url = urlMaker(endpoint);
 
-    // Log the response status
+    // Log the complete request details for debugging
+    console.log("Request details:", {
+      url,
+      method: options.method || "GET",
+      headers: options.headers,
+    });
+
+    const response = await fetch(url, options);
+
+    // Log the response status and headers
     console.log(`Response status: ${response.status}`);
+    console.log(
+      "Response headers:",
+      Object.fromEntries([...response.headers.entries()])
+    );
 
-    const resData = await response.json();
+    // Handle non-JSON responses
+    const contentType = response.headers.get("content-type");
+    if (contentType && !contentType.includes("application/json")) {
+      console.warn(`Received non-JSON response: ${contentType}`);
+      const text = await response.text();
+      console.log("Response text:", text);
+      throw new Error(`Received non-JSON response: ${contentType}`);
+    }
+
+    // Try to parse JSON response
+    let resData;
+    try {
+      resData = await response.json();
+    } catch (err) {
+      console.error("Failed to parse JSON response:", err);
+      throw new Error("Failed to parse server response");
+    }
+
     console.log("Response data:", resData);
 
     if (!successCodes.includes(response.status) || !response.ok) {
@@ -139,4 +170,41 @@ export const checkEmail = async (email) => {
     `${API_ROUTES.user.checkEmail}?email=${email}`
   );
   return response;
+};
+
+export const getAllUsers = async (token) => {
+  try {
+    console.log(
+      "getAllUsers called with token:",
+      token ? "Token exists" : "No token"
+    );
+
+    const options = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    console.log("Fetching from:", urlMaker(API_ROUTES.user.getAllUsers));
+    const response = await fetchGet(API_ROUTES.user.getAllUsers, options);
+
+    console.log("API response:", response);
+
+    // Handle different response formats
+    if (response.data) {
+      return response.data;
+    } else if (Array.isArray(response)) {
+      return response;
+    } else if (response.users) {
+      return response.users;
+    } else {
+      console.warn("Unexpected response format:", response);
+      return [];
+    }
+  } catch (err) {
+    console.error("Error in getAllUsers:", err);
+    throw err;
+  }
 };
