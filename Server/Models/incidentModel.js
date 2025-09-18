@@ -10,12 +10,29 @@ const IncidentSchema = new mongoose.Schema(
       enum: ["low", "medium", "high", "critical"],
       required: true,
     },
+    targetId: {
+      type: mongoose.Schema.ObjectId,
+      required: [true, "A report must reference a target item"],
+    },
+    targetType: {
+      type: String,
+      required: [true, "A report must specify a target type"],
+      enum: ["Path", "Review"],
+    },
+    user: {
+      type: mongoose.Schema.ObjectId,
+      ref: "User",
+      require: [true, "A report must belong to a user"],
+    },
     status: {
       type: String,
-      enum: ["open", "in_progress", "resolved", "closed"],
-      default: "open",
+      enum: ["pending", "approved", "rejected"],
+      default: "pending",
     },
-    assignee: { type: String, default: "Unassigned" },
+    handledBy: {
+      type: mongoose.Schema.ObjectId,
+      ref: "User",
+    },
   },
   { timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } }
 );
