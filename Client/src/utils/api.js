@@ -29,6 +29,11 @@ export const API_ROUTES = {
     update: (id) => `incidents/${id}`,
     delete: (id) => `incidents/${id}`,
   },
+  path: {
+    getAll: "path/",
+    getById: (id) => `path/${id}`,
+    create: "path/",
+  },
   payment: {
     getPaymentCards: "payment/card/",
     updatePaymentCard: "payment/card/",
@@ -134,10 +139,21 @@ export const fetchGet = async (endpoint, options = {}) => {
 
     // Handle non-JSON responses
     const contentType = response.headers.get("content-type");
-    if (contentType && !contentType.includes("application/json")) {
+    if (!contentType || !contentType.includes("application/json")) {
       console.warn(`Received non-JSON response: ${contentType}`);
       const text = await response.text();
       console.log("Response text:", text);
+
+      // If it's an HTML error page, try to extract the error message
+      if (contentType && contentType.includes("text/html")) {
+        const errorMessage =
+          text.match(/<title>(.*?)<\/title>/)?.[1] ||
+          text.match(/<h1>(.*?)<\/h1>/)?.[1] ||
+          "Server returned HTML instead of JSON";
+        throw new Error(`API Error: ${errorMessage}`);
+      }
+
+      // For non-HTML responses, throw a generic error
       throw new Error(`Received non-JSON response: ${contentType}`);
     }
 

@@ -81,7 +81,7 @@ function IncidentsTab() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ status: "resolved" }),
+        body: JSON.stringify({ status: "approved" }),
       });
 
       // Refresh incidents after update
