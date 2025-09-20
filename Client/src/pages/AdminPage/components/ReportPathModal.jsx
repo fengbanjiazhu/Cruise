@@ -149,7 +149,7 @@ function ReportPathModal({ path, isOpen, onClose, onSubmit }) {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter a brief description of the issue"
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              className="text-black w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
               required
             />
           </div>
@@ -166,14 +166,14 @@ function ReportPathModal({ path, isOpen, onClose, onSubmit }) {
                 id="severity"
                 value={severity}
                 onChange={(e) => setSeverity(e.target.value)}
-                className="block w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                className="text-black block w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
               >
                 <option value="low">Low</option>
                 <option value="medium">Medium</option>
                 <option value="high">High</option>
                 <option value="critical">Critical</option>
               </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
+              <div className=" pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
                 <svg
                   className="h-5 w-5"
                   fill="currentColor"
