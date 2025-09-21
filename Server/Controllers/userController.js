@@ -1,4 +1,4 @@
-import User from "../models/userModel.js";
+import User from "../Models/userModel.js";
 import catchAsync from "../utils/catchAsync.js";
 import { updateOne, getOne, getAll, deleteOne } from "./centralController.js";
 
@@ -8,8 +8,7 @@ export const updateUser = updateOne(User);
 export const deleteUser = deleteOne(User);
 
 export const getMe = catchAsync(async (req, res, next) => {
-  console.log(req.user);
-  const user = req.user;
+  const user = await User.findById(req.user._id);
 
   res.status(200).json({
     status: "success",

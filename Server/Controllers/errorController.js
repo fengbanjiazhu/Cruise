@@ -1,6 +1,8 @@
 import cusError from "../utils/cusError.js";
 
 const senErrorProd = (err, req, res) => {
+  console.log("Something going on: =============");
+  console.log(err);
   // API
   if (req.originalUrl.startsWith("/api")) {
     // Operational, trusted error: send a message to client

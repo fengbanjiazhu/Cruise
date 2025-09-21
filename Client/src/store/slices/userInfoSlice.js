@@ -44,7 +44,9 @@ export const userInfoSlice = createSlice({
 
 export const fetchUserInfoUntilSuccess = () => async (dispatch, getState) => {
   const token = getState().userInfo.token;
-  if (!token) return;
+  const user = getState().userInfo.user;
+
+  if ((user != null && user != undefined) || !token) return;
 
   dispatch(startLoadingUser());
 

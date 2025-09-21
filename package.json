@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.10",
+    "@radix-ui/react-scroll-area": "^1.2.10",
     "@react-spring/parallax": "^10.0.1",
     "@react-spring/web": "^10.0.1",
     "@reduxjs/toolkit": "^2.8.2",
