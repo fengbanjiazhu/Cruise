@@ -1,8 +1,7 @@
 import { useSelector } from "react-redux";
 import Card from "../components/UI/OldCard";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import PathBriefTab from "../components/Paths/PathBriefTab";
+import FavList from "../components/Profiles/FavList";
 
 function Profile() {
   const { user } = useSelector((state) => state.userInfo);
@@ -28,10 +27,7 @@ function Profile() {
         <p>Role: {role}</p>
       </Card>
 
-      <ScrollArea className="h-90 w-[550px] m-10 rounded-md border p-4">
-        {savedList.length === 0 && <p>No saved paths</p>}
-        {savedList.length > 0 && <PathBriefTab path={savedList[0]} />}
-      </ScrollArea>
+      <FavList savedList={savedList} />
     </>
   );
 }
