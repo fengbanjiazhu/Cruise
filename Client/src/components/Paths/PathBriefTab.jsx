@@ -25,7 +25,7 @@ function PathBriefTab({ path }) {
   };
 
   return (
-    <Card className="text-slate-70 text-left justify-center items-center mt-5 grid grid-cols-2 gap-4">
+    <Card className="text-slate-70 text-left justify-center items-center mb-5 grid grid-cols-1 md:grid-cols-2 gap-4">
       <CardHeader>
         <CardTitle>{name.toUpperCase()}</CardTitle>
         <CardDescription className="flex gap-2">
@@ -49,7 +49,7 @@ function PathBriefTab({ path }) {
           </Button>
         </div>
       </CardHeader>
-      <CardContent className="p-4">
+      <CardContent className="p-4 hidden md:block">
         <AspectRatio ratio={16 / 10} className="bg-muted rounded-lg">
           <img
             src="https://images.unsplash.com/photo-1478059299873-f047d8c5fe1a?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"

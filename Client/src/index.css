@@ -95,7 +95,7 @@ header nav a:hover {
 .main {
   display: flex;
   min-height: 90vh;
-  width: 100vw;
+  width: 100%;
   position: relative;
 }
 
@@ -142,8 +142,6 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
-
-
 
 @layer base {
   :root {
@@ -200,8 +198,6 @@ button:focus-visible {
     --chart-5: 340 75% 55%;
   }
 }
-
-
 
 @layer base {
   * {
