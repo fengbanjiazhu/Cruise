@@ -9,10 +9,6 @@ export const API_ROUTES = {
     getUser: "user/getUser",
     updateUser: "user/updateUser",
   },
-  product: {
-    getProducts: "product/getProducts",
-    getProductById: "product/getProductById",
-  },
   // new supplier route
   supplier: {
     create: "supplier/",

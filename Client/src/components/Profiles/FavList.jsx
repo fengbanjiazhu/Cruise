@@ -13,7 +13,7 @@ function FavList({ savedList }) {
           </button>
         </>
       )}
-      {savedList.length > 0 && savedList.map((path) => <PathBriefTab path={path} />)}
+      {savedList.length > 0 && savedList.map((path) => <PathBriefTab key={path._id} path={path} />)}
     </ScrollArea>
   );
 }

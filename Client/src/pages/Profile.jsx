@@ -6,7 +6,6 @@ import FavList from "../components/Profiles/FavList";
 function Profile() {
   const { user } = useSelector((state) => state.userInfo);
   const { name, email, role, savedList } = user;
-  console.log(user);
 
   if (!user) {
     return <p>Loading...</p>;
