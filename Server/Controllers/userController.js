@@ -8,7 +8,7 @@ export const updateUser = updateOne(User);
 export const deleteUser = deleteOne(User);
 
 export const getMe = catchAsync(async (req, res, next) => {
-  const user = await User.findById(req.user._id);
+  const user = await User.findById(req.user._id).populate("savedList");
 
   res.status(200).json({
     status: "success",

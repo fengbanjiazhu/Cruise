@@ -10,7 +10,7 @@ export const addToUserList = catchAsync(async (req, res, next) => {
     _id,
     { $addToSet: { savedList: pathid } },
     { new: true }
-  );
+  ).populate("savedList");
 
   console.log(`Add Result: ${updatedUser}`);
 
@@ -28,7 +28,7 @@ export const removeFromUserList = catchAsync(async (req, res, next) => {
     _id,
     { $pull: { savedList: pathid } },
     { new: true }
-  );
+  ).populate("savedList");
 
   console.log(`Delete Result: ${updatedUser}`);
 
