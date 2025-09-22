@@ -46,7 +46,6 @@ header {
   height: 3rem;
   margin: 0 auto;
   line-height: 3rem;
-  /* background-color: aqua; */
   background: linear-gradient(
     to bottom,
     rgb(0, 3, 32),
@@ -89,26 +88,6 @@ header nav a::after {
 
 header nav a:hover {
   background-color: rgba(0, 0, 0, 0);
-}
-
-/* MAIN AREA */
-.main {
-  display: flex;
-  min-height: 90vh;
-  width: 100%;
-  position: relative;
-}
-
-/* FOOTER AREA */
-
-.footer {
-  line-height: 1.5rem;
-  background-color: rgba(50, 50, 50, 0.8);
-  color: #dad9d9;
-  text-align: center;
-  align-items: center;
-
-  margin-top: auto;
 }
 
 button {

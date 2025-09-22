@@ -8,7 +8,7 @@ const Layout = ({ props }) => {
     <>
       <Header {...props} />
       <div className="container">
-        <div className="block md:flex min-h-[90vh] w-full relative">
+        <div className="block md:flex min-h-[90vh] w-full md:w-[100vw] relative">
           <Outlet />
         </div>
       </div>
