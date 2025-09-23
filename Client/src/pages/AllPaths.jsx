@@ -65,43 +65,44 @@ import { fetchGet } from "../utils/api";
         alignItems: 'center',
         width: '100%',
         minHeight: '100vh',
-        background: 'linear-gradient(180deg,#101014 0%,#18181b 100%)',
+        background: '#f7f7fa',
+        padding: '0 1rem',
       }}>
         <h1
           style={{
-            fontSize: '2.6rem',
-            fontWeight: 800,
-            letterSpacing: '-0.02em',
-            color: '#fff',
+            fontSize: '2.2rem',
+            fontWeight: 700,
+            letterSpacing: '-0.01em',
+            color: '#222',
             marginTop: '2.5rem',
             marginBottom: '1.5rem',
             textAlign: 'center',
-            textShadow: '0 2px 12px #18181b',
+            lineHeight: 1.2,
           }}
         >
           User Created Paths
         </h1>
         <table style={{
           width: '100%',
-          maxWidth: '1100px',
+          maxWidth: '900px',
           borderCollapse: 'separate',
           borderSpacing: 0,
-          borderRadius: '1rem',
+          borderRadius: '0.75rem',
           overflow: 'hidden',
-          boxShadow: '0 2px 24px 0 rgba(0,0,0,0.32)',
-          background: 'rgba(24,24,27,0.98)',
+          boxShadow: '0 2px 12px 0 rgba(0,0,0,0.06)',
+          background: '#fff',
           marginTop: '0.5rem',
-          color: '#e5e7eb',
-          border: '1px solid #232326',
+          color: '#222',
+          border: '1px solid #ececf0',
         }}>
-          <thead style={{background: 'linear-gradient(90deg,#232326 0%,#18181b 100%)', color: '#a5b4fc'}}>
+          <thead style={{background: '#f7f7fa', color: '#555', borderBottom: '1px solid #ececf0'}}>
             <tr>
-              <th style={{padding: '1rem', fontWeight: 700, textAlign: 'left', letterSpacing: '0.01em'}}>Name</th>
-              <th style={{padding: '1rem', fontWeight: 700, textAlign: 'left', letterSpacing: '0.01em'}}>Profile</th>
-              <th style={{padding: '1rem', fontWeight: 700, textAlign: 'left', letterSpacing: '0.01em'}}>Description</th>
-              <th style={{padding: '1rem', fontWeight: 700, textAlign: 'left', letterSpacing: '0.01em'}}>Duration</th>
-              <th style={{padding: '1rem', fontWeight: 700, textAlign: 'left', letterSpacing: '0.01em'}}>Creator</th>
-              <th style={{padding: '1rem'}}></th>
+              <th style={{padding: '0.85rem', fontWeight: 600, textAlign: 'left', letterSpacing: '0.01em'}}>Name</th>
+              <th style={{padding: '0.85rem', fontWeight: 600, textAlign: 'left', letterSpacing: '0.01em'}}>Profile</th>
+              <th style={{padding: '0.85rem', fontWeight: 600, textAlign: 'left', letterSpacing: '0.01em'}}>Description</th>
+              <th style={{padding: '0.85rem', fontWeight: 600, textAlign: 'left', letterSpacing: '0.01em'}}>Duration</th>
+              <th style={{padding: '0.85rem', fontWeight: 600, textAlign: 'left', letterSpacing: '0.01em'}}>Creator</th>
+              <th style={{padding: '0.85rem'}}></th>
             </tr>
           </thead>
           <tbody>
@@ -114,21 +115,21 @@ import { fetchGet } from "../utils/api";
             ) : (
               paths.map((path, idx) => (
                 <React.Fragment key={path._id}>
-                  <tr style={{background: idx % 2 === 0 ? 'rgba(35,35,38,0.98)' : 'rgba(24,24,27,0.98)', transition: 'background 0.2s'}} onMouseEnter={e => e.currentTarget.style.background='#323248'} onMouseLeave={e => e.currentTarget.style.background=idx % 2 === 0 ? 'rgba(35,35,38,0.98)' : 'rgba(24,24,27,0.98)'}>
-                    <td style={{padding: '1rem', fontWeight: 500}}>{path.name}</td>
-                    <td style={{padding: '1rem'}}>{path.profile?.charAt(0).toUpperCase() + path.profile?.slice(1)}</td>
-                    <td style={{padding: '1rem'}}>{path.description || "No description."}</td>
-                    <td style={{padding: '1rem'}}>{path.duration} min</td>
-                    <td style={{padding: '1rem'}}>{path.creator?.name || "Unknown"}</td>
-                    <td style={{padding: '1rem'}}>
-                      <button onClick={() => handleTogglePath(path._id)} style={{padding: '0.5rem 1.2rem', borderRadius: '0.75rem', background: openPathIds.includes(path._id) ? '#444' : '#222', color: '#fff', fontWeight: 600, border: 'none', cursor: 'pointer', boxShadow: '0 1px 4px 0 rgba(0,0,0,0.18)'}}>
+                  <tr style={{background: idx % 2 === 0 ? '#f7f7fa' : '#fff', transition: 'background 0.2s'}} onMouseEnter={e => e.currentTarget.style.background='#ececf0'} onMouseLeave={e => e.currentTarget.style.background=idx % 2 === 0 ? '#f7f7fa' : '#fff'}>
+                    <td style={{padding: '0.85rem', fontWeight: 500, color: '#222'}}>{path.name}</td>
+                    <td style={{padding: '0.85rem', color: '#555'}}>{path.profile?.charAt(0).toUpperCase() + path.profile?.slice(1)}</td>
+                    <td style={{padding: '0.85rem', color: '#555'}}>{path.description || "No description."}</td>
+                    <td style={{padding: '0.85rem', color: '#555'}}>{path.duration} min</td>
+                    <td style={{padding: '0.85rem', color: '#555'}}>{path.creator?.name || "Unknown"}</td>
+                    <td style={{padding: '0.85rem'}}>
+                      <button onClick={() => handleTogglePath(path._id)} style={{padding: '0.45rem 1.1rem', borderRadius: '0.6rem', background: openPathIds.includes(path._id) ? '#ececf0' : '#f7f7fa', color: '#222', fontWeight: 500, border: '1px solid #ececf0', cursor: 'pointer', boxShadow: 'none', fontSize: '0.98rem', transition: 'background 0.2s, border 0.2s'}}>
                         {openPathIds.includes(path._id) ? 'Close preview' : 'Quick view'}
                       </button>
                     </td>
                   </tr>
                   {openPathIds.includes(path._id) && (
                     <tr>
-                      <td colSpan={6} style={{background: 'linear-gradient(90deg,#232326 0%,#18181b 100%)', padding: '0', borderRadius: '0 0 1rem 1rem', borderTop: '1px solid #232326'}}>
+                      <td colSpan={6} style={{background: '#f7f7fa', padding: '0', borderRadius: '0 0 0.75rem 0.75rem', borderTop: '1px solid #ececf0'}}>
                         {/* Only show the map for quick view */}
                         {Array.isArray(path.waypoints) && path.waypoints.length >= 2 && (
                           <div
@@ -136,17 +137,17 @@ import { fetchGet } from "../utils/api";
                               minHeight: '220px',
                               height: 'clamp(220px, 40vw, 340px)',
                               width: '100%',
-                              borderRadius: '1rem',
+                              borderRadius: '0.75rem',
                               overflow: 'hidden',
-                              boxShadow: '0 2px 24px 0 rgba(0,0,0,0.32)',
+                              boxShadow: '0 2px 12px 0 rgba(0,0,0,0.06)',
                               margin: '0',
                               position: 'relative',
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
-                              background: 'rgba(24,24,27,0.98)',
+                              background: '#fff',
                               padding: '0.5rem',
-                              border: '1px solid #232326',
+                              border: '1px solid #ececf0',
                             }}
                           >
                             <MapWithRoute waypoints={path.waypoints} profile={path.profile} />
@@ -166,27 +167,27 @@ import { fetchGet } from "../utils/api";
                                 href={`/path/${path._id}`}
                                 style={{
                                   padding: '0.5rem 1.2rem',
-                                  borderRadius: '0.75rem',
-                                  background: 'linear-gradient(90deg,#6366f1 0%,#60a5fa 100%)',
-                                  color: '#fff',
-                                  fontWeight: 600,
-                                  border: 'none',
+                                  borderRadius: '0.6rem',
+                                  background: '#ececf0',
+                                  color: '#222',
+                                  fontWeight: 500,
+                                  border: '1px solid #ececf0',
                                   textDecoration: 'none',
-                                  boxShadow: '0 1px 8px 0 rgba(99,102,241,0.18)',
-                                  fontSize: '1rem',
+                                  boxShadow: 'none',
+                                  fontSize: '0.98rem',
                                   position: 'relative',
                                   zIndex: 1001,
-                                  transition: 'background 0.2s, box-shadow 0.2s',
+                                  transition: 'background 0.2s, border 0.2s',
                                   cursor: 'pointer',
                                   outline: 'none',
                                 }}
                                 onMouseOver={e => {
-                                  e.currentTarget.style.background = 'linear-gradient(90deg,#60a5fa 0%,#6366f1 100%)';
-                                  e.currentTarget.style.boxShadow = '0 2px 12px 0 rgba(99,102,241,0.28)';
+                                  e.currentTarget.style.background = '#f7f7fa';
+                                  e.currentTarget.style.border = '1px solid #d1d5db';
                                 }}
                                 onMouseOut={e => {
-                                  e.currentTarget.style.background = 'linear-gradient(90deg,#6366f1 0%,#60a5fa 100%)';
-                                  e.currentTarget.style.boxShadow = '0 1px 8px 0 rgba(99,102,241,0.18)';
+                                  e.currentTarget.style.background = '#ececf0';
+                                  e.currentTarget.style.border = '1px solid #ececf0';
                                 }}
                                 tabIndex={0}
                               >
