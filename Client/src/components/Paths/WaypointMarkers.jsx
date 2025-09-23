@@ -4,13 +4,13 @@ function WaypointMarkers({ waypoints, setWaypoints }) {
   // Allow each marker to be draggable
   return waypoints.map((wp, idx) => (
     <Marker
-      key={wp.id}
+      key={wp.id ?? idx}
       position={wp.position}
       draggable={true}
       eventHandlers={{
         dragend: (e) => {
           const newPos = [e.target.getLatLng().lat, e.target.getLatLng().lng];
-          setWaypoints((wps) => wps.map((w, i) => (i === idx ? { ...w, position: newPos } : w)));
+          setWaypoints && setWaypoints((wps) => wps.map((w, i) => (i === idx ? { ...w, position: newPos } : w)));
         },
       }}
     >
