@@ -228,10 +228,11 @@ function CreatePath() {
         </p>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-800">
+            <label htmlFor="routeName" className="block text-sm font-medium text-gray-800">
               Route name <span className="text-red-500">*</span>
             </label>
             <input
+              id="routeName"
               type="text"
               value={routeName}
               onChange={(e) => setRouteName(e.target.value)}
@@ -243,8 +244,9 @@ function CreatePath() {
             )}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-800">Description</label>
+            <label htmlFor="description" className="block text-sm font-medium text-gray-800">Description</label>
             <textarea
+              id="description"
               rows={3}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
