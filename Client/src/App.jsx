@@ -14,10 +14,11 @@ import Profile from "./pages/Profile";
 import Admin from "./pages/AdminPage/page";
 import Login from "./pages/Login";
 import Register from "./pages/Registration";
+import PathDetail from "./pages/PathDetail";
+import Review from "./pages/Review";
 
 import { fetchUserInfoUntilSuccess } from "./store/slices/userInfoSlice";
 import { useEffect } from "react";
-import Review from "./pages/Review";
 
 function App() {
   const dispatch = useDispatch();
@@ -37,6 +38,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/path" element={<Path />} />
             <Route path="/allpaths" element={<AllPaths />} />
+            <Route path="/path/:pathID" element={<PathDetail />} />
             {/* <Route path="/profile" element={<Profile />} /> */}
 
             {/* Only logged in users can access these */}
