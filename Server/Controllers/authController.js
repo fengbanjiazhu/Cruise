@@ -61,7 +61,7 @@ export const login = catchAsync(async (req, res, next) => {
     return next(new cusError("Please provide email and password", 400));
   }
 
-  const user = await User.findOne({ email }).select("+password +active");
+  const user = await User.findOne({ email }).select("+password +active").populate("savedList");
 
   const correct = await correctPassword(password, user.password);
 

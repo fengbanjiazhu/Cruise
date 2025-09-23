@@ -1,5 +1,5 @@
 import bg from "@/assets/bg.jpg";
-import Card from "../components/UI/Card";
+import Card from "../components/UI/OldCard";
 import { useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { fetchPost, optionMaker } from "../utils/api";

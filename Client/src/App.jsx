@@ -39,10 +39,11 @@ function App() {
             <Route path="/allpaths" element={<AllPaths />} />
             {/* <Route path="/profile" element={<Profile />} /> */}
 
-            {isLoggedIn && <Route path="/profile" element={<Profile />} />}
-            {isLoggedIn && <Route path="/review" element={<Review />} />}
-            {isLoggedIn && <Route path="/admin" element={<Admin />} />}
+            {/* Only logged in users can access these */}
             {isLoggedIn && <Route path="/createpath" element={<CreatePath />} />}
+            {isLoggedIn && <Route path="/review" element={<Review />} />}
+            {isLoggedIn && <Route path="/profile" element={<Profile />} />}
+            {isLoggedIn && <Route path="/admin" element={<Admin />} />}
 
             {!isLoggedIn && <Route path="/login" element={<Login />} />}
             {!isLoggedIn && <Route path="/register" element={<Register />} />}

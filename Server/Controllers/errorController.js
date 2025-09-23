@@ -1,6 +1,8 @@
 import cusError from "../utils/cusError.js";
 
 const senErrorProd = (err, req, res) => {
+  console.log("Something going on: =============");
+  console.log(err);
   // API
   if (req.originalUrl.startsWith("/api")) {
     // Operational, trusted error: send a message to client
@@ -43,17 +45,17 @@ const handleValidationError = (err) => {
 };
 
 const handleJWTExpireError = (err) => {
-  return new cusError("Your token has expired! Please Login again");
+  return new cusError("Your token has expired! Please Login again", 401);
 };
 
 const handleJWTError = (err) => {
-  return new cusError("Your token has some issue, please logout and re login");
+  return new cusError("Your token has some issue, please logout and re login", 401);
 };
 
 export default (err, req, res, next) => {
-  // console.log("=========ERROR STARTS============");
-  // console.log(err);
-  // console.log("=========END OF ERROR============");
+  console.log("=========ERROR STARTS============");
+  console.log(err);
+  console.log("=========END OF ERROR============");
 
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";

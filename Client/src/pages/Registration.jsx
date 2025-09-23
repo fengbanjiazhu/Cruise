@@ -1,6 +1,5 @@
-
 import bg from "@/assets/bg.jpg";
-import Card from "../components/UI/Card";
+import Card from "../components/UI/OldCard";
 import { useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { fetchPost, optionMaker, checkEmail } from "../utils/api";
@@ -22,12 +21,9 @@ function Register() {
   const passwordRef = useRef(null);
   const passwordConfirmRef = useRef(null);
 
-  
-
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
   const handleRegister = async () => {
-    
     if (!name.trim()) {
       nameRef.current.focus();
       return toast.error("Name is required");
@@ -54,12 +50,12 @@ function Register() {
     const result = await checkEmail(email);
     if (!result || result.exist) return toast.error("Email already exist");
 
-    const data = { name, email, password,passwordConfirm};
+    const data = { name, email, password, passwordConfirm };
 
     try {
       await fetchPost("user/register", optionMaker(data));
       toast.success("Successfully registered!");
-      navigate("/login"); 
+      navigate("/login");
     } catch (err) {
       toast.error(err.message || "Registration failed");
     }
@@ -121,10 +117,6 @@ function Register() {
         >
           Register
         </button>
-
-        
-
-
       </Card>
     </div>
   );
