@@ -435,7 +435,7 @@ function PathDetail() {
                   waypoints={editWaypoints}
                   profile={editProfile}
                   scenic={editScenic}
-                  handleSave={() => {}}
+                  handleSave={setRouteSteps}
                 />
               </MapContainer>
             </div>
@@ -475,7 +475,52 @@ function PathDetail() {
               <button
                 type="button"
                 style={{borderRadius: '0.7rem', border: '1.5px solid #2563eb', background: '#2563eb', color: '#fff', fontWeight: 600, padding: '0.8rem 1.7rem', fontSize: '1.08rem', cursor: 'pointer', letterSpacing: '0.01em'}}
-                // TODO: Add save logic
+                onClick={async () => {
+                  console.log('routeSteps in PATCH handler:', routeSteps);
+                  // Calculate distance and duration from routeSteps
+                  let distance = null;
+                  let duration = null;
+                  if (routeSteps && routeSteps.summary) {
+                    distance = routeSteps.summary.totalDistance;
+                    duration = routeSteps.summary.totalTime;
+                  }
+                  const payload = {
+                    name: editName,
+                    description: editDescription,
+                    profile: editProfile,
+                    distance,
+                    duration,
+                    locations: editWaypoints.map(wp => ({
+                      lat: wp.position[0],
+                      lng: wp.position[1]
+                    })),
+                    waypoints: editWaypoints.map((wp, i) => ({
+                      label: wp.label && wp.label.trim() ? wp.label.trim() : `Waypoint ${i + 1}`,
+                      lat: wp.position[0],
+                      lng: wp.position[1],
+                    })),
+                  };
+                  console.log('PATCH payload:', payload);
+                  try {
+                    const res = await fetch(`/api/path/${pathID}`, {
+                      method: 'PATCH',
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify(payload),
+                    });
+                    if (!res.ok) {
+                      const err = await res.json();
+                      alert('Failed to update path: ' + (err.errors ? err.errors.join(', ') : err.message));
+                    } else {
+                      alert('Path updated successfully!');
+                      setShowEditModal(false);
+                      window.location.reload();
+                    }
+                  } catch (err) {
+                    alert('Error updating path: ' + err.message);
+                  }
+                }}
               >
                 Save Changes
               </button>
