@@ -8,7 +8,6 @@ import Layout from "./components/UI/Layout";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import CreatePath from "./pages/CreatePath";
-import Path from "./pages/Path";
 import AllPaths from "./pages/AllPaths";
 import Profile from "./pages/Profile";
 import Admin from "./pages/AdminPage/page";
@@ -36,7 +35,6 @@ function App() {
         <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
-            <Route path="/path" element={<Path />} />
             <Route path="/allpaths" element={<AllPaths />} />
             <Route path="/path/:pathID" element={<PathDetail />} />
             {/* <Route path="/profile" element={<Profile />} /> */}
