@@ -13,8 +13,24 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
 });
 
-function RouteBetweenWaypoints({ waypoints, profile = "foot", scenic = true, handleSave }) {
-  const map = useMapEvents({});
+function RouteBetweenWaypoints({ waypoints, profile = "foot", scenic = true, handleSave, setWaypoints }) {
+  // Add waypoint on map click
+  const map = useMapEvents({
+    click: (e) => {
+      if (typeof setWaypoints === 'function') {
+        setWaypoints((wps) => [
+          ...wps,
+          {
+            id: Math.random().toString(36).slice(2),
+            position: [e.latlng.lat, e.latlng.lng],
+            label: `Waypoint ${wps.length + 1}`,
+            lat: e.latlng.lat,
+            lng: e.latlng.lng,
+          },
+        ]);
+      }
+    },
+  });
   const routeRef = useRef(null);
 
   useEffect(() => {
@@ -31,7 +47,11 @@ function RouteBetweenWaypoints({ waypoints, profile = "foot", scenic = true, han
     // Need at least 2 waypoints to draw a route
     if (!waypoints || waypoints.length < 2) return;
 
-    const latLngs = waypoints.map((w) => L.latLng(w.position[0], w.position[1]));
+    // Only use waypoints with valid position arrays
+    const latLngs = waypoints
+      .filter(w => Array.isArray(w.position) && w.position.length === 2)
+      .map((w) => L.latLng(w.position[0], w.position[1]));
+    if (latLngs.length < 2) return;
 
     // Create routing control using public OSRM demo server
     routeRef.current = L.Routing.control({

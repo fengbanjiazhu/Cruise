@@ -1,18 +1,41 @@
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { MapContainer, TileLayer, Polyline } from "react-leaflet";
+import { MapContainer, TileLayer, Polyline, useMapEvents } from "react-leaflet";
 import WaypointMarkers from "../components/Paths/WaypointMarkers";
 import RouteBetweenWaypoints from "../components/Paths/RouteBetweenWaypoints";
 import { fetchGet } from "../utils/api";
 
 
 function PathDetail() {
+  const currentUser = useSelector(state => state.userInfo.user);
   const { pathID } = useParams();
   const [path, setPath] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [routeSteps, setRouteSteps] = useState(null);
   const [cardVisible, setCardVisible] = useState(true);
+  const [showEditModal, setShowEditModal] = useState(false);
+  // Edit modal states
+  const [editName, setEditName] = useState("");
+  const [editDescription, setEditDescription] = useState("");
+  const [editWaypoints, setEditWaypoints] = useState([]);
+  const [editProfile, setEditProfile] = useState("foot");
+  const [editScenic, setEditScenic] = useState(true);
+  useEffect(() => {
+    if (showEditModal && path) {
+      setEditName(path.name || "");
+      setEditDescription(path.description || "");
+      setEditWaypoints(Array.isArray(path.waypoints)
+        ? path.waypoints.map(wp => ({
+            ...wp,
+            position: [wp.lat, wp.lng]
+          }))
+        : []);
+      setEditProfile(path.profile || "foot");
+      setEditScenic(true); // default true, adjust if path has scenic info
+    }
+  }, [showEditModal, path]);
 
   useEffect(() => {
     async function fetchPath() {
@@ -34,9 +57,11 @@ function PathDetail() {
   if (loading) return <div className="mx-auto max-w-7xl px-4 py-6 lg:px-6">Loading path…</div>;
   if (error) return <div className="mx-auto max-w-7xl px-4 py-6 lg:px-6 text-red-600">{error}</div>;
   if (!path) return <div className="mx-auto max-w-7xl px-4 py-6 lg:px-6">No path found.</div>;
+  const isCreator = currentUser && path.creator && (currentUser._id === path.creator);
+  console.log('Is current user the creator of this path?', isCreator, '\nCurrent user:', currentUser, '\nPath creator:', path.creator);
 
   return (
-    <div style={{width: '100vw', height: '100vh', position: 'relative', left: '50%', right: '50%', marginLeft: '-50vw', marginRight: '-50vw', overflow: 'hidden'}}>
+  <div style={{width: '100vw', height: '100vh', position: 'relative', left: '50%', right: '50%', marginLeft: '-50vw', marginRight: '-50vw', overflow: 'hidden'}}>
       {/* App navigation button - more prominent */}
       <a
         href="/allpaths"
@@ -76,7 +101,7 @@ function PathDetail() {
         </svg>
         View all paths
       </a>
-      {/* Overlay card in top left */}
+  {/* Overlay card in top left */}
       <div
         style={{
           position: 'absolute',
@@ -124,8 +149,73 @@ function PathDetail() {
             ))}
           </ul>
         )}
+        {/* Button section at bottom of card for creator */}
+        {currentUser && path.creator && (currentUser._id === path.creator) && (
+          <div style={{
+            width: '100%',
+            padding: '1.1rem 0 0.7rem 0',
+            marginTop: '1.2rem',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            gap: '0.7rem',
+            background: 'none',
+            borderRadius: '0 0 12px 12px',
+          }}>
+            <span style={{
+              fontSize: '1rem',
+              color: '#444',
+              fontWeight: 700,
+              letterSpacing: '0.01em',
+              display: 'block',
+              marginBottom: '0.7rem',
+            }}>
+              You created this path
+            </span>
+            <div style={{display: 'flex', gap: '0.7rem'}}>
+              <button
+                style={{
+                  background: '#fff',
+                  color: '#2563eb',
+                  border: '1.5px solid #2563eb',
+                  borderRadius: '6px',
+                  fontSize: '0.98rem',
+                  fontWeight: 500,
+                  padding: '0.45rem 1.1rem',
+                  cursor: 'pointer',
+                  boxShadow: 'none',
+                  letterSpacing: '0.01em',
+                  transition: 'background 0.2s, color 0.2s, border 0.2s',
+                }}
+                onClick={() => setShowEditModal(true)}
+                aria-label="Edit Path"
+              >
+                Edit
+              </button>
+              <button
+                style={{
+                  background: '#fff',
+                  color: '#dc2626',
+                  border: '1.5px solid #dc2626',
+                  borderRadius: '6px',
+                  fontSize: '0.98rem',
+                  fontWeight: 500,
+                  padding: '0.45rem 1.1rem',
+                  cursor: 'pointer',
+                  boxShadow: 'none',
+                  letterSpacing: '0.01em',
+                  transition: 'background 0.2s, color 0.2s, border 0.2s',
+                }}
+                onClick={() => {/* TODO: handle delete path */}}
+                aria-label="Delete Path"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        )}
       </div>
-      {/* Toggle button when card is hidden */}
+  {/* Toggle button when card is hidden */}
       {!cardVisible && (
         <button
           onClick={() => setCardVisible(true)}
@@ -158,7 +248,7 @@ function PathDetail() {
           Show Details
         </button>
       )}
-      {/* Fullscreen map */}
+  {/* Fullscreen map */}
       <div style={{width: '100vw', height: '100vh', position: 'absolute', top: 0, left: 0, zIndex: 1}}>
         {Array.isArray(path.locations) && path.locations.length > 0 && (
           <MapContainer
@@ -200,6 +290,200 @@ function PathDetail() {
       <p className="mt-2 text-sm text-gray-500 text-center" style={{position: 'absolute', bottom: 24, left: 0, width: '100%', zIndex: 1002}}>
         Tip: waypoints and route are shown as on creation. Dragging is disabled.
       </p>
+
+    {/* Edit Modal Popup */}
+    {showEditModal && (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        background: 'rgba(0,0,0,0.45)',
+        zIndex: 2000,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+        <div style={{
+          background: '#fff',
+          borderRadius: '1.25rem',
+          padding: '2.5rem 2rem',
+          minWidth: '340px',
+          maxWidth: '95vw',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+          position: 'relative',
+          maxHeight: '90vh',
+          overflowY: 'auto',
+        }}>
+          <button
+            onClick={() => setShowEditModal(false)}
+            style={{
+              position: 'absolute',
+              top: 18,
+              right: 18,
+              background: 'none',
+              border: 'none',
+              fontSize: '2rem',
+              color: '#888',
+              cursor: 'pointer',
+              padding: 0,
+            }}
+            aria-label="Close Edit Modal"
+          >
+            &times;
+          </button>
+          <h3 style={{fontSize: '1.6rem', fontWeight: 700, marginBottom: '1.5rem', color: '#222', letterSpacing: '0.01em'}}>Edit Path</h3>
+          <form style={{display: 'flex', flexDirection: 'column', gap: '1.2rem'}}>
+            {/* ...existing code... */}
+            <div>
+              <label htmlFor="editName" style={{fontWeight: 600, fontSize: '1.08rem', color: '#222', marginBottom: 4, display: 'block'}}>Route name <span style={{color: 'red'}}>*</span></label>
+              <input
+                id="editName"
+                type="text"
+                value={editName}
+                onChange={e => setEditName(e.target.value)}
+                placeholder="e.g. Coastal Sunrise Run"
+                style={{marginTop: 6, width: '100%', borderRadius: '0.7rem', border: '1.5px solid #bbb', padding: '0.7rem', fontSize: '1.08rem', background: '#fafbfc', color: '#222'}}
+              />
+            </div>
+            <div>
+              <label htmlFor="editDescription" style={{fontWeight: 600, fontSize: '1.08rem', color: '#222', marginBottom: 4, display: 'block'}}>Description</label>
+              <textarea
+                id="editDescription"
+                rows={3}
+                value={editDescription}
+                onChange={e => setEditDescription(e.target.value)}
+                placeholder="Short description for this path"
+                style={{marginTop: 6, width: '100%', borderRadius: '0.7rem', border: '1.5px solid #bbb', padding: '0.7rem', fontSize: '1.08rem', background: '#fafbfc', color: '#222'}}
+              />
+            </div>
+            <div>
+              <div style={{display: 'flex', alignItems: 'center', gap: '0.7rem', marginBottom: 4}}>
+                <span style={{fontWeight: 600, fontSize: '1.08rem', color: '#222'}}>Waypoints</span>
+                <span style={{background: '#f3f4f6', borderRadius: '1rem', padding: '0.2rem 0.7rem', fontSize: '1rem', color: '#222'}}>{editWaypoints.length}</span>
+              </div>
+              {editWaypoints.length === 0 ? (
+                <p style={{marginTop: 8, fontSize: '1.05rem', color: '#888'}}>No waypoints. (Editing waypoints in modal is not supported yet)</p>
+              ) : (
+                <ul style={{marginTop: 10, listStyle: 'none', padding: 0}}>
+                  {editWaypoints.map((wp, idx) => (
+                    <li key={idx} style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', border: '1.5px solid #e5e7eb', borderRadius: '0.7rem', padding: '0.9rem', marginBottom: 10, background: '#fafbfc'}}>
+                      <div style={{minWidth: 0}}>
+                        <div style={{fontWeight: 600, fontSize: '1.08rem', marginBottom: 2, color: '#222'}}>{idx + 1}. {wp.label?.trim() || `Waypoint ${idx + 1}`}</div>
+                        <div style={{fontSize: '1rem', color: '#666', marginBottom: 4}}>{wp.lat?.toFixed(6)}, {wp.lng?.toFixed(6)}</div>
+                        <label style={{fontSize: '0.95rem', color: '#444', marginBottom: 2, display: 'block'}}>Rename</label>
+                        <input
+                          type="text"
+                          value={wp.label || ""}
+                          onChange={e => {
+                            const val = e.target.value;
+                            setEditWaypoints(wps => wps.map((w, i) => (i === idx ? { ...w, label: val } : w)));
+                          }}
+                          placeholder={`Waypoint ${idx + 1}`}
+                          style={{width: '100%', borderRadius: '0.5rem', border: '1.5px solid #bbb', padding: '0.5rem', fontSize: '1rem', background: '#fff', color: '#222'}}
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        style={{marginLeft: 12, borderRadius: '0.5rem', border: '1.5px solid #dc2626', background: '#fff', color: '#dc2626', fontWeight: 500, padding: '0.5rem 1.1rem', fontSize: '1rem', cursor: 'pointer'}}
+                        onClick={() => {
+                          if (window.confirm('Delete this waypoint? This will reset the route.')) {
+                            setEditWaypoints(wps => wps.filter((_, i) => i !== idx));
+                          }
+                        }}
+                      >Delete</button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            {/* Editable Map in Popup - moved below waypoints, above routing profile */}
+            <div style={{width: '100%', height: '320px', borderRadius: '1rem', overflow: 'hidden', marginBottom: '1.2rem', boxShadow: '0 2px 12px rgba(0,0,0,0.08)'}}>
+              <MapContainer
+                center={editWaypoints[0]?.position || [-33.8688, 151.2093]}
+                zoom={13}
+                scrollWheelZoom
+                style={{width: '100%', height: '100%'}}>
+                <TileLayer
+                  url="https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png"
+                  attribution="&copy; Stadia Maps, &copy; OpenMapTiles &copy; OpenStreetMap contributors"
+                />
+                <WaypointMarkers waypoints={editWaypoints} setWaypoints={setEditWaypoints} />
+                {/* Add waypoint on map click, like CreatePath */}
+                {(() => {
+                  function AddWaypointOnClick() {
+                    useMapEvents({
+                      click: (e) => {
+                        setEditWaypoints((wps) => [
+                          ...wps,
+                          {
+                            id: Math.random().toString(36).slice(2),
+                            position: [e.latlng.lat, e.latlng.lng],
+                            label: `Waypoint ${wps.length + 1}`,
+                            lat: e.latlng.lat,
+                            lng: e.latlng.lng,
+                          },
+                        ]);
+                      },
+                    });
+                    return null;
+                  }
+                  return <AddWaypointOnClick />;
+                })()}
+                <RouteBetweenWaypoints
+                  waypoints={editWaypoints}
+                  profile={editProfile}
+                  scenic={editScenic}
+                  handleSave={() => {}}
+                />
+              </MapContainer>
+            </div>
+            <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.2rem'}}>
+              <div>
+                <label style={{fontWeight: 600, fontSize: '1.08rem', color: '#222', marginBottom: 4, display: 'block'}}>Routing profile</label>
+                <select
+                  style={{marginTop: 6, width: '100%', borderRadius: '0.7rem', border: '1.5px solid #bbb', padding: '0.7rem', fontSize: '1.08rem', background: '#fafbfc', color: '#222'}}
+                  value={editProfile}
+                  onChange={e => setEditProfile(e.target.value)}
+                >
+                  <option value="car">Driving</option>
+                  <option value="bike">Cycling</option>
+                  <option value="foot">Walking</option>
+                </select>
+              </div>
+              <div style={{display: 'flex', alignItems: 'center', height: '100%'}}>
+                <label style={{fontWeight: 600, fontSize: '1.08rem', color: '#222', marginRight: 8}}>
+                  <input
+                    type="checkbox"
+                    checked={editScenic}
+                    onChange={e => setEditScenic(e.target.checked)}
+                    style={{marginRight: 8}}
+                  />
+                  Scenic mode (show alternatives)
+                </label>
+              </div>
+            </div>
+            <div style={{display: 'flex', gap: '1rem', marginTop: '1.5rem'}}>
+              <button
+                type="button"
+                onClick={() => setShowEditModal(false)}
+                style={{borderRadius: '0.7rem', border: '1.5px solid #bbb', background: '#fff', color: '#222', fontWeight: 600, padding: '0.8rem 1.7rem', fontSize: '1.08rem', cursor: 'pointer', letterSpacing: '0.01em'}}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                style={{borderRadius: '0.7rem', border: '1.5px solid #2563eb', background: '#2563eb', color: '#fff', fontWeight: 600, padding: '0.8rem 1.7rem', fontSize: '1.08rem', cursor: 'pointer', letterSpacing: '0.01em'}}
+                // TODO: Add save logic
+              >
+                Save Changes
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    )}
     </div>
   );
 }

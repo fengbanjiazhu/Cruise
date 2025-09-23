@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import { useSelector } from "react-redux";
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-hot-toast";
@@ -8,6 +9,7 @@ import WaypointMarkers from "../components/Paths/WaypointMarkers";
 import { fetchPost, optionMaker } from "../utils/api";
 
 function CreatePath() {
+  const currentUser = useSelector(state => state.userInfo.user);
   const [routeName, setRouteName] = useState("");
   const [description, setDescription] = useState("");
   const [waypoints, setWaypoints] = useState([]);
@@ -26,7 +28,7 @@ function CreatePath() {
   const buildPayload = () => ({
     name: routeName,
     description,
-    creator: "68abbad440fef1e01fe82b34",
+  creator: currentUser?._id || "68abbad440fef1e01fe82b34",
     locations: routeSteps?.coordinates,
     profile: routingProfile,
     distance: routeSteps?.summary.totalDistance,
@@ -65,20 +67,7 @@ function CreatePath() {
       return toast.error("Please add at least 2 waypoints");
     }
 
-    const sendData = {
-      name: routeName,
-      description,
-      creator: "68abbad440fef1e01fe82b34",
-      locations: routeSteps?.coordinates,
-      profile: routingProfile,
-      distance: routeSteps?.summary.totalDistance,
-      duration: routeSteps?.summary.totalTime,
-      waypoints: waypoints.map((wp, i) => ({
-        label: wp.label && wp.label.trim() ? wp.label.trim() : `Waypoint ${i + 1}`,
-        lat: wp.position[0],
-        lng: wp.position[1],
-      })),
-    };
+    const sendData = buildPayload();
 
     try {
       const sendData = buildPayload();
