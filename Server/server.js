@@ -11,7 +11,11 @@ import reviewRoute from "./Routes/reviewRoute.js";
 
 const app = express();
 
-dotenv.config({ path: "./Server/config.env" });
+if (process.env.NODE_ENV !== "production") {
+  dotenv.config({ path: "./Server/config.env" });
+}
+
+// dotenv.config({ path: "./Server/config.env" });
 
 app.use(
   cors({

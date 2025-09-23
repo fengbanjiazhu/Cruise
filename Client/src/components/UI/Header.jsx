@@ -36,6 +36,8 @@ function Header() {
 
           {!isLoggedIn && <NavLink to="/login">Login</NavLink>}
           {!isLoggedIn && <NavLink to="/register">Register</NavLink>}
+
+          {/* {!isLoggedIn && <NavLink to="/login">Register</NavLink>} */}
         </nav>
       </header>
     </>
