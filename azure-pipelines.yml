@@ -23,18 +23,16 @@ steps:
     versionSpec: '20.x'
   displayName: 'Install Node.js'
 
-# - script: |
-#     npm install
-#   displayName: 'Install dependencies'
-
 - script: |
     npm install --include=dev
   displayName: 'Install dependencies including devDependencies'
-  
 
 - script: |
     npm run test-be
   displayName: 'Run backend unit tests'
+  env:
+    JWT_SECRET: $(JWT_SECRET)
+
 
 - script: |
     npm run test-fe
