@@ -37,6 +37,45 @@ function PathDetail() {
 
   return (
     <div style={{width: '100vw', height: '100vh', position: 'relative', left: '50%', right: '50%', marginLeft: '-50vw', marginRight: '-50vw', overflow: 'hidden'}}>
+      {/* App navigation button - more prominent */}
+      <a
+        href="/allpaths"
+        style={{
+          position: 'absolute',
+          top: 32,
+          left: 32,
+          zIndex: 1100,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+          padding: '0.6rem 1.3rem',
+          borderRadius: '0.8rem',
+          background: '#fff',
+          color: '#222',
+          fontWeight: 600,
+          border: '1px solid #ececf0',
+          cursor: 'pointer',
+          boxShadow: '0 2px 12px 0 rgba(99,102,241,0.10)',
+          fontSize: '1.08rem',
+          textDecoration: 'none',
+          letterSpacing: '0.01em',
+          transition: 'background 0.2s, box-shadow 0.2s, border 0.2s',
+        }}
+        onMouseOver={e => {
+          e.currentTarget.style.background = '#f7f7fa';
+          e.currentTarget.style.border = '1px solid #d1d5db';
+        }}
+        onMouseOut={e => {
+          e.currentTarget.style.background = '#fff';
+          e.currentTarget.style.border = '1px solid #ececf0';
+        }}
+        aria-label="View all paths"
+      >
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg" style={{display:'inline',verticalAlign:'middle'}}>
+          <path d="M18 11H4M4 11L9.5 5.5M4 11L9.5 16.5" stroke="#222" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+        View all paths
+      </a>
       {/* Overlay card in top left */}
       <div
         style={{
@@ -61,10 +100,11 @@ function PathDetail() {
       >
         <button
           onClick={() => setCardVisible(false)}
-          style={{position: 'absolute', top: 18, right: 18, zIndex: 1010, background: 'none', border: 'none', fontSize: '1.5rem', color: '#888', cursor: 'pointer', padding: 0}}
-          aria-label="Hide details"
+          style={{position: 'absolute', top: 18, right: 18, zIndex: 1010, background: 'none', border: 'none', fontSize: '1.7rem', color: '#888', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center'}}
+          aria-label="Slide details away"
+          title="Slide details away"
         >
-          ×
+          <span style={{display: 'inline-block', transform: 'rotate(0deg)', fontSize: '2rem', marginRight: '2px'}}>&#8594;</span>
         </button>
         <h2 style={{fontSize: '1.5rem', fontWeight: 600, marginBottom: '0.5rem', color: '#222'}}>{path.name}</h2>
         <p style={{marginBottom: '1.2rem', color: '#555', fontSize: '1rem'}}>{path.description}</p>
@@ -89,9 +129,31 @@ function PathDetail() {
       {!cardVisible && (
         <button
           onClick={() => setCardVisible(true)}
-          style={{position: 'absolute', top: 32, right: 32, zIndex: 1000}}
-          className="rounded-full bg-blue-600 px-4 py-2 text-sm font-bold text-white shadow-lg hover:bg-blue-800"
+          style={{
+            position: 'absolute',
+            top: 32,
+            right: 32,
+            zIndex: 1000,
+            padding: '0.45rem 1.1rem',
+            borderRadius: '0.6rem',
+            background: '#ececf0',
+            color: '#222',
+            fontWeight: 500,
+            border: '1px solid #ececf0',
+            cursor: 'pointer',
+            boxShadow: 'none',
+            fontSize: '0.98rem',
+            transition: 'background 0.2s, border 0.2s',
+          }}
           aria-label="Show details"
+          onMouseOver={e => {
+            e.currentTarget.style.background = '#f7f7fa';
+            e.currentTarget.style.border = '1px solid #d1d5db';
+          }}
+          onMouseOut={e => {
+            e.currentTarget.style.background = '#ececf0';
+            e.currentTarget.style.border = '1px solid #ececf0';
+          }}
         >
           Show Details
         </button>
