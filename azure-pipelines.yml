@@ -9,6 +9,14 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
+variables:
+  NODE_ENV: 'production'
+  JWT_SECRET: $(jwt)
+  JWT_EXPIRES_IN: '14d'
+  JWT_COOKIE_EXPIRES_IN: 14
+  DATABASE: $(db)
+  DATABASE_PASSWORD: $(dbpass)
+
 steps:
 - task: NodeTool@0
   inputs:
@@ -20,5 +28,9 @@ steps:
   displayName: 'Install dependencies'
 
 - script: |
-    # npm run test
+    npm run test
   displayName: 'Run tests'
+
+- script: |
+    npm run build
+  displayName: 'Build frontend (Vite)'

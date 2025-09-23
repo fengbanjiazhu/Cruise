@@ -26,6 +26,7 @@ function Header() {
           {isLoggedIn && <NavLink to="/createpath">Create Path</NavLink>}
           {isLoggedIn && <NavLink to="/review">Reviews</NavLink>}
           {isLoggedIn && <NavLink to="/profile">Profile</NavLink>}
+          {isLoggedIn && <NavLink to="/admin">Admin</NavLink>}
 
           {isLoggedIn && (
             <a onClick={logout} role="button">
