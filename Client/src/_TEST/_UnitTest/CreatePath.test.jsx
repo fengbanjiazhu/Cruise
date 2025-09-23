@@ -1,7 +1,7 @@
 import React from "react";
-import '@testing-library/jest-dom';
+import "@testing-library/jest-dom";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import CreatePath from "../CreatePath";
+import CreatePath from "../../pages/CreatePath";
 import { Provider } from "react-redux";
 import { store } from "../../store/store";
 
@@ -21,13 +21,13 @@ describe("CreatePath UI", () => {
       </Provider>
     );
     // Heading
-    expect(screen.getByRole('heading', { name: /Create Path/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /Create Path/i })).toBeInTheDocument();
     // Route name input
     expect(screen.getByLabelText(/Route name/i)).toBeInTheDocument();
     // Description textarea
     expect(screen.getByLabelText(/Description/i)).toBeInTheDocument();
-  // Waypoints heading
-  expect(screen.getByRole('heading', { name: /Waypoints/i })).toBeInTheDocument();
+    // Waypoints heading
+    expect(screen.getByRole("heading", { name: /Waypoints/i })).toBeInTheDocument();
     // Create Path button
     expect(screen.getAllByText(/Create Path/i)[1]).toBeInTheDocument();
   });
@@ -67,7 +67,10 @@ describe("CreatePath validation", () => {
       if (waypoints.length < 2) errs.waypoints = "At least 2 waypoints are required";
       return errs;
     };
-    expect(validate("", [])).toEqual({ routeName: "Route name is required", waypoints: "At least 2 waypoints are required" });
+    expect(validate("", [])).toEqual({
+      routeName: "Route name is required",
+      waypoints: "At least 2 waypoints are required",
+    });
     expect(validate("Test", [{}, {}])).toEqual({});
   });
 });

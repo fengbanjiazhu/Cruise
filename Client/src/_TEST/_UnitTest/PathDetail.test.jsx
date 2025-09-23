@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
-import '@testing-library/jest-dom';
-import PathDetail from "../PathDetail";
+import "@testing-library/jest-dom";
+import PathDetail from "../../pages/PathDetail";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import userInfoReducer from "../../store/slices/userInfoSlice";
@@ -9,7 +9,9 @@ import userInfoReducer from "../../store/slices/userInfoSlice";
 // Define store for all tests
 const store = configureStore({
   reducer: { userInfo: userInfoReducer },
-  preloadedState: { userInfo: { user: { _id: "u1" }, token: null, isLoggedIn: true, loadingUser: false } }
+  preloadedState: {
+    userInfo: { user: { _id: "u1" }, token: null, isLoggedIn: true, loadingUser: false },
+  },
 });
 
 // Mock react-router-dom useParams
@@ -20,26 +22,28 @@ jest.mock("react-router-dom", () => ({
 
 // Mock API fetchGet
 jest.mock("../../utils/api", () => ({
-  fetchGet: jest.fn(() => Promise.resolve({
-    data: {
+  fetchGet: jest.fn(() =>
+    Promise.resolve({
       data: {
-        _id: "123",
-        name: "Test Path",
-        description: "A test path description.",
-        profile: "foot",
-        duration: 42,
-  creator: "u1",
-        waypoints: [
-          { lat: 1, lng: 2, label: "Start" },
-          { lat: 3, lng: 4, label: "End" }
-        ],
-        locations: [
-          { lat: 1, lng: 2 },
-          { lat: 3, lng: 4 }
-        ]
-      }
-    }
-  }))
+        data: {
+          _id: "123",
+          name: "Test Path",
+          description: "A test path description.",
+          profile: "foot",
+          duration: 42,
+          creator: "u1",
+          waypoints: [
+            { lat: 1, lng: 2, label: "Start" },
+            { lat: 3, lng: 4, label: "End" },
+          ],
+          locations: [
+            { lat: 1, lng: 2 },
+            { lat: 3, lng: 4 },
+          ],
+        },
+      },
+    })
+  ),
 }));
 
 // UI tests
@@ -52,9 +56,11 @@ describe("PathDetail UI", () => {
       </Provider>
     );
     expect(screen.getByText(/Loading path/i)).toBeInTheDocument();
-    await waitFor(() => expect(screen.getByRole('heading', { name: /Test Path/i })).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByRole("heading", { name: /Test Path/i })).toBeInTheDocument()
+    );
     expect(screen.getByText(/A test path description/i)).toBeInTheDocument();
-  expect(screen.getByText(/Unknown/i)).toBeInTheDocument();
+    expect(screen.getByText(/Unknown/i)).toBeInTheDocument();
     expect(screen.getByText(/42 min/i)).toBeInTheDocument();
     expect(screen.getByText(/foot/i)).toBeInTheDocument();
     expect(screen.getByText(/Waypoints:/i)).toBeInTheDocument();
@@ -64,19 +70,19 @@ describe("PathDetail UI", () => {
 
   test("shows error if fetch fails", async () => {
     // Override fetchGet to throw
-  const { fetchGet } = require("../../utils/api");
+    const { fetchGet } = require("../../utils/api");
     fetchGet.mockImplementationOnce(() => Promise.reject(new Error("Fetch error")));
     render(
       <Provider store={store}>
         <PathDetail />
       </Provider>
     );
-  await waitFor(() => expect(screen.getByText(/Fetch error/i)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText(/Fetch error/i)).toBeInTheDocument());
   });
   test("edit modal PATCHes path and reloads on success", async () => {
     // Mock fetch for PATCH
     global.fetch = jest.fn((url, opts) => {
-      if (opts.method === 'PATCH') {
+      if (opts.method === "PATCH") {
         return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
       }
       // fallback to GET
@@ -88,20 +94,25 @@ describe("PathDetail UI", () => {
       </Provider>
     );
     // Open edit modal
-    await waitFor(() => screen.getByRole('button', { name: /Edit Path/i }));
-    fireEvent.click(screen.getByRole('button', { name: /Edit Path/i }));
+    await waitFor(() => screen.getByRole("button", { name: /Edit Path/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Edit Path/i }));
     // Change name
     fireEvent.change(screen.getByLabelText(/Route name/i), { target: { value: "Edited Path" } });
     // Save changes
     fireEvent.click(screen.getByText(/Save Changes/i));
-    await waitFor(() => expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('/api/path/'), expect.objectContaining({ method: 'PATCH' })));
+    await waitFor(() =>
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringContaining("/api/path/"),
+        expect.objectContaining({ method: "PATCH" })
+      )
+    );
     // Success: PATCH called
   });
 
   test("delete button sends DELETE and redirects", async () => {
     // Mock fetch for DELETE
     global.fetch = jest.fn((url, opts) => {
-      if (opts.method === 'DELETE') {
+      if (opts.method === "DELETE") {
         return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
       }
       // fallback to GET
@@ -120,10 +131,15 @@ describe("PathDetail UI", () => {
       </Provider>
     );
     // Click delete
-    await waitFor(() => screen.getByRole('button', { name: /Delete Path/i }));
-    fireEvent.click(screen.getByRole('button', { name: /Delete Path/i }));
+    await waitFor(() => screen.getByRole("button", { name: /Delete Path/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Delete Path/i }));
     // Should call fetch with DELETE
-    await waitFor(() => expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('/api/path/'), expect.objectContaining({ method: 'DELETE' })));
+    await waitFor(() =>
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringContaining("/api/path/"),
+        expect.objectContaining({ method: "DELETE" })
+      )
+    );
     // Success: DELETE called
   });
 });
