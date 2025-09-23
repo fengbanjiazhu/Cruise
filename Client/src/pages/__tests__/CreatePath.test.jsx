@@ -2,6 +2,8 @@ import React from "react";
 import '@testing-library/jest-dom';
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import CreatePath from "../CreatePath";
+import { Provider } from "react-redux";
+import { store } from "../../store/store";
 
 // Mock API utils
 jest.mock("../../utils/api", () => ({
@@ -13,7 +15,11 @@ jest.mock("../../utils/api", () => ({
 
 describe("CreatePath UI", () => {
   test("renders heading and form fields", () => {
-    render(<CreatePath />);
+    render(
+      <Provider store={store}>
+        <CreatePath />
+      </Provider>
+    );
     // Heading
     expect(screen.getByRole('heading', { name: /Create Path/i })).toBeInTheDocument();
     // Route name input
@@ -27,13 +33,21 @@ describe("CreatePath UI", () => {
   });
 
   test("shows error if route name is empty on submit", async () => {
-    render(<CreatePath />);
+    render(
+      <Provider store={store}>
+        <CreatePath />
+      </Provider>
+    );
     fireEvent.click(screen.getByText(/Preview JSON/i));
     expect(await screen.findByText(/Route name is required/i)).toBeInTheDocument();
   });
 
   test("shows error if less than 2 waypoints on submit", async () => {
-    render(<CreatePath />);
+    render(
+      <Provider store={store}>
+        <CreatePath />
+      </Provider>
+    );
     fireEvent.change(screen.getByLabelText(/Route name/i), { target: { value: "Test Route" } });
     fireEvent.click(screen.getByText(/Preview JSON/i));
     expect(await screen.findByText(/At least 2 waypoints are required/i)).toBeInTheDocument();
@@ -62,7 +76,11 @@ describe("CreatePath validation", () => {
 import { fetchPost } from "../../utils/api";
 describe("CreatePath API", () => {
   test("calls fetchPost with correct payload on create", async () => {
-    render(<CreatePath />);
+    render(
+      <Provider store={store}>
+        <CreatePath />
+      </Provider>
+    );
     fireEvent.change(screen.getByLabelText(/Route name/i), { target: { value: "Test Route" } });
     // Add two waypoints: not possible here, so just check the mock
     await waitFor(() => {
