@@ -14,12 +14,12 @@ function MapWithRoute({ waypoints, profile }) {
       center={formattedWaypoints[0]?.position || [0,0]}
       zoom={13}
       scrollWheelZoom={false}
-      style={{ height: "100%", width: "100%", background: "#18181b" }}
+      style={{ height: "100%", width: "100%", background: "#fff" }}
       attributionControl={false}
     >
       <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution="&copy; OpenStreetMap contributors"
+        url="https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png"
+        attribution="&copy; Stadia Maps, &copy; OpenMapTiles &copy; OpenStreetMap contributors"
       />
       <WaypointMarkers waypoints={formattedWaypoints} setWaypoints={() => {}} />
       <RouteBetweenWaypoints waypoints={formattedWaypoints} profile={profile} scenic={false} />
