@@ -1,7 +1,8 @@
 import { MapContainer, TileLayer } from "react-leaflet";
 import WaypointMarkers from "../components/Paths/WaypointMarkers";
 import RouteBetweenWaypoints from "../components/Paths/RouteBetweenWaypoints";
-import Loading from "../components/UI/Loading";
+import React, { useState, useEffect } from "react";
+import { fetchGet } from "../utils/api";
 
 const th_style = {
   padding: "0.85rem",
@@ -36,9 +37,6 @@ function MapWithRoute({ waypoints, profile }) {
   );
 }
 
-import React, { useState, useEffect } from "react";
-import { fetchGet } from "../utils/api";
-
 function AllPaths() {
   const [paths, setPaths] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -66,8 +64,6 @@ function AllPaths() {
       ids.includes(pathId) ? ids.filter((id) => id !== pathId) : [...ids, pathId]
     );
   };
-
-  if (loading) return <Loading classNames="w-[900px]" />;
 
   return (
     <div
