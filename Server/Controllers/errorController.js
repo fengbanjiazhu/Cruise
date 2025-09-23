@@ -60,7 +60,11 @@ export default (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
 
-  let error = { ...err, name: err?.name, message: err.message };
+  let error = {
+    ...err,
+    name: err?.name || "Error",
+    message: err.message || "Unknown error",
+  };
 
   // Regular Mongo Validation Error
   if (error?.name === "ValidationError") error = handleValidationError(error);

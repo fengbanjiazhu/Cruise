@@ -8,11 +8,12 @@
     "start": "vite Client/",
     "server": "nodemon Server/server.js",
     "server-prod": "node Server/server.js",
-    "test-fe": "vitest",
-    "build": "vite build",
+    "build": "vite build Client/",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "jest"
+    "test-fe": "jest Client/src/_TEST/_UnitTest --config jest.fe.config.cjs",
+    "test-be": "jest Server/_TEST --config jest.be.config.cjs",
+    "inte-test": "vitest Client/src/_TEST/_IntegrationTest"
   },
   "dependencies": {
     "@radix-ui/react-aspect-ratio": "^1.1.7",
@@ -60,6 +61,7 @@
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react": "^5.0.0",
     "autoprefixer": "^10.4.21",
+    "babel-jest": "^30.1.2",
     "eslint": "^9.33.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
