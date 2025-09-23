@@ -102,5 +102,25 @@ export const updateOnePath = async (req, res, next) => {
 };
 export const getOnePath = getOne(Path);
 export const getAllPaths = getAll(Path);
+export const deleteOnePath = async (req, res, next) => {
+  try {
+    const doc = await Path.findByIdAndDelete(req.params.id);
+    if (!doc) {
+      return res.status(404).json({
+        status: "fail",
+        message: "No path found with that ID"
+      });
+    }
+    res.status(204).json({
+      status: "success",
+      data: null
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: "fail",
+      message: err.message || "Delete failed"
+    });
+  }
+};
 
 

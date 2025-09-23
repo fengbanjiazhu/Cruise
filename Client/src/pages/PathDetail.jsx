@@ -206,7 +206,24 @@ function PathDetail() {
                   letterSpacing: '0.01em',
                   transition: 'background 0.2s, color 0.2s, border 0.2s',
                 }}
-                onClick={() => {/* TODO: handle delete path */}}
+                onClick={async () => {
+                  if (window.confirm('Are you sure you want to delete this path? This action cannot be undone.')) {
+                    try {
+                      const res = await fetch(`/api/path/${pathID}`, {
+                        method: 'DELETE',
+                      });
+                      if (!res.ok) {
+                        const err = await res.json();
+                        alert('Failed to delete path: ' + (err.errors ? err.errors.join(', ') : err.message));
+                      } else {
+                        alert('Path deleted successfully!');
+                        window.location.href = '/allpaths';
+                      }
+                    } catch (err) {
+                      alert('Error deleting path: ' + err.message);
+                    }
+                  }
+                }}
                 aria-label="Delete Path"
               >
                 Delete
