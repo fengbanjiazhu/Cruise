@@ -11,11 +11,11 @@ pool:
 
 variables:
   NODE_ENV: 'production'
-  JWT_SECRET: $(JWT_SECRET)
+  JWT_SECRET: $(jwt)
   JWT_EXPIRES_IN: '14d'
   JWT_COOKIE_EXPIRES_IN: 14
-  DATABASE: $(DATABASE)
-  DATABASE_PASSWORD: $(DATABASE_PASSWORD)
+  DATABASE: $(db)
+  DATABASE_PASSWORD: $(dbpass)
 
 steps:
 - task: NodeTool@0
