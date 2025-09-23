@@ -1,3 +1,31 @@
+import { MapContainer, TileLayer } from "react-leaflet";
+import WaypointMarkers from "../components/Paths/WaypointMarkers";
+import RouteBetweenWaypoints from "../components/Paths/RouteBetweenWaypoints";
+
+function MapWithRoute({ waypoints, profile }) {
+  // Convert waypoints to expected format for WaypointMarkers/RouteBetweenWaypoints
+  const formattedWaypoints = waypoints.map((wp, idx) => ({
+    id: wp.id || idx,
+    position: [wp.lat, wp.lng],
+    label: wp.label || `Waypoint ${idx + 1}`,
+  }));
+  return (
+    <MapContainer
+      center={formattedWaypoints[0]?.position || [0,0]}
+      zoom={13}
+      scrollWheelZoom={false}
+      style={{ height: "100%", width: "100%", background: "#18181b" }}
+      attributionControl={false}
+    >
+      <TileLayer
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution="&copy; OpenStreetMap contributors"
+      />
+      <WaypointMarkers waypoints={formattedWaypoints} setWaypoints={() => {}} />
+      <RouteBetweenWaypoints waypoints={formattedWaypoints} profile={profile} scenic={false} />
+    </MapContainer>
+  );
+}
 
 import React, { useState, useEffect } from "react";
 import { fetchGet } from "../utils/api";
@@ -6,8 +34,7 @@ import { fetchGet } from "../utils/api";
     const [paths, setPaths] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [slideoverOpen, setSlideoverOpen] = useState(false);
-    const [selectedPath, setSelectedPath] = useState(null);
+  const [openPathIds, setOpenPathIds] = useState([]);
 
     useEffect(() => {
       async function fetchPaths() {
@@ -25,95 +52,157 @@ import { fetchGet } from "../utils/api";
       fetchPaths();
     }, []);
 
-    const handleOpenSlideover = (path) => {
-      setSelectedPath(path);
-      setSlideoverOpen(true);
-    };
-    const handleCloseSlideover = () => {
-      setSlideoverOpen(false);
-      setSelectedPath(null);
+    const handleTogglePath = (pathId) => {
+      setOpenPathIds((ids) =>
+        ids.includes(pathId) ? ids.filter((id) => id !== pathId) : [...ids, pathId]
+      );
     };
 
     return (
-      <div>
-        <h1>User Created Paths</h1>
-        <table>
-          <thead>
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        width: '100%',
+        minHeight: '100vh',
+        background: 'linear-gradient(180deg,#101014 0%,#18181b 100%)',
+      }}>
+        <h1
+          style={{
+            fontSize: '2.6rem',
+            fontWeight: 800,
+            letterSpacing: '-0.02em',
+            color: '#fff',
+            marginTop: '2.5rem',
+            marginBottom: '1.5rem',
+            textAlign: 'center',
+            textShadow: '0 2px 12px #18181b',
+          }}
+        >
+          User Created Paths
+        </h1>
+        <table style={{
+          width: '100%',
+          maxWidth: '1100px',
+          borderCollapse: 'separate',
+          borderSpacing: 0,
+          borderRadius: '1rem',
+          overflow: 'hidden',
+          boxShadow: '0 2px 24px 0 rgba(0,0,0,0.32)',
+          background: 'rgba(24,24,27,0.98)',
+          marginTop: '0.5rem',
+          color: '#e5e7eb',
+          border: '1px solid #232326',
+        }}>
+          <thead style={{background: 'linear-gradient(90deg,#232326 0%,#18181b 100%)', color: '#a5b4fc'}}>
             <tr>
-              <th>Name</th>
-              <th>Profile</th>
-              <th>Description</th>
-              <th>Duration</th>
-              <th>Creator</th>
-              <th></th>
+              <th style={{padding: '1rem', fontWeight: 700, textAlign: 'left', letterSpacing: '0.01em'}}>Name</th>
+              <th style={{padding: '1rem', fontWeight: 700, textAlign: 'left', letterSpacing: '0.01em'}}>Profile</th>
+              <th style={{padding: '1rem', fontWeight: 700, textAlign: 'left', letterSpacing: '0.01em'}}>Description</th>
+              <th style={{padding: '1rem', fontWeight: 700, textAlign: 'left', letterSpacing: '0.01em'}}>Duration</th>
+              <th style={{padding: '1rem', fontWeight: 700, textAlign: 'left', letterSpacing: '0.01em'}}>Creator</th>
+              <th style={{padding: '1rem'}}></th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={6}>Loading paths…</td></tr>
+              <tr><td colSpan={6} style={{padding: '2rem', textAlign: 'center', color: '#fff'}}>Loading paths…</td></tr>
             ) : error ? (
-              <tr><td colSpan={6}>{error}</td></tr>
+              <tr><td colSpan={6} style={{padding: '2rem', textAlign: 'center', color: '#fff'}}>{error}</td></tr>
             ) : paths.length === 0 ? (
-              <tr><td colSpan={6}>No paths found.</td></tr>
+              <tr><td colSpan={6} style={{padding: '2rem', textAlign: 'center', color: '#fff'}}>No paths found.</td></tr>
             ) : (
-              paths.map((path) => (
-                <tr key={path._id}>
-                  <td>{path.name}</td>
-                  <td>{path.profile?.charAt(0).toUpperCase() + path.profile?.slice(1)}</td>
-                  <td>{path.description || "No description."}</td>
-                  <td>{path.duration} min</td>
-                  <td>{path.creator?.name || "Unknown"}</td>
-                  <td>
-                    <button onClick={() => handleOpenSlideover(path)}>
-                      Open Path
-                    </button>
-                  </td>
-                </tr>
+              paths.map((path, idx) => (
+                <React.Fragment key={path._id}>
+                  <tr style={{background: idx % 2 === 0 ? 'rgba(35,35,38,0.98)' : 'rgba(24,24,27,0.98)', transition: 'background 0.2s'}} onMouseEnter={e => e.currentTarget.style.background='#323248'} onMouseLeave={e => e.currentTarget.style.background=idx % 2 === 0 ? 'rgba(35,35,38,0.98)' : 'rgba(24,24,27,0.98)'}>
+                    <td style={{padding: '1rem', fontWeight: 500}}>{path.name}</td>
+                    <td style={{padding: '1rem'}}>{path.profile?.charAt(0).toUpperCase() + path.profile?.slice(1)}</td>
+                    <td style={{padding: '1rem'}}>{path.description || "No description."}</td>
+                    <td style={{padding: '1rem'}}>{path.duration} min</td>
+                    <td style={{padding: '1rem'}}>{path.creator?.name || "Unknown"}</td>
+                    <td style={{padding: '1rem'}}>
+                      <button onClick={() => handleTogglePath(path._id)} style={{padding: '0.5rem 1.2rem', borderRadius: '0.75rem', background: openPathIds.includes(path._id) ? '#444' : '#222', color: '#fff', fontWeight: 600, border: 'none', cursor: 'pointer', boxShadow: '0 1px 4px 0 rgba(0,0,0,0.18)'}}>
+                        {openPathIds.includes(path._id) ? 'Close preview' : 'Quick view'}
+                      </button>
+                    </td>
+                  </tr>
+                  {openPathIds.includes(path._id) && (
+                    <tr>
+                      <td colSpan={6} style={{background: 'linear-gradient(90deg,#232326 0%,#18181b 100%)', padding: '0', borderRadius: '0 0 1rem 1rem', borderTop: '1px solid #232326'}}>
+                        {/* Only show the map for quick view */}
+                        {Array.isArray(path.waypoints) && path.waypoints.length >= 2 && (
+                          <div
+                            style={{
+                              minHeight: '220px',
+                              height: 'clamp(220px, 40vw, 340px)',
+                              width: '100%',
+                              borderRadius: '1rem',
+                              overflow: 'hidden',
+                              boxShadow: '0 2px 24px 0 rgba(0,0,0,0.32)',
+                              margin: '0',
+                              position: 'relative',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              background: 'rgba(24,24,27,0.98)',
+                              padding: '0.5rem',
+                              border: '1px solid #232326',
+                            }}
+                          >
+                            <MapWithRoute waypoints={path.waypoints} profile={path.profile} />
+                            <div
+                              style={{
+                                position: 'absolute',
+                                top: '1rem',
+                                right: '1rem',
+                                zIndex: 1000,
+                                pointerEvents: 'auto',
+                                display: 'flex',
+                                flexDirection: 'row',
+                                gap: '0.5rem',
+                              }}
+                            >
+                              <a
+                                href={`/path/${path._id}`}
+                                style={{
+                                  padding: '0.5rem 1.2rem',
+                                  borderRadius: '0.75rem',
+                                  background: 'linear-gradient(90deg,#6366f1 0%,#60a5fa 100%)',
+                                  color: '#fff',
+                                  fontWeight: 600,
+                                  border: 'none',
+                                  textDecoration: 'none',
+                                  boxShadow: '0 1px 8px 0 rgba(99,102,241,0.18)',
+                                  fontSize: '1rem',
+                                  position: 'relative',
+                                  zIndex: 1001,
+                                  transition: 'background 0.2s, box-shadow 0.2s',
+                                  cursor: 'pointer',
+                                  outline: 'none',
+                                }}
+                                onMouseOver={e => {
+                                  e.currentTarget.style.background = 'linear-gradient(90deg,#60a5fa 0%,#6366f1 100%)';
+                                  e.currentTarget.style.boxShadow = '0 2px 12px 0 rgba(99,102,241,0.28)';
+                                }}
+                                onMouseOut={e => {
+                                  e.currentTarget.style.background = 'linear-gradient(90deg,#6366f1 0%,#60a5fa 100%)';
+                                  e.currentTarget.style.boxShadow = '0 1px 8px 0 rgba(99,102,241,0.18)';
+                                }}
+                                tabIndex={0}
+                              >
+                                Explore Full Path
+                              </a>
+                            </div>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
               ))
             )}
           </tbody>
         </table>
-
-        {/* Slideover Overlay */}
-        {slideoverOpen && (
-          <div onClick={handleCloseSlideover} style={{position: "fixed", inset: 0, zIndex: 9998, background: "rgba(0,0,0,0.1)"}} />
-        )}
-
-        {/* Slideover Panel */}
-        {slideoverOpen && (
-          <div style={{position: "fixed", top: 0, right: 0, height: "100%", width: 420, background: "#fff", zIndex: 9999, borderRadius: "1rem 0 0 1rem", boxShadow: "-4px 0 24px rgba(0,0,0,0.12)", display: "flex", flexDirection: "column"}}>
-            <div style={{display: "flex", alignItems: "center", justifyContent: "space-between", padding: "2rem 2rem 1rem 2rem", borderBottom: "1px solid #eee", borderRadius: "1rem 1rem 0 0"}}>
-              <h2 style={{fontSize: "2rem", fontWeight: "bold"}}>{selectedPath?.name}</h2>
-              <button onClick={handleCloseSlideover} aria-label="Close" style={{fontSize: "2rem", fontWeight: "bold", border: "none", background: "#eee", borderRadius: "50%", width: 40, height: 40, cursor: "pointer"}}>
-                ×
-              </button>
-            </div>
-            <div style={{padding: "2rem", overflowY: "auto", flex: 1}}>
-              {selectedPath && (
-                <>
-                  <div style={{marginBottom: "1.5rem"}}>
-                    <span style={{padding: "0.5rem 1rem", borderRadius: "0.5rem", fontWeight: "bold", background: "#eee"}}>
-                      {selectedPath.profile.charAt(0).toUpperCase() + selectedPath.profile.slice(1)}
-                    </span>
-                  </div>
-                  <p style={{marginBottom: "1.5rem"}}>{selectedPath.description || "No description."}</p>
-                  <div style={{marginBottom: "1.5rem"}}>
-                    <span style={{fontSize: "0.8rem", color: "#888"}}>Duration</span>
-                    <div style={{fontWeight: "bold"}}>{selectedPath.duration} min</div>
-                  </div>
-                  <div style={{marginBottom: "1.5rem"}}>
-                    <span style={{fontSize: "0.8rem", color: "#888"}}>Waypoints</span>
-                    <div style={{fontWeight: "bold"}}>{Array.isArray(selectedPath.waypoints) ? selectedPath.waypoints.length : 0}</div>
-                  </div>
-                  <div style={{marginBottom: "1.5rem"}}>
-                    <span style={{fontSize: "0.8rem", color: "#888"}}>Creator</span>
-                    <div style={{fontWeight: "bold"}}>{selectedPath.creator?.name || "Unknown"}</div>
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-        )}
       </div>
     );
   }
