@@ -9,30 +9,6 @@ export const API_ROUTES = {
     getUser: "user/getUser",
     updateUser: "user/updateUser",
   },
-  // new supplier route
-  supplier: {
-    create: "supplier/",
-    getAll: "supplier/",
-    getById: (id) => `supplier/${id}`, // Look up item id when delte from data base | Id = dynamic handelling (id) => `supplier/${id}`
-    update: (id) => `supplier/${id}`, //
-    delete: (id) => `supplier/${id}`,
-  },
-  payment: {
-    getPaymentCards: "payment/card/",
-    updatePaymentCard: "payment/card/",
-    removePaymentCard: "payment/card/",
-
-    getPaymentHistory: "payment/history/",
-    addPayment: "payment/addPayment",
-  },
-  order: {
-    getOrderHistory: "order/history",
-    getOrderbyId: (id) => `order/${id}`,
-  },
-  checkout: {
-    checkout: "checkout",
-    guest: "checkout/guest",
-  },
 };
 
 export const urlMaker = (endpoint) => {
