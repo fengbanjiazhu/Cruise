@@ -28,8 +28,16 @@ steps:
   displayName: 'Install dependencies'
 
 - script: |
-    # npm run test
-  displayName: 'Run tests'
+    npm run test-be
+  displayName: 'Run backend unit tests'
+
+- script: |
+    npm run test-fe
+  displayName: 'Run frontend unit tests'
+
+# - script: |
+#     npm run inte-test
+#   displayName: 'Run integration tests'
 
 - script: |
     npm run build
