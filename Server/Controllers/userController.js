@@ -1,4 +1,4 @@
-import User from "../models/userModel.js";
+import User from "../Models/userModel.js";
 import catchAsync from "../utils/catchAsync.js";
 import { updateOne, getOne, getAll, deleteOne } from "./centralController.js";
 

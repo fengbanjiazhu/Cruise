@@ -47,5 +47,6 @@ export const createOnePath = async (req, res, next) => {
 };
 
 export const getOnePath = getOne(Path);
+export const getAllPaths = getAll(Path);
 
 

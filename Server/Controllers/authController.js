@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import catchAsync from "../utils/catchAsync.js";
 import cusError from "../utils/cusError.js";
 
-import User from "../models/userModel.js";
+import User from "../Models/userModel.js";
 
 export const hashPassword = async function (password) {
   return await bcrypt.hash(password, 12);
