@@ -41,7 +41,7 @@ describe("AllPaths", () => {
     render(
       <Provider store={store}>
         <MemoryRouter>
-          <PathDetail />
+          <AllPaths />
         </MemoryRouter>
       </Provider>
     );
@@ -54,7 +54,7 @@ describe("AllPaths", () => {
     render(
       <Provider store={store}>
         <MemoryRouter>
-          <PathDetail />
+          <AllPaths />
         </MemoryRouter>
       </Provider>
     );

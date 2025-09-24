@@ -1,7 +1,8 @@
 import React from "react";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import PathDetail from "../../pages/PathDetail";
+import PathDetail from "../../pages/PathDetail.jsx";
+
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import userInfoReducer from "../../store/slices/userInfoSlice";
@@ -128,7 +129,7 @@ describe("PathDetail UI", () => {
     // Mock window.confirm to always return true
     window.confirm = jest.fn(() => true);
     // Mock window.alert to silence jsdom errors
-    window.alert = jest.fn();
+    // window.alert = jest.fn();
     // Mock window.location.reload to silence jsdom errors
     delete window.location;
     // window.location = { reload: jest.fn() };

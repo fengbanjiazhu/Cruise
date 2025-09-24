@@ -256,17 +256,17 @@ function PathDetail() {
                       });
                       if (!res.ok) {
                         const err = await res.json();
-                        alert(
+                        toast.error(
                           "Failed to delete path: " +
                             (err.errors ? err.errors.join(", ") : err.message)
                         );
                       } else {
-                        alert("Path deleted successfully!");
+                        toast.success("Path deleted successfully!");
                         navigate("/allpaths");
                         // window.location.href = "/allpaths";
                       }
                     } catch (err) {
-                      alert("Error deleting path: " + err.message);
+                      toast.error("Error deleting path: " + err.message);
                     }
                   }
                 }}
@@ -767,18 +767,18 @@ function PathDetail() {
                       });
                       if (!res.ok) {
                         const err = await res.json();
-                        alert(
+                        toast.error(
                           "Failed to update path: " +
                             (err.errors ? err.errors.join(", ") : err.message)
                         );
                       } else {
                         const raw = await res.json();
-                        alert("Path updated successfully!");
+                        toast.success("Path updated successfully!");
                         setShowEditModal(false);
                         setPath(raw.data.data);
                       }
                     } catch (err) {
-                      alert("Error updating path: " + err.message);
+                      toast.error("Error updating path: " + err.message);
                     }
                   }}
                 >
