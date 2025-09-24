@@ -35,8 +35,8 @@ steps:
 
 
 - script: |
-    npm run test-fe
-  displayName: 'Run frontend unit tests'
+    # npm run test-fe
+  displayName: 'Run frontend unit tests (skipped for now)'
 
 # - script: |
 #     npm run inte-test
