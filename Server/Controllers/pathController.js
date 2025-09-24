@@ -48,6 +48,7 @@ export const createOnePath = async (req, res, next) => {
 
 export const updateOnePath = async (req, res, next) => {
   const errors = [];
+  const user = req.user;
   const { name, locations, profile, waypoints, distance, duration } = req.body;
 
   if (!name || typeof name !== "string" || name.trim().length < 8) {
@@ -77,16 +78,30 @@ export const updateOnePath = async (req, res, next) => {
   }
 
   try {
+    const pathDoc = await Path.findById(req.params.id);
+
+    if (!pathDoc) {
+      return res.status(404).json({ status: "fail", message: "No data found with that ID" });
+    }
+
+    if (pathDoc.creator.toString() !== user._id.toString()) {
+      return res
+        .status(403)
+        .json({ status: "fail", message: "You are not allowed to update this path" });
+    }
+
     const doc = await Path.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
     });
+
     if (!doc) {
       return res.status(404).json({
         status: "fail",
-        message: "No data found with that ID"
+        message: "No data found with that ID",
       });
     }
+
     res.status(200).json({
       status: "success",
       data: {
@@ -96,31 +111,50 @@ export const updateOnePath = async (req, res, next) => {
   } catch (err) {
     res.status(400).json({
       status: "fail",
-      message: err.message || "Update failed"
+      message: err.message || "Update failed",
     });
   }
 };
 export const getOnePath = getOne(Path);
-export const getAllPaths = getAll(Path);
+export const getAllPaths = getAll(Path, {
+  path: "creator",
+  select: "name",
+});
 export const deleteOnePath = async (req, res, next) => {
+  const user = req.user;
+
   try {
+    const pathDoc = await Path.findById(req.params.id);
+
+    if (!pathDoc) {
+      return res.status(404).json({ status: "fail", message: "Path not found" });
+    }
+
+    if (pathDoc.creator.toString() !== user._id.toString() && user.role !== "admin") {
+      return res
+        .status(403)
+        .json({ status: "fail", message: "You are not allowed to delete this path" });
+    }
+
     const doc = await Path.findByIdAndDelete(req.params.id);
+
     if (!doc) {
       return res.status(404).json({
         status: "fail",
-        message: "No path found with that ID"
+        message: "No path found with that ID",
       });
     }
-    res.status(204).json({
+
+    res.status(200).json({
       status: "success",
-      data: null
+      data: {
+        data: doc,
+      },
     });
   } catch (err) {
     res.status(400).json({
       status: "fail",
-      message: err.message || "Delete failed"
+      message: err.message || "Delete failed",
     });
   }
 };
-
-
