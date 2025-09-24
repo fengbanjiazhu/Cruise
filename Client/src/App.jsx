@@ -4,7 +4,7 @@ import { Toaster } from "react-hot-toast";
 import "./index.css";
 import "./App.css";
 
-import Layout from "./components/UI/Layout";
+import Layout from "./components/ui/Layout";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import CreatePath from "./pages/CreatePath";
