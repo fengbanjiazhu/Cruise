@@ -3,6 +3,18 @@ import { render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import AllPaths from "../../pages/AllPaths";
 
+import { Provider } from "react-redux";
+import { configureStore } from "@reduxjs/toolkit";
+import userInfoReducer from "../../store/slices/userInfoSlice";
+import { MemoryRouter } from "react-router-dom";
+
+const store = configureStore({
+  reducer: { userInfo: userInfoReducer },
+  preloadedState: {
+    userInfo: { user: { _id: "u1" }, token: null, isLoggedIn: true, loadingUser: false },
+  },
+});
+
 // Mock fetchGet utility
 jest.mock("../../utils/api", () => ({
   fetchGet: jest.fn(),
@@ -26,14 +38,26 @@ describe("AllPaths", () => {
         ],
       },
     });
-    render(<AllPaths />);
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <AllPaths />
+        </MemoryRouter>
+      </Provider>
+    );
     expect(screen.getByText(/Loading paths/i)).toBeInTheDocument();
     await waitFor(() => expect(screen.getByText("Path 1")).toBeInTheDocument());
   });
 
   it("shows error on API failure", async () => {
     fetchGet.mockRejectedValue(new Error("API error"));
-    render(<AllPaths />);
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <AllPaths />
+        </MemoryRouter>
+      </Provider>
+    );
     await waitFor(() => expect(screen.getByText(/API error/i)).toBeInTheDocument());
   });
 });
