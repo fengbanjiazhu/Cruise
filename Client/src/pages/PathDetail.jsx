@@ -7,9 +7,10 @@ import RouteBetweenWaypoints from "../components/Paths/RouteBetweenWaypoints";
 import { fetchGet } from "../utils/api";
 import { FaAngleRight } from "react-icons/fa";
 import { toast } from "react-hot-toast";
+import { fetchPost, optionMaker } from "../utils/api";
 
 function PathDetail() {
-  const currentUser = useSelector((state) => state.userInfo.user);
+  const { user: currentUser, token } = useSelector((state) => state.userInfo);
   const { pathID } = useParams();
   const [path, setPath] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -251,21 +252,23 @@ function PathDetail() {
                     )
                   ) {
                     try {
-                      const res = await fetch(`/api/path/${pathID}`, {
-                        method: "DELETE",
-                      });
-                      if (!res.ok) {
-                        const err = await res.json();
-                        toast.error(
-                          "Failed to delete path: " +
-                            (err.errors ? err.errors.join(", ") : err.message)
-                        );
-                      } else {
-                        toast.success("Path deleted successfully!");
-                        navigate("/allpaths");
-                        // window.location.href = "/allpaths";
-                      }
+                      // const res = await fetch(`/api/path/${pathID}`, {
+                      //   method: "DELETE",
+                      // });
+                      await fetchPost(`path/${pathID}`, optionMaker({ pathID }, "DELETE", token));
+                      // if (!res.ok) {
+                      //   const err = await res.json();
+                      //   toast.error(
+                      //     "Failed to delete path: " +
+                      //       (err.errors ? err.errors.join(", ") : err.message)
+                      //   );
+                      // } else {
+                      toast.success("Path deleted successfully!");
+                      navigate("/allpaths");
+                      // window.location.href = "/allpaths";
+                      // }
                     } catch (err) {
+                      console.log(err);
                       toast.error("Error deleting path: " + err.message);
                     }
                   }
@@ -758,25 +761,22 @@ function PathDetail() {
                     };
                     console.log("PATCH payload:", payload);
                     try {
-                      const res = await fetch(`/api/path/${pathID}`, {
-                        method: "PATCH",
-                        headers: {
-                          "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify(payload),
-                      });
-                      if (!res.ok) {
-                        const err = await res.json();
-                        toast.error(
-                          "Failed to update path: " +
-                            (err.errors ? err.errors.join(", ") : err.message)
-                        );
-                      } else {
-                        const raw = await res.json();
-                        toast.success("Path updated successfully!");
-                        setShowEditModal(false);
-                        setPath(raw.data.data);
-                      }
+                      const res = await fetchPost(
+                        `path/${pathID}`,
+                        optionMaker({ ...payload }, "PATCH", token)
+                      );
+
+                      // if (!res.ok) {
+                      //   const err = await res.json();
+                      //   toast.error(
+                      //     "Failed to update path: " +
+                      //       (err.errors ? err.errors.join(", ") : err.message)
+                      //   );
+                      // } else {
+                      toast.success("Path updated successfully!");
+                      setShowEditModal(false);
+                      setPath(res.data.data);
+                      // }
                     } catch (err) {
                       toast.error("Error updating path: " + err.message);
                     }

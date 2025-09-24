@@ -13,7 +13,8 @@
     "preview": "vite preview",
     "test-fe": "jest Client/src/_TEST/_UnitTest --config jest.fe.config.cjs",
     "test-be": "jest Server/_TEST --config jest.be.config.cjs",
-    "inte-test": "vitest Client/src/_TEST/_IntegrationTest"
+    "inte-test": "vitest Client/src/_TEST/_IntegrationTest",
+    "vtest-fe": "vitest Client/src/_TEST/_UnitTest"
   },
   "dependencies": {
     "@radix-ui/react-aspect-ratio": "^1.1.7",
