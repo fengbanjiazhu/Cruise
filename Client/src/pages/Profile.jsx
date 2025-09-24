@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
-import Card from "../components/UI/OldCard";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Card from "../components/ui/OldCard";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import FavList from "../components/Profiles/FavList";
 
 function Profile() {
@@ -18,7 +18,6 @@ function Profile() {
 
         <Avatar className="mb-10">
           <AvatarImage src="https://github.com/shadcn.png" />
-          <AvatarFallback>CN</AvatarFallback>
         </Avatar>
 
         <p>Welcome back, {name}</p>
