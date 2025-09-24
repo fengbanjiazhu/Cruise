@@ -5,6 +5,7 @@ import PathDetail from "../../pages/PathDetail";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import userInfoReducer from "../../store/slices/userInfoSlice";
+import { MemoryRouter } from "react-router-dom";
 
 // Define store for all tests
 const store = configureStore({
@@ -52,7 +53,9 @@ describe("PathDetail UI", () => {
   test("renders loading, then path details", async () => {
     render(
       <Provider store={store}>
-        <PathDetail />
+        <MemoryRouter>
+          <PathDetail />
+        </MemoryRouter>
       </Provider>
     );
     expect(screen.getByText(/Loading path/i)).toBeInTheDocument();
@@ -74,7 +77,9 @@ describe("PathDetail UI", () => {
     fetchGet.mockImplementationOnce(() => Promise.reject(new Error("Fetch error")));
     render(
       <Provider store={store}>
-        <PathDetail />
+        <MemoryRouter>
+          <PathDetail />
+        </MemoryRouter>
       </Provider>
     );
     await waitFor(() => expect(screen.getByText(/Fetch error/i)).toBeInTheDocument());
@@ -90,7 +95,9 @@ describe("PathDetail UI", () => {
     });
     render(
       <Provider store={store}>
-        <PathDetail />
+        <MemoryRouter>
+          <PathDetail />
+        </MemoryRouter>
       </Provider>
     );
     // Open edit modal
@@ -124,10 +131,12 @@ describe("PathDetail UI", () => {
     window.alert = jest.fn();
     // Mock window.location.reload to silence jsdom errors
     delete window.location;
-    window.location = { reload: jest.fn() };
+    // window.location = { reload: jest.fn() };
     render(
       <Provider store={store}>
-        <PathDetail />
+        <MemoryRouter>
+          <PathDetail />
+        </MemoryRouter>
       </Provider>
     );
     // Click delete

@@ -3,6 +3,9 @@ import WaypointMarkers from "../components/Paths/WaypointMarkers";
 import RouteBetweenWaypoints from "../components/Paths/RouteBetweenWaypoints";
 import React, { useState, useEffect } from "react";
 import { fetchGet } from "../utils/api";
+import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import SavePathButton from "../components/Paths/SavePathButton";
 
 const th_style = {
   padding: "0.85rem",
@@ -11,7 +14,10 @@ const th_style = {
   letterSpacing: "0.01em",
 };
 
+const td_style = { padding: "0.85rem", color: "#555" };
+
 const tr_style = { padding: "2rem", textAlign: "center", color: "#fff" };
+
 function MapWithRoute({ waypoints, profile }) {
   // Convert waypoints to expected format for WaypointMarkers/RouteBetweenWaypoints
   const formattedWaypoints = waypoints.map((wp, idx) => ({
@@ -42,6 +48,9 @@ function AllPaths() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [openPathIds, setOpenPathIds] = useState([]);
+  const { user } = useSelector((state) => state.userInfo);
+
+  const saved = user.savedList?.map((path) => path._id);
 
   useEffect(() => {
     async function fetchPaths() {
@@ -65,55 +74,23 @@ function AllPaths() {
     );
   };
 
+  const isSaved = (pathId) => saved.includes(pathId);
+
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        width: "100%",
-        minHeight: "100vh",
-        background: "#f7f7fa",
-        padding: "0 1rem",
-      }}
-    >
-      <h1
-        style={{
-          fontSize: "2.2rem",
-          fontWeight: 700,
-          letterSpacing: "-0.01em",
-          color: "#222",
-          marginTop: "2.5rem",
-          marginBottom: "1.5rem",
-          textAlign: "center",
-          lineHeight: 1.2,
-        }}
-      >
+    <div className="flex flex-col items-center w-full min-h-screen bg-[#f7f7fa] px-4">
+      <h1 className="text-[2.2rem] font-bold tracking-[-0.01em] text-[#222] mt-10 mb-6 text-center leading-[1.2]">
         User Created Paths
       </h1>
-      <table
-        style={{
-          width: "100%",
-          maxWidth: "900px",
-          borderCollapse: "separate",
-          borderSpacing: 0,
-          borderRadius: "0.75rem",
-          overflow: "hidden",
-          boxShadow: "0 2px 12px 0 rgba(0,0,0,0.06)",
-          background: "#fff",
-          marginTop: "0.5rem",
-          color: "#222",
-          border: "1px solid #ececf0",
-        }}
-      >
-        <thead style={{ background: "#f7f7fa", color: "#555", borderBottom: "1px solid #ececf0" }}>
+      <table className="w-full max-w-[900px] border-separate border-spacing-0 rounded-xl overflow-hidden shadow-[0_2px_12px_0_rgba(0,0,0,0.06)] bg-white mt-2 text-[#222] border border-[#ececf0]">
+        <thead className="bg-[#f7f7fa] text-[#555] border-b border-[#ececf0]">
           <tr>
             <th style={th_style}>Name</th>
             <th style={th_style}>Profile</th>
             <th style={th_style}>Description</th>
             <th style={th_style}>Duration</th>
             <th style={th_style}>Creator</th>
-            <th style={{ padding: "0.85rem" }}></th>
+            <th className="p-[0.85rem]"></th>
+            <th className="p-[0.85rem]"></th>
           </tr>
         </thead>
         <tbody>
@@ -148,19 +125,13 @@ function AllPaths() {
                     (e.currentTarget.style.background = idx % 2 === 0 ? "#f7f7fa" : "#fff")
                   }
                 >
-                  <td style={{ padding: "0.85rem", fontWeight: 500, color: "#222" }}>
-                    {path.name}
-                  </td>
-                  <td style={{ padding: "0.85rem", color: "#555" }}>
+                  <td className="p-[0.85rem] font-medium text-[#222]">{path.name}</td>
+                  <td style={td_style}>
                     {path.profile?.charAt(0).toUpperCase() + path.profile?.slice(1)}
                   </td>
-                  <td style={{ padding: "0.85rem", color: "#555" }}>
-                    {path.description || "No description."}
-                  </td>
-                  <td style={{ padding: "0.85rem", color: "#555" }}>{path.duration} min</td>
-                  <td style={{ padding: "0.85rem", color: "#555" }}>
-                    {path.creator?.name || "Unknown"}
-                  </td>
+                  <td style={td_style}>{path.description || "No description."}</td>
+                  <td style={td_style}>{path.duration} min</td>
+                  <td style={td_style}>{path.creator?.name || "Unknown"}</td>
                   <td style={{ padding: "0.85rem" }}>
                     <button
                       onClick={() => handleTogglePath(path._id)}
@@ -180,69 +151,24 @@ function AllPaths() {
                       {openPathIds.includes(path._id) ? "Close preview" : "Quick view"}
                     </button>
                   </td>
+                  <td className="p-[0.85rem]">
+                    <SavePathButton isSaved={isSaved(path._id)} pathId={path._id} />
+                  </td>
                 </tr>
                 {openPathIds.includes(path._id) && (
                   <tr>
                     <td
-                      colSpan={6}
-                      style={{
-                        background: "#f7f7fa",
-                        padding: "0",
-                        borderRadius: "0 0 0.75rem 0.75rem",
-                        borderTop: "1px solid #ececf0",
-                      }}
+                      colSpan={7}
+                      className="bg-[#f7f7fa] p-0 rounded-b-xl border-t border-[#ececf0]"
                     >
                       {/* Only show the map for quick view */}
                       {Array.isArray(path.waypoints) && path.waypoints.length >= 2 && (
-                        <div
-                          style={{
-                            minHeight: "220px",
-                            height: "clamp(220px, 40vw, 340px)",
-                            width: "100%",
-                            borderRadius: "0.75rem",
-                            overflow: "hidden",
-                            boxShadow: "0 2px 12px 0 rgba(0,0,0,0.06)",
-                            margin: "0",
-                            position: "relative",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            background: "#fff",
-                            padding: "0.5rem",
-                            border: "1px solid #ececf0",
-                          }}
-                        >
+                        <div className="min-h-[220px] h-[clamp(220px,40vw,340px)] w-full rounded-xl overflow-hidden shadow-[0_2px_12px_0_rgba(0,0,0,0.06)] m-0 relative flex items-center justify-center bg-white p-2 border border-[#ececf0]">
                           <MapWithRoute waypoints={path.waypoints} profile={path.profile} />
-                          <div
-                            style={{
-                              position: "absolute",
-                              top: "1rem",
-                              right: "1rem",
-                              zIndex: 1000,
-                              pointerEvents: "auto",
-                              display: "flex",
-                              flexDirection: "row",
-                              gap: "0.5rem",
-                            }}
-                          >
-                            <a
-                              href={`/path/${path._id}`}
-                              style={{
-                                padding: "0.5rem 1.2rem",
-                                borderRadius: "0.6rem",
-                                background: "#ececf0",
-                                color: "#222",
-                                fontWeight: 500,
-                                border: "1px solid #ececf0",
-                                textDecoration: "none",
-                                boxShadow: "none",
-                                fontSize: "0.98rem",
-                                position: "relative",
-                                zIndex: 1001,
-                                transition: "background 0.2s, border 0.2s",
-                                cursor: "pointer",
-                                outline: "none",
-                              }}
+                          <div className="absolute top-4 right-4 z-[1000] pointer-events-auto flex flex-row gap-2">
+                            <Link
+                              to={`/path/${path._id}`}
+                              className="px-[1.2rem] py-2.5 rounded-[0.6rem] bg-[#ececf0] text-[#222] font-medium border border-[#ececf0] no-underline shadow-none text-[0.98rem] relative z-[1001] transition-colors duration-200 cursor-pointer outline-none"
                               onMouseOver={(e) => {
                                 e.currentTarget.style.background = "#f7f7fa";
                                 e.currentTarget.style.border = "1px solid #d1d5db";
@@ -254,7 +180,7 @@ function AllPaths() {
                               tabIndex={0}
                             >
                               Explore Full Path
-                            </a>
+                            </Link>
                           </div>
                         </div>
                       )}
