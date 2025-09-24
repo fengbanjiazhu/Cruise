@@ -50,7 +50,7 @@ function AllPaths() {
   const [openPathIds, setOpenPathIds] = useState([]);
   const { user } = useSelector((state) => state.userInfo);
 
-  const saved = user.savedList?.map((path) => path._id) || [];
+  const saved = user?.savedList?.map((path) => path._id) || [];
 
   useEffect(() => {
     async function fetchPaths() {
