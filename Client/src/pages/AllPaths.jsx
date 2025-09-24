@@ -3,9 +3,10 @@ import WaypointMarkers from "../components/Paths/WaypointMarkers";
 import RouteBetweenWaypoints from "../components/Paths/RouteBetweenWaypoints";
 import React, { useState, useEffect } from "react";
 import { fetchGet } from "../utils/api";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import SavePathButton from "../components/Paths/SavePathButton";
+import SearchBar from "../components/Paths/SearchBar";
 
 const th_style = {
   padding: "0.85rem",
@@ -49,6 +50,7 @@ function AllPaths() {
   const [error, setError] = useState(null);
   const [openPathIds, setOpenPathIds] = useState([]);
   const { user } = useSelector((state) => state.userInfo);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const saved = user?.savedList?.map((path) => path._id) || [];
 
@@ -68,6 +70,29 @@ function AllPaths() {
     fetchPaths();
   }, []);
 
+  useEffect(() => {
+    const fetchPaths = async () => {
+      try {
+        let url = "path/";
+        const params = {};
+        for (const [key, value] of searchParams.entries()) {
+          if (value) params[key] = value;
+        }
+        if (Object.keys(params).length) {
+          const queryString = new URLSearchParams(params).toString();
+          url += `?${queryString}`;
+        }
+
+        const res = await fetchGet(url, {});
+        setPaths(res.data.data || []);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchPaths();
+  }, [searchParams]);
+
   const handleTogglePath = (pathId) => {
     setOpenPathIds((ids) =>
       ids.includes(pathId) ? ids.filter((id) => id !== pathId) : [...ids, pathId]
@@ -78,6 +103,9 @@ function AllPaths() {
 
   return (
     <div className="flex flex-col items-center w-full min-h-screen bg-[#f7f7fa] px-4">
+      <div className="fixed top-20 right-10">
+        <SearchBar />
+      </div>
       <h1 className="text-[2.2rem] font-bold tracking-[-0.01em] text-[#222] mt-10 mb-6 text-center leading-[1.2]">
         User Created Paths
       </h1>
