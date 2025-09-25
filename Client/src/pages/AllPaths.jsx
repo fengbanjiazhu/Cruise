@@ -14,7 +14,7 @@ import SavePathButton from "../components/Paths/SavePathButton";
 import SearchBar from "../components/Search/SearchBar";
 
 import NoResult from "../components/Paths/NoResult";
-import Loading from "../components/UI/Loading";
+import Loading from "../components/ui/Loading";
 
 const th_style = {
   padding: "0.85rem",
@@ -25,7 +25,7 @@ const th_style = {
 
 const td_style = { padding: "0.85rem", color: "#555" };
 
-const tr_style = { padding: "2rem", textAlign: "center", color: "#fff" };
+// const tr_style = { padding: "2rem", textAlign: "center", color: "#fff" };
 
 function MapWithRoute({ waypoints, profile }) {
   // Convert waypoints to expected format for WaypointMarkers/RouteBetweenWaypoints
