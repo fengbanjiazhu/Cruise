@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import { API_ROUTES, fetchGet } from "../../../utils/api";
 import ReportPathModal from "./ReportPathModal";
 
@@ -8,10 +9,21 @@ function PathsTab() {
   const [error, setError] = useState(null);
   const [showReportModal, setShowReportModal] = useState(false);
   const [selectedPath, setSelectedPath] = useState(null);
+  
+  // Get the refresh trigger from Redux store
+  const refreshPaths = useSelector((state) => state.admin.refreshPaths);
 
   useEffect(() => {
     fetchPaths();
   }, []);
+
+  // Listen for refresh trigger from Redux store
+  useEffect(() => {
+    if (refreshPaths > 0) {
+      console.log("Paths refresh triggered, fetching updated paths...");
+      fetchPaths();
+    }
+  }, [refreshPaths]);
 
   const fetchPaths = async () => {
     try {

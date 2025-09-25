@@ -1,5 +1,6 @@
 // controllers/incidentController.js
 import Incident from "../Models/incidentModel.js";
+import Path from "../Models/pathModel.js";
 
 export const listIncidents = async (req, res) => {
   try {
@@ -44,6 +45,22 @@ export const updateIncident = async (req, res) => {
       { new: true, runValidators: true }
     );
     if (!item) return res.status(404).json({ message: "Not found" });
+    
+    // If the incident is being approved and it targets a Path, delete the path
+    if (req.body.status === "approved" && item.targetType === "Path") {
+      try {
+        const deletedPath = await Path.findByIdAndDelete(item.targetId);
+        if (deletedPath) {
+          console.log(`Path ${item.targetId} deleted due to approved incident ${item.id}`);
+        } else {
+          console.log(`Path ${item.targetId} not found for deletion`);
+        }
+      } catch (pathError) {
+        console.error("Error deleting path:", pathError);
+        // Don't fail the incident update if path deletion fails
+      }
+    }
+    
     res.json(item);
   } catch (error) {
     console.error("Error updating incident:", error);

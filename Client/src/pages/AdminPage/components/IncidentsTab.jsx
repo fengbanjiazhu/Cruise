@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { triggerPathsRefresh } from "../../../store/slices/adminSlice";
 import Pill from "./Pill";
 import {
   formatDate,
@@ -14,6 +16,7 @@ import {
 } from "../../../utils/api";
 
 function IncidentsTab() {
+  const dispatch = useDispatch();
   const [incidents, setIncidents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -86,6 +89,9 @@ function IncidentsTab() {
 
       // Refresh incidents after update
       fetchIncidents();
+
+      // Trigger paths refresh since a path may have been deleted
+      dispatch(triggerPathsRefresh());
 
       // Show success message
       setTestResponse(`Incident ${incidentId} approved successfully`);
