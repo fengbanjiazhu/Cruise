@@ -1,12 +1,12 @@
-import DurationSetter from "../Search/DurationSetter";
+import DurationSetter from "./DurationSetter";
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 
-import LocationGetter from "../Search/LocationGetter";
+import LocationGetter from "./LocationGetter";
 
-import ProfileSelector from "../Search/ProfileSelector";
+import ProfileSelector from "./ProfileSelector";
 
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
