@@ -12,6 +12,8 @@ function UsersTab() {
   const { token: reduxToken, isLoggedIn } = useSelector(
     (state) => state.userInfo
   );
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Smooth animation variants (mirroring IncidentsTab)
   const containerVariants = {
@@ -103,6 +105,16 @@ function UsersTab() {
   const getToken = () => {
     if (reduxToken) return reduxToken;
     return localStorage.getItem("jwt");
+  };
+
+  const openModal = (user) => {
+    setSelectedUser(user);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedUser(null);
   };
 
   // Rest of the component remains the same
@@ -201,6 +213,7 @@ function UsersTab() {
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         transition={{ duration: 0.2, ease: "easeOut" }}
+                        onClick={() => openModal(u)}
                       >
                         View
                       </motion.button>
@@ -225,6 +238,101 @@ function UsersTab() {
           </tbody>
         </table>
       </motion.div>
+
+      {/* User Details Modal */}
+      <AnimatePresence>
+        {isModalOpen && selectedUser && (
+          <motion.div
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            onClick={closeModal}
+          >
+            <motion.div
+              className="bg-white rounded-lg p-6 max-w-md mx-auto w-[90%]"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{
+                type: "spring",
+                damping: 25,
+                stiffness: 300,
+                duration: 0.4,
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-medium text-gray-900">
+                  User Details
+                </h3>
+                <button
+                  className="text-gray-900 hover:text-gray-700 bg-gray-100 border border-gray-300 rounded-full px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  onClick={closeModal}
+                  aria-label="Close"
+                  title="Close"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="space-y-3 text-sm text-gray-800">
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Name:</span>
+                  <span className="font-medium">
+                    {selectedUser.name || "-"}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Email:</span>
+                  <span className="font-medium">
+                    {selectedUser.email || "-"}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Role:</span>
+                  <span className="font-medium">
+                    {selectedUser.role || "-"}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Status:</span>
+                  <span className="font-medium">
+                    {selectedUser.status || "active"}
+                  </span>
+                </div>
+                {selectedUser.createdAt && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Created:</span>
+                    <span className="font-medium">
+                      {new Date(selectedUser.createdAt).toLocaleString()}
+                    </span>
+                  </div>
+                )}
+                {selectedUser.updatedAt && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Updated:</span>
+                    <span className="font-medium">
+                      {new Date(selectedUser.updatedAt).toLocaleString()}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-6 flex justify-end">
+                <button
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"
+                  onClick={closeModal}
+                >
+                  Close
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {!error && !loading && (
         <motion.p
           className="mt-3 text-xs text-gray-500"
