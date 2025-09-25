@@ -113,14 +113,6 @@ function UsersTab() {
         variants={itemVariants}
       >
         <h2 className="text-xl font-semibold text-gray-950">User Management</h2>
-        <motion.button
-          className="rounded-lg bg-blue-600 text-white px-4 py-2 text-sm font-medium shadow-sm hover:bg-blue-700 transition-all duration-200"
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          transition={{ duration: 0.2, ease: "easeOut" }}
-        >
-          + Add User
-        </motion.button>
       </motion.div>
 
       <motion.div
