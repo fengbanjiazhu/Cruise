@@ -46,18 +46,22 @@ export const updateIncident = async (req, res) => {
     );
     if (!item) return res.status(404).json({ message: "Not found" });
     
-    // If the incident is being approved and it targets a Path, delete the path
+    // If the incident is being approved and it targets a Path, block the path instead of deleting it
     if (req.body.status === "approved" && item.targetType === "Path") {
       try {
-        const deletedPath = await Path.findByIdAndDelete(item.targetId);
-        if (deletedPath) {
-          console.log(`Path ${item.targetId} deleted due to approved incident ${item.id}`);
+        const updatedPath = await Path.findByIdAndUpdate(
+          item.targetId,
+          { blocked: true },
+          { new: true }
+        );
+        if (updatedPath) {
+          console.log(`Path ${item.targetId} blocked due to approved incident ${item.id}`);
         } else {
-          console.log(`Path ${item.targetId} not found for deletion`);
+          console.log(`Path ${item.targetId} not found for blocking`);
         }
       } catch (pathError) {
-        console.error("Error deleting path:", pathError);
-        // Don't fail the incident update if path deletion fails
+        console.error("Error blocking path:", pathError);
+        // Don't fail the incident update if path blocking fails
       }
     }
     
@@ -70,19 +74,25 @@ export const updateIncident = async (req, res) => {
 
 export const deleteIncident = async (req, res) => {
   try {
-    const result = await Incident.findOneAndDelete({ id: req.params.id });
+    // Instead of deleting, mark as rejected
+    const result = await Incident.findOneAndUpdate(
+      { id: req.params.id },
+      { status: "rejected" },
+      { new: true }
+    );
 
     if (!result) {
       return res.status(404).json({ message: "Incident not found" });
     }
 
-    console.log(`Deleted incident ${req.params.id}`);
+    console.log(`Incident ${req.params.id} marked as rejected`);
     res.status(200).json({
-      message: "Incident deleted successfully",
+      message: "Incident marked as rejected",
       id: req.params.id,
+      status: "rejected"
     });
   } catch (error) {
-    console.error("Error deleting incident:", error);
+    console.error("Error rejecting incident:", error);
     res.status(500).json({ message: error.message });
   }
 };

@@ -90,11 +90,11 @@ function IncidentsTab() {
       // Refresh incidents after update
       fetchIncidents();
 
-      // Trigger paths refresh since a path may have been deleted
+      // Trigger paths refresh since a path may have been blocked
       dispatch(triggerPathsRefresh());
 
       // Show success message
-      setTestResponse(`Incident ${incidentId} approved successfully`);
+      setTestResponse(`Incident ${incidentId} approved successfully - associated path has been blocked`);
     } catch (err) {
       console.error(`Error approving incident ${incidentId}:`, err);
       setError(`Failed to approve incident: ${err.message || "Unknown error"}`);
@@ -114,7 +114,7 @@ function IncidentsTab() {
       setConfirmingDelete(null); // Clear confirmation dialog
 
       const endpoint = API_ROUTES.incident.delete(incidentId);
-      console.log(`Deleting incident ${incidentId} at endpoint ${endpoint}`);
+      console.log(`Rejecting incident ${incidentId} at endpoint ${endpoint}`);
 
       await fetchDelete(endpoint, {
         headers: {
@@ -122,14 +122,14 @@ function IncidentsTab() {
         },
       });
 
-      // Refresh incidents after deletion
+      // Refresh incidents after rejection
       fetchIncidents();
 
       // Show success message
-      setTestResponse(`Incident ${incidentId} deleted successfully`);
+      setTestResponse(`Incident ${incidentId} marked as rejected`);
     } catch (err) {
-      console.error(`Error deleting incident ${incidentId}:`, err);
-      setError(`Failed to delete incident: ${err.message || "Unknown error"}`);
+      console.error(`Error rejecting incident ${incidentId}:`, err);
+      setError(`Failed to reject incident: ${err.message || "Unknown error"}`);
     } finally {
       setProcessingAction(null);
     }
@@ -239,11 +239,10 @@ function IncidentsTab() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md mx-auto">
             <h3 className="text-lg font-medium mb-4 text-gray-900">
-              Confirm Deletion
+              Confirm Rejection
             </h3>
             <p className="mb-6 text-gray-700">
-              Are you sure you want to delete incident {confirmingDelete}? This
-              action cannot be undone.
+              Are you sure you want to reject incident {confirmingDelete}? This will mark it as rejected but keep the record.
             </p>
             <div className="flex justify-end space-x-3">
               <button
@@ -256,7 +255,7 @@ function IncidentsTab() {
                 onClick={() => handleRejectIncident(confirmingDelete)}
                 className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
               >
-                Delete Incident
+                Reject Incident
               </button>
             </div>
           </div>
@@ -416,27 +415,31 @@ function IncidentsTab() {
                           View
                         </button>
 
-                        {/* Approve button - always visible */}
-                        <button
-                          onClick={() => handleApproveIncident(i.id)}
-                          disabled={processingAction === i.id}
-                          className="rounded-lg px-3 py-1.5 text-xs font-medium bg-green-600 text-white hover:bg-green-700 transition-colors duration-200"
-                        >
-                          {processingAction === i.id
-                            ? "Processing..."
-                            : "Approve"}
-                        </button>
+                        {/* Approve button - only show for pending incidents */}
+                        {i.status === "pending" && (
+                          <button
+                            onClick={() => handleApproveIncident(i.id)}
+                            disabled={processingAction === i.id}
+                            className="rounded-lg px-3 py-1.5 text-xs font-medium bg-green-600 text-white hover:bg-green-700 transition-colors duration-200"
+                          >
+                            {processingAction === i.id
+                              ? "Processing..."
+                              : "Approve"}
+                          </button>
+                        )}
 
-                        {/* Delete button - always visible */}
-                        <button
-                          onClick={() => initiateRejectIncident(i.id)}
-                          disabled={processingAction === i.id}
-                          className="rounded-lg px-3 py-1.5 text-xs font-medium bg-red-600 text-white hover:bg-red-700 transition-colors duration-200"
-                        >
-                          {processingAction === i.id
-                            ? "Processing..."
-                            : "Delete"}
-                        </button>
+                        {/* Reject button - only show for pending incidents */}
+                        {i.status === "pending" && (
+                          <button
+                            onClick={() => initiateRejectIncident(i.id)}
+                            disabled={processingAction === i.id}
+                            className="rounded-lg px-3 py-1.5 text-xs font-medium bg-red-600 text-white hover:bg-red-700 transition-colors duration-200"
+                          >
+                            {processingAction === i.id
+                              ? "Processing..."
+                              : "Reject"}
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
