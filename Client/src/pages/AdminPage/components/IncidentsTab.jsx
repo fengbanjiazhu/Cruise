@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
+import { motion, AnimatePresence } from "framer-motion";
 import { triggerPathsRefresh } from "../../../store/slices/adminSlice";
 import Pill from "./Pill";
 import {
@@ -24,6 +25,76 @@ function IncidentsTab() {
   const [processingAction, setProcessingAction] = useState(null);
   const [confirmingDelete, setConfirmingDelete] = useState(null);
   const [activeTab, setActiveTab] = useState("active");
+  const [refreshing, setRefreshing] = useState(false);
+
+  // Smooth animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: 0.6,
+        ease: "easeOut",
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 15 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        ease: "easeOut",
+      },
+    },
+  };
+
+  const tabVariants = {
+    hidden: { opacity: 0, x: -10 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: 0.4,
+        ease: "easeOut",
+      },
+    },
+    exit: {
+      opacity: 0,
+      x: 10,
+      transition: {
+        duration: 0.3,
+        ease: "easeIn",
+      },
+    },
+  };
+
+  const tableRowVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.4,
+        ease: "easeOut",
+      },
+    },
+  };
+
+  const refreshVariants = {
+    initial: { opacity: 1 },
+    refreshing: {
+      opacity: 0.7,
+      transition: { duration: 0.3 },
+    },
+    refreshed: {
+      opacity: 1,
+      transition: { duration: 0.5, ease: "easeOut" },
+    },
+  };
 
   useEffect(() => {
     fetchIncidents();
@@ -31,9 +102,14 @@ function IncidentsTab() {
     console.log("Incidents endpoint:", API_URL + API_ROUTES.incident.getAll);
   }, []);
 
-  const fetchIncidents = async () => {
+  const fetchIncidents = async (isRefresh = false) => {
     try {
-      setLoading(true);
+      if (isRefresh) {
+        setRefreshing(true);
+      } else {
+        setLoading(true);
+      }
+
       console.log("Fetching from:", API_ROUTES.incident.getAll);
       const data = await fetchGet(API_ROUTES.incident.getAll, {
         method: "GET",
@@ -51,6 +127,9 @@ function IncidentsTab() {
       setError(`Failed to load incidents: ${err.message || "Unknown error"}`);
     } finally {
       setLoading(false);
+      if (isRefresh) {
+        setRefreshing(false);
+      }
     }
   };
 
@@ -81,9 +160,12 @@ function IncidentsTab() {
         body: JSON.stringify({ status: "approved" }),
       });
 
-      fetchIncidents();
+      // Refresh with animation
+      await fetchIncidents(true);
       dispatch(triggerPathsRefresh());
-      setTestResponse(`Incident ${incidentId} approved successfully - associated path has been blocked`);
+      setTestResponse(
+        `Incident ${incidentId} approved successfully - associated path has been blocked`
+      );
     } catch (err) {
       console.error(`Error approving incident ${incidentId}:`, err);
       setError(`Failed to approve incident: ${err.message || "Unknown error"}`);
@@ -110,7 +192,8 @@ function IncidentsTab() {
         },
       });
 
-      fetchIncidents();
+      // Refresh with animation
+      await fetchIncidents(true);
       setTestResponse(`Incident ${incidentId} marked as rejected`);
     } catch (err) {
       console.error(`Error rejecting incident ${incidentId}:`, err);
@@ -125,228 +208,342 @@ function IncidentsTab() {
   };
 
   // Filter incidents based on status
-  const activeIncidents = incidents.filter(incident => incident.status === "pending");
-  const lockedIncidents = incidents.filter(incident => 
-    incident.status === "approved" || incident.status === "rejected"
+  const activeIncidents = incidents.filter(
+    (incident) => incident.status === "pending"
+  );
+  const lockedIncidents = incidents.filter(
+    (incident) =>
+      incident.status === "approved" || incident.status === "rejected"
   );
 
   const renderIncidentsTable = (incidentsList, showActions = true) => (
-    <div className="overflow-x-auto rounded-lg border">
-      <table className="min-w-full divide-y divide-gray-200">
+    <motion.div
+      className="w-full overflow-x-auto rounded-lg border"
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+      variants={refreshVariants}
+      animate={refreshing ? "refreshing" : "refreshed"}
+    >
+      <table className="w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+            <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
               ID
             </th>
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+            <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
               Title
             </th>
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+            <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
               Severity
             </th>
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+            <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
               Status
             </th>
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+            <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
               Assignee
             </th>
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+            <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
               Created
             </th>
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+            <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
               Updated
             </th>
-            {showActions && (
-              <th className="px-4 py-3 text-right">Actions</th>
-            )}
+            {showActions && <th className="px-6 py-4 text-right">Actions</th>}
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200 bg-white">
-          {incidentsList.length > 0 ? (
-            incidentsList.map((i) => (
-              <tr key={i.id}>
-                <td className="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900">
-                  {i.id}
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-800">
-                  {i.title}
-                </td>
-                <td className="whitespace-nowrap px-4 py-3">
-                  <Pill className={incidentSeverityClass(i.severity)}>
-                    {i.severity}
-                  </Pill>
-                </td>
-                <td className="whitespace-nowrap px-4 py-3">
-                  <Pill className={incidentStatusClass(i.status)}>
-                    {i.status}
-                  </Pill>
-                </td>
-                <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">
-                  {i.assignee}
-                </td>
-                <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">
-                  {formatDate(i.createdAt)}
-                </td>
-                <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">
-                  {formatDate(i.updatedAt)}
-                </td>
-                {showActions && (
-                  <td className="whitespace-nowrap px-4 py-3 text-right">
-                    <div className="flex items-center justify-end space-x-2">
-                      <button
-                        onClick={() => console.log("View incident", i.id)}
-                        className="rounded-lg bg-white border border-blue-300 px-3 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-50 transition-colors duration-200"
-                      >
-                        View
-                      </button>
-                      <button
-                        onClick={() => handleApproveIncident(i.id)}
-                        disabled={processingAction === i.id}
-                        className="rounded-lg px-3 py-1.5 text-xs font-medium bg-green-600 text-white hover:bg-green-700 transition-colors duration-200"
-                      >
-                        {processingAction === i.id ? "Processing..." : "Approve"}
-                      </button>
-                      <button
-                        onClick={() => initiateRejectIncident(i.id)}
-                        disabled={processingAction === i.id}
-                        className="rounded-lg px-3 py-1.5 text-xs font-medium bg-red-600 text-white hover:bg-red-700 transition-colors duration-200"
-                      >
-                        {processingAction === i.id ? "Processing..." : "Reject"}
-                      </button>
-                    </div>
+          <AnimatePresence>
+            {incidentsList.length > 0 ? (
+              incidentsList.map((i, index) => (
+                <motion.tr
+                  key={i.id}
+                  initial="hidden"
+                  animate="visible"
+                  exit={{ opacity: 0, y: -10 }}
+                  variants={tableRowVariants}
+                  transition={{ delay: index * 0.03 }}
+                  whileHover={{
+                    backgroundColor: "#f9fafb",
+                    transition: { duration: 0.2, ease: "easeOut" },
+                  }}
+                  className="hover:bg-gray-50"
+                >
+                  <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
+                    {i.id}
                   </td>
-                )}
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td
-                colSpan={showActions ? "8" : "7"}
-                className="px-4 py-6 text-center text-gray-500"
+                  <td className="px-6 py-4 text-sm text-gray-800">{i.title}</td>
+                  <td className="whitespace-nowrap px-6 py-4">
+                    <Pill className={incidentSeverityClass(i.severity)}>
+                      {i.severity}
+                    </Pill>
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4">
+                    <Pill className={incidentStatusClass(i.status)}>
+                      {i.status}
+                    </Pill>
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-700">
+                    {i.assignee}
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-700">
+                    {formatDate(i.createdAt)}
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-700">
+                    {formatDate(i.updatedAt)}
+                  </td>
+                  {showActions && (
+                    <td className="whitespace-nowrap px-6 py-4 text-right">
+                      <div className="flex items-center justify-end space-x-2">
+                        <motion.button
+                          onClick={() => console.log("View incident", i.id)}
+                          className="rounded-lg bg-white border border-blue-300 px-3 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-50 transition-all duration-300"
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          transition={{ duration: 0.2, ease: "easeOut" }}
+                        >
+                          View
+                        </motion.button>
+                        <motion.button
+                          onClick={() => handleApproveIncident(i.id)}
+                          disabled={processingAction === i.id}
+                          className="rounded-lg px-3 py-1.5 text-xs font-medium bg-green-600 text-white hover:bg-green-700 transition-all duration-300"
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          transition={{ duration: 0.2, ease: "easeOut" }}
+                        >
+                          {processingAction === i.id
+                            ? "Processing..."
+                            : "Approve"}
+                        </motion.button>
+                        <motion.button
+                          onClick={() => initiateRejectIncident(i.id)}
+                          disabled={processingAction === i.id}
+                          className="rounded-lg px-3 py-1.5 text-xs font-medium bg-red-600 text-white hover:bg-red-700 transition-all duration-300"
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          transition={{ duration: 0.2, ease: "easeOut" }}
+                        >
+                          {processingAction === i.id
+                            ? "Processing..."
+                            : "Reject"}
+                        </motion.button>
+                      </div>
+                    </td>
+                  )}
+                </motion.tr>
+              ))
+            ) : (
+              <motion.tr
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2, duration: 0.4 }}
               >
-                No incidents found
-              </td>
-            </tr>
-          )}
+                <td
+                  colSpan={showActions ? "8" : "7"}
+                  className="px-6 py-8 text-center text-gray-500"
+                >
+                  No incidents found
+                </td>
+              </motion.tr>
+            )}
+          </AnimatePresence>
         </tbody>
       </table>
-    </div>
+    </motion.div>
   );
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-4">
+    <motion.div initial="hidden" animate="visible" variants={containerVariants}>
+      <motion.div
+        className="flex items-center justify-between mb-6"
+        variants={itemVariants}
+      >
         <h2 className="text-xl font-semibold text-gray-950">
           Incident Reports
         </h2>
-        <div className="flex gap-2">
-          <button
-            onClick={testConnection}
-            className="rounded-lg bg-gray-600 text-white px-4 py-2 text-sm font-medium shadow-sm hover:bg-gray-700 transition-colors duration-200"
-          >
-            Test API
-          </button>
-        </div>
-      </div>
+        <motion.button
+          onClick={testConnection}
+          className="rounded-lg bg-gray-600 text-white px-4 py-2 text-sm font-medium shadow-sm hover:bg-gray-700 transition-all duration-300"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
+        >
+          Test API
+        </motion.button>
+      </motion.div>
 
-      {testResponse && (
-        <div className="mb-4 px-4 py-3 bg-blue-50 border border-blue-200 text-blue-700 rounded-lg">
-          {testResponse}
-        </div>
-      )}
+      <AnimatePresence>
+        {testResponse && (
+          <motion.div
+            className="mb-6 px-4 py-3 bg-blue-50 border border-blue-200 text-blue-700 rounded-lg"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+          >
+            {testResponse}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Delete Confirmation Dialog */}
-      {confirmingDelete && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md mx-auto">
-            <h3 className="text-lg font-medium mb-4 text-gray-900">
-              Confirm Rejection
-            </h3>
-            <p className="mb-6 text-gray-700">
-              Are you sure you want to reject incident {confirmingDelete}? This will mark it as rejected but keep the record.
-            </p>
-            <div className="flex justify-end space-x-3">
-              <button
-                onClick={cancelDelete}
-                className="px-4 py-2 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 shadow-sm"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => handleRejectIncident(confirmingDelete)}
-                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-              >
-                Reject Incident
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {confirmingDelete && (
+          <motion.div
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+          >
+            <motion.div
+              className="bg-white rounded-lg p-6 max-w-md mx-auto"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{
+                type: "spring",
+                damping: 25,
+                stiffness: 300,
+                duration: 0.4,
+              }}
+            >
+              <h3 className="text-lg font-medium mb-4 text-gray-900">
+                Confirm Rejection
+              </h3>
+              <p className="mb-6 text-gray-700">
+                Are you sure you want to reject incident {confirmingDelete}?
+                This will mark it as rejected but keep the record.
+              </p>
+              <div className="flex justify-end space-x-3">
+                <motion.button
+                  onClick={cancelDelete}
+                  className="px-4 py-2 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 shadow-sm transition-all duration-300"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                >
+                  Cancel
+                </motion.button>
+                <motion.button
+                  onClick={() => handleRejectIncident(confirmingDelete)}
+                  className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-all duration-300"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                >
+                  Reject Incident
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Tab Navigation */}
-      <div className="flex border-b gap-5 px-2 py-1 bg-gray-50 mb-6">
-        <button
-          className={`px-6 py-3 font-medium text-sm rounded-lg transition-all duration-200 ${
+      <motion.div
+        className="flex border-b gap-5 px-2 py-1 bg-gray-50 mb-6"
+        variants={itemVariants}
+      >
+        <motion.button
+          className={`px-6 py-3 font-medium text-sm rounded-lg transition-all duration-300 ${
             activeTab === "active"
               ? "bg-blue-600 text-white shadow-md"
               : "bg-white text-gray-700 hover:bg-blue-50 hover:text-blue-600 border border-gray-200"
           }`}
           onClick={() => setActiveTab("active")}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
         >
           Active ({activeIncidents.length})
-        </button>
-        <button
-          className={`px-6 py-3 font-medium text-sm rounded-lg transition-all duration-200 ${
+        </motion.button>
+        <motion.button
+          className={`px-6 py-3 font-medium text-sm rounded-lg transition-all duration-300 ${
             activeTab === "locked"
               ? "bg-blue-600 text-white shadow-md"
               : "bg-white text-gray-700 hover:bg-blue-50 hover:text-blue-600 border border-gray-200"
           }`}
           onClick={() => setActiveTab("locked")}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
         >
           Locked ({lockedIncidents.length})
-        </button>
-      </div>
+        </motion.button>
+      </motion.div>
 
       {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        </div>
+        <motion.div
+          className="flex justify-center items-center h-64"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4 }}
+        >
+          <motion.div
+            className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          />
+        </motion.div>
       ) : error ? (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+        <motion.div
+          className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+        >
           {error}
-        </div>
+        </motion.div>
       ) : (
-        <div>
+        <AnimatePresence mode="wait">
           {activeTab === "active" && (
-            <div>
-              <div className="mb-4">
+            <motion.div
+              key="active"
+              variants={tabVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              transition={{ duration: 0.4, ease: "easeOut" }}
+            >
+              <motion.div className="mb-6" variants={itemVariants}>
                 <h3 className="text-lg font-medium text-gray-900 mb-2">
                   Active Incidents
                 </h3>
                 <p className="text-sm text-gray-600">
-                  Pending incidents that require your attention. You can approve or reject these incidents.
+                  Pending incidents that require your attention. You can approve
+                  or reject these incidents.
                 </p>
-              </div>
+              </motion.div>
               {renderIncidentsTable(activeIncidents, true)}
-            </div>
+            </motion.div>
           )}
-          
+
           {activeTab === "locked" && (
-            <div>
-              <div className="mb-4">
+            <motion.div
+              key="locked"
+              variants={tabVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              transition={{ duration: 0.4, ease: "easeOut" }}
+            >
+              <motion.div className="mb-6" variants={itemVariants}>
                 <h3 className="text-lg font-medium text-gray-900 mb-2">
                   Locked Incidents
                 </h3>
                 <p className="text-sm text-gray-600">
-                  Historical record of approved and rejected incidents. These are read-only for audit purposes.
+                  Historical record of approved and rejected incidents. These
+                  are read-only for audit purposes.
                 </p>
-              </div>
+              </motion.div>
               {renderIncidentsTable(lockedIncidents, false)}
-            </div>
+            </motion.div>
           )}
-        </div>
+        </AnimatePresence>
       )}
-    </div>
+    </motion.div>
   );
 }
 
