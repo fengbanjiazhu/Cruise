@@ -243,7 +243,7 @@ function CreatePath() {
                             type="button"
                             onClick={() => moveWaypoint(idx, -1)}
                             disabled={idx === 0}
-                            className="rounded-lg border px-2 py-1 text-xs bg-black text-white disabled:opacity-40"
+                            className="rounded-lg border px-2 py-1 text-xs bg-gray-600 text-white disabled:opacity-40 hover:bg-gray-700"
                           >
                             ↑
                           </button>
@@ -251,14 +251,14 @@ function CreatePath() {
                             type="button"
                             onClick={() => moveWaypoint(idx, 1)}
                             disabled={idx === waypoints.length - 1}
-                            className="rounded-lg border px-2 py-1 text-xs bg-black text-white disabled:opacity-40"
+                            className="rounded-lg border px-2 py-1 text-xs bg-gray-600 text-white disabled:opacity-40 hover:bg-gray-700"
                           >
                             ↓
                           </button>
                           <button
                             type="button"
                             onClick={() => removeWaypoint(idx)}
-                            className="rounded-lg border px-2 py-1 text-xs bg-black text-white"
+                            className="rounded-lg border px-2 py-1 text-xs bg-gray-600 text-white hover:bg-gray-700"
                           >
                             Remove
                           </button>
@@ -311,7 +311,7 @@ function CreatePath() {
                 <button
                   type="submit"
                   disabled={isValidating}
-                  className="inline-flex items-center rounded-xl bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-900 disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="inline-flex items-center rounded-xl bg-gray-600 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {isValidating ? "Validating…" : "Preview JSON"}
                 </button>
@@ -336,7 +336,7 @@ function CreatePath() {
                 <h3 className="text-sm font-semibold text-gray-900">Submission Preview</h3>
                 <button
                   onClick={() => setShowPreview(false)}
-                  className="rounded-lg border px-2 py-1 text-xs bg-black text-white"
+                  className="rounded-lg border px-2 py-1 text-xs bg-gray-600 text-white hover:bg-gray-700"
                 >
                   Edit
                 </button>
@@ -385,14 +385,14 @@ function CreatePath() {
                         <button
                           type="button"
                           onClick={() => setPendingLatLng(null)}
-                          className="rounded-lg border px-3 py-1 text-sm bg-black text-white"
+                          className="rounded-lg border px-3 py-1 text-sm bg-gray-600 text-white hover:bg-gray-700"
                         >
                           Cancel
                         </button>
                         <button
                           type="button"
                           onClick={() => addWaypoint(pendingLatLng)}
-                          className="rounded-lg bg-black px-3 py-1 text-sm text-white"
+                          className="rounded-lg bg-gray-600 px-3 py-1 text-sm text-white hover:bg-gray-700"
                         >
                           Add
                         </button>
