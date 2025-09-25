@@ -6,13 +6,47 @@ class QueryFeatures {
 
   filter() {
     const queryObj = { ...this.queryString };
+
     const excludeFields = ["sort", "fields"];
     excludeFields.forEach((el) => delete queryObj[el]);
 
-    let queryStr = JSON.stringify(queryObj);
-    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    const mongoQuery = {};
 
-    this.query = this.query.find(JSON.parse(queryStr));
+    for (const [key, value] of Object.entries(queryObj)) {
+      if (["lat", "lng", "radius"].includes(key)) continue;
+
+      const match = key.match(/^(.+)\[(gte|gt|lte|lt)\]$/);
+      if (match) {
+        const field = match[1];
+        const op = `$${match[2]}`;
+        if (!mongoQuery[field]) mongoQuery[field] = {};
+        mongoQuery[field][op] = Number(value);
+      } else if (typeof value === "string") {
+        mongoQuery[key] = { $regex: value, $options: "i" };
+      } else {
+        mongoQuery[key] = value;
+      }
+    }
+
+    if (queryObj.lat && queryObj.lng && queryObj.radius) {
+      const lat = parseFloat(queryObj.lat);
+      const lng = parseFloat(queryObj.lng);
+      const radius = parseFloat(queryObj.radius) / 6378.1;
+
+      mongoQuery.startLocation = {
+        $geoWithin: {
+          $centerSphere: [[lng, lat], radius],
+        },
+      };
+    }
+
+    console.log(mongoQuery);
+
+    console.log("CONDITIONS:", mongoQuery._conditions);
+
+    // this.query = this.query.find(mongoQuery);
+    this.query = this.query.model.find(mongoQuery);
+
     return this;
   }
   sort() {
