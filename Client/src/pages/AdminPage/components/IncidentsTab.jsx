@@ -20,16 +20,10 @@ function IncidentsTab() {
   const [incidents, setIncidents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isCreating, setIsCreating] = useState(false);
   const [testResponse, setTestResponse] = useState(null);
-  const [newIncident, setNewIncident] = useState({
-    title: "",
-    severity: "medium",
-    assignee: "Unassigned",
-  });
   const [processingAction, setProcessingAction] = useState(null);
   const [confirmingDelete, setConfirmingDelete] = useState(null);
-  const [activeTab, setActiveTab] = useState("active"); // New state for tab management
+  const [activeTab, setActiveTab] = useState("active");
 
   useEffect(() => {
     fetchIncidents();
@@ -128,65 +122,6 @@ function IncidentsTab() {
 
   const cancelDelete = () => {
     setConfirmingDelete(null);
-  };
-
-  const handleCreateIncident = () => {
-    setIsCreating(true);
-    const lastIncidentId =
-      incidents.length > 0
-        ? incidents.sort((a, b) => a.id.localeCompare(b.id))[
-            incidents.length - 1
-          ].id
-        : "INC-2400";
-
-    const idNumber = parseInt(lastIncidentId.split("-")[1]) + 1;
-    const newId = `INC-${idNumber}`;
-
-    setNewIncident((prev) => ({
-      ...prev,
-      id: newId,
-    }));
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewIncident((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmitIncident = async (e) => {
-    e.preventDefault();
-    try {
-      await fetchPost(API_ROUTES.incident.create, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newIncident),
-      });
-
-      fetchIncidents();
-      setIsCreating(false);
-      setNewIncident({
-        title: "",
-        severity: "medium",
-        assignee: "Unassigned",
-      });
-    } catch (err) {
-      console.error("Error creating incident:", err);
-      setError("Failed to create incident. Please try again.");
-    }
-  };
-
-  const handleCancelCreate = () => {
-    setIsCreating(false);
-    setNewIncident({
-      title: "",
-      severity: "medium",
-      assignee: "Unassigned",
-    });
   };
 
   // Filter incidents based on status
@@ -305,22 +240,12 @@ function IncidentsTab() {
           Incident Reports
         </h2>
         <div className="flex gap-2">
-          {!isCreating && (
-            <>
-              <button
-                onClick={testConnection}
-                className="rounded-lg bg-gray-600 text-white px-4 py-2 text-sm font-medium shadow-sm hover:bg-gray-700 transition-colors duration-200"
-              >
-                Test API
-              </button>
-              <button
-                onClick={handleCreateIncident}
-                className="rounded-lg bg-blue-600 text-white px-4 py-2 text-sm font-medium shadow-sm hover:bg-blue-700 transition-colors duration-200"
-              >
-                + New Incident
-              </button>
-            </>
-          )}
+          <button
+            onClick={testConnection}
+            className="rounded-lg bg-gray-600 text-white px-4 py-2 text-sm font-medium shadow-sm hover:bg-gray-700 transition-colors duration-200"
+          >
+            Test API
+          </button>
         </div>
       </div>
 
@@ -355,83 +280,6 @@ function IncidentsTab() {
               </button>
             </div>
           </div>
-        </div>
-      )}
-
-      {isCreating && (
-        <div className="bg-white p-4 mb-6 border rounded-lg shadow-sm">
-          <h3 className="text-lg font-medium mb-3">Create New Incident</h3>
-          <form onSubmit={handleSubmitIncident}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  ID
-                </label>
-                <input
-                  type="text"
-                  value={newIncident.id || ""}
-                  disabled
-                  className="px-3 py-2 bg-gray-100 border border-gray-300 rounded-md w-full"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Title
-                </label>
-                <input
-                  type="text"
-                  name="title"
-                  value={newIncident.title}
-                  onChange={handleInputChange}
-                  required
-                  className="px-3 py-2 border border-gray-300 rounded-md w-full"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Severity
-                </label>
-                <select
-                  name="severity"
-                  value={newIncident.severity}
-                  onChange={handleInputChange}
-                  className="px-3 py-2 border border-gray-300 rounded-md w-full"
-                >
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
-                  <option value="critical">Critical</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Assignee
-                </label>
-                <input
-                  type="text"
-                  name="assignee"
-                  value={newIncident.assignee}
-                  onChange={handleInputChange}
-                  className="px-3 py-2 border border-gray-300 rounded-md w-full"
-                />
-              </div>
-            </div>
-            <div className="flex justify-end space-x-3">
-              <button
-                type="button"
-                onClick={handleCancelCreate}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-              >
-                Create Incident
-              </button>
-            </div>
-          </form>
         </div>
       )}
 
