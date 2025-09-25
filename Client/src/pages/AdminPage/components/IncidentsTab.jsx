@@ -219,9 +219,7 @@ function IncidentsTab() {
   const renderIncidentsTable = (incidentsList, showActions = true) => (
     <motion.div
       className="w-full overflow-x-auto rounded-lg border"
-      initial={{ opacity: 0, y: 15 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
+      initial="initial"
       variants={refreshVariants}
       animate={refreshing ? "refreshing" : "refreshed"}
     >
