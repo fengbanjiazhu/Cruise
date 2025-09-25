@@ -29,10 +29,10 @@ function IncidentsTab() {
   });
   const [processingAction, setProcessingAction] = useState(null);
   const [confirmingDelete, setConfirmingDelete] = useState(null);
+  const [activeTab, setActiveTab] = useState("active"); // New state for tab management
 
   useEffect(() => {
     fetchIncidents();
-    // For debugging - log API URL and route
     console.log("API URL:", API_URL);
     console.log("Incidents endpoint:", API_URL + API_ROUTES.incident.getAll);
   }, []);
@@ -87,13 +87,8 @@ function IncidentsTab() {
         body: JSON.stringify({ status: "approved" }),
       });
 
-      // Refresh incidents after update
       fetchIncidents();
-
-      // Trigger paths refresh since a path may have been blocked
       dispatch(triggerPathsRefresh());
-
-      // Show success message
       setTestResponse(`Incident ${incidentId} approved successfully - associated path has been blocked`);
     } catch (err) {
       console.error(`Error approving incident ${incidentId}:`, err);
@@ -104,14 +99,13 @@ function IncidentsTab() {
   };
 
   const initiateRejectIncident = (incidentId) => {
-    // Set the incident ID in state to show confirmation dialog
     setConfirmingDelete(incidentId);
   };
 
   const handleRejectIncident = async (incidentId) => {
     try {
       setProcessingAction(incidentId);
-      setConfirmingDelete(null); // Clear confirmation dialog
+      setConfirmingDelete(null);
 
       const endpoint = API_ROUTES.incident.delete(incidentId);
       console.log(`Rejecting incident ${incidentId} at endpoint ${endpoint}`);
@@ -122,10 +116,7 @@ function IncidentsTab() {
         },
       });
 
-      // Refresh incidents after rejection
       fetchIncidents();
-
-      // Show success message
       setTestResponse(`Incident ${incidentId} marked as rejected`);
     } catch (err) {
       console.error(`Error rejecting incident ${incidentId}:`, err);
@@ -141,7 +132,6 @@ function IncidentsTab() {
 
   const handleCreateIncident = () => {
     setIsCreating(true);
-    // Generate a new incident ID using the pattern INC-XXXX
     const lastIncidentId =
       incidents.length > 0
         ? incidents.sort((a, b) => a.id.localeCompare(b.id))[
@@ -177,7 +167,6 @@ function IncidentsTab() {
         body: JSON.stringify(newIncident),
       });
 
-      // Refresh incidents after creating
       fetchIncidents();
       setIsCreating(false);
       setNewIncident({
@@ -200,7 +189,114 @@ function IncidentsTab() {
     });
   };
 
-  // Removed unused showActionButtons function
+  // Filter incidents based on status
+  const activeIncidents = incidents.filter(incident => incident.status === "pending");
+  const lockedIncidents = incidents.filter(incident => 
+    incident.status === "approved" || incident.status === "rejected"
+  );
+
+  const renderIncidentsTable = (incidentsList, showActions = true) => (
+    <div className="overflow-x-auto rounded-lg border">
+      <table className="min-w-full divide-y divide-gray-200">
+        <thead className="bg-gray-50">
+          <tr>
+            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              ID
+            </th>
+            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              Title
+            </th>
+            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              Severity
+            </th>
+            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              Status
+            </th>
+            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              Assignee
+            </th>
+            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              Created
+            </th>
+            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              Updated
+            </th>
+            {showActions && (
+              <th className="px-4 py-3 text-right">Actions</th>
+            )}
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-200 bg-white">
+          {incidentsList.length > 0 ? (
+            incidentsList.map((i) => (
+              <tr key={i.id}>
+                <td className="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900">
+                  {i.id}
+                </td>
+                <td className="px-4 py-3 text-sm text-gray-800">
+                  {i.title}
+                </td>
+                <td className="whitespace-nowrap px-4 py-3">
+                  <Pill className={incidentSeverityClass(i.severity)}>
+                    {i.severity}
+                  </Pill>
+                </td>
+                <td className="whitespace-nowrap px-4 py-3">
+                  <Pill className={incidentStatusClass(i.status)}>
+                    {i.status}
+                  </Pill>
+                </td>
+                <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">
+                  {i.assignee}
+                </td>
+                <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">
+                  {formatDate(i.createdAt)}
+                </td>
+                <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">
+                  {formatDate(i.updatedAt)}
+                </td>
+                {showActions && (
+                  <td className="whitespace-nowrap px-4 py-3 text-right">
+                    <div className="flex items-center justify-end space-x-2">
+                      <button
+                        onClick={() => console.log("View incident", i.id)}
+                        className="rounded-lg bg-white border border-blue-300 px-3 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-50 transition-colors duration-200"
+                      >
+                        View
+                      </button>
+                      <button
+                        onClick={() => handleApproveIncident(i.id)}
+                        disabled={processingAction === i.id}
+                        className="rounded-lg px-3 py-1.5 text-xs font-medium bg-green-600 text-white hover:bg-green-700 transition-colors duration-200"
+                      >
+                        {processingAction === i.id ? "Processing..." : "Approve"}
+                      </button>
+                      <button
+                        onClick={() => initiateRejectIncident(i.id)}
+                        disabled={processingAction === i.id}
+                        className="rounded-lg px-3 py-1.5 text-xs font-medium bg-red-600 text-white hover:bg-red-700 transition-colors duration-200"
+                      >
+                        {processingAction === i.id ? "Processing..." : "Reject"}
+                      </button>
+                    </div>
+                  </td>
+                )}
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td
+                colSpan={showActions ? "8" : "7"}
+                className="px-4 py-6 text-center text-gray-500"
+              >
+                No incidents found
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
 
   return (
     <div>
@@ -339,6 +435,30 @@ function IncidentsTab() {
         </div>
       )}
 
+      {/* Tab Navigation */}
+      <div className="flex border-b gap-5 px-2 py-1 bg-gray-50 mb-6">
+        <button
+          className={`px-6 py-3 font-medium text-sm rounded-lg transition-all duration-200 ${
+            activeTab === "active"
+              ? "bg-blue-600 text-white shadow-md"
+              : "bg-white text-gray-700 hover:bg-blue-50 hover:text-blue-600 border border-gray-200"
+          }`}
+          onClick={() => setActiveTab("active")}
+        >
+          Active ({activeIncidents.length})
+        </button>
+        <button
+          className={`px-6 py-3 font-medium text-sm rounded-lg transition-all duration-200 ${
+            activeTab === "locked"
+              ? "bg-blue-600 text-white shadow-md"
+              : "bg-white text-gray-700 hover:bg-blue-50 hover:text-blue-600 border border-gray-200"
+          }`}
+          onClick={() => setActiveTab("locked")}
+        >
+          Locked ({lockedIncidents.length})
+        </button>
+      </div>
+
       {loading ? (
         <div className="flex justify-center items-center h-64">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -348,114 +468,34 @@ function IncidentsTab() {
           {error}
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-lg border">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  ID
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Title
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Severity
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Status
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Assignee
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Created
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Updated
-                </th>
-                <th className="px-4 py-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
-              {incidents.length > 0 ? (
-                incidents.map((i) => (
-                  <tr key={i.id}>
-                    <td className="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900">
-                      {i.id}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-800">
-                      {i.title}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-3">
-                      <Pill className={incidentSeverityClass(i.severity)}>
-                        {i.severity}
-                      </Pill>
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-3">
-                      <Pill className={incidentStatusClass(i.status)}>
-                        {i.status}
-                      </Pill>
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">
-                      {i.assignee}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">
-                      {formatDate(i.createdAt)}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">
-                      {formatDate(i.updatedAt)}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-3 text-right">
-                      <div className="flex items-center justify-end space-x-2">
-                        {/* View button */}
-                        <button
-                          onClick={() => console.log("View incident", i.id)}
-                          className="rounded-lg bg-white border border-blue-300 px-3 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-50 transition-colors duration-200"
-                        >
-                          View
-                        </button>
-
-                        {/* Approve button - only show for pending incidents */}
-                        {i.status === "pending" && (
-                          <button
-                            onClick={() => handleApproveIncident(i.id)}
-                            disabled={processingAction === i.id}
-                            className="rounded-lg px-3 py-1.5 text-xs font-medium bg-green-600 text-white hover:bg-green-700 transition-colors duration-200"
-                          >
-                            {processingAction === i.id
-                              ? "Processing..."
-                              : "Approve"}
-                          </button>
-                        )}
-
-                        {/* Reject button - only show for pending incidents */}
-                        {i.status === "pending" && (
-                          <button
-                            onClick={() => initiateRejectIncident(i.id)}
-                            disabled={processingAction === i.id}
-                            className="rounded-lg px-3 py-1.5 text-xs font-medium bg-red-600 text-white hover:bg-red-700 transition-colors duration-200"
-                          >
-                            {processingAction === i.id
-                              ? "Processing..."
-                              : "Reject"}
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td
-                    colSpan="8"
-                    className="px-4 py-6 text-center text-gray-500"
-                  >
-                    No incidents found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+        <div>
+          {activeTab === "active" && (
+            <div>
+              <div className="mb-4">
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  Active Incidents
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Pending incidents that require your attention. You can approve or reject these incidents.
+                </p>
+              </div>
+              {renderIncidentsTable(activeIncidents, true)}
+            </div>
+          )}
+          
+          {activeTab === "locked" && (
+            <div>
+              <div className="mb-4">
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  Locked Incidents
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Historical record of approved and rejected incidents. These are read-only for audit purposes.
+                </p>
+              </div>
+              {renderIncidentsTable(lockedIncidents, false)}
+            </div>
+          )}
         </div>
       )}
     </div>
