@@ -95,17 +95,17 @@ function AllPaths() {
 
   if (loading) return <Loading />;
 
-  if (paths.length === 0)
-    return (
-      <NoResult>
-        <Button onClick={() => setSearchParams({})}>Clear Filters</Button>
-      </NoResult>
-    );
-
   if (error)
     return (
       <NoResult title="Something Went Wrong" message={error}>
         <Button onClick={() => navigate("/")}>Back to Home</Button>
+      </NoResult>
+    );
+
+  if (paths.length === 0)
+    return (
+      <NoResult>
+        <Button onClick={() => setSearchParams({})}>Clear Filters</Button>
       </NoResult>
     );
 
