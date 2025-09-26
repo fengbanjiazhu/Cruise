@@ -34,9 +34,9 @@ steps:
     JWT_SECRET: $(JWT_SECRET)
 
 
-- script: |
-    # npm run test-fe
-  displayName: 'Run frontend unit tests (skipped for now)'
+ - script: |
+    npm run test-fe
+  displayName: 'Run frontend unit tests'
 
 # - script: |
 #     npm run inte-test
