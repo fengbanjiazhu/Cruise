@@ -34,7 +34,7 @@ steps:
     JWT_SECRET: $(JWT_SECRET)
 
 
- - script: |
+- script: |
     npm run test-fe
   displayName: 'Run frontend unit tests'
 
