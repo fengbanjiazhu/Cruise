@@ -10,7 +10,6 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  NODE_ENV: 'production'
   JWT_SECRET: $(jwt)
   JWT_EXPIRES_IN: '14d'
   JWT_COOKIE_EXPIRES_IN: 14
@@ -47,3 +46,5 @@ steps:
 - script: |
     npm run build
   displayName: 'Build frontend (Vite)'
+  env:
+    NODE_ENV: production
