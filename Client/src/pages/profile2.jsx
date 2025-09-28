@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-hot-toast";
@@ -15,42 +15,48 @@ const th_style = {
 const td_style = { padding: "0.85rem", color: "#555" };
 
 function ProfilePage() {
-  const { user, token } = useSelector((state) => state.userInfo);
+  
   const dispatch = useDispatch();
+  const { user, token } = useSelector((state) => state.userInfo);
 
   const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
+  const [editingName, setEditingName] = useState(false);
   const [editingEmail, setEditingEmail] = useState(false);
-  const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  if (!user) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <p className="text-[#555] mb-4">User not logged in.</p>
-        <Button onClick={() => window.location.href = "/login"}>
-          Go to Login
-        </Button>
-      </div>
-    );
-  }
 
-  const handleSave = async (field) => {
-  try {
-    setLoading(true);
-    const data = field === "name" ? { name } : { email };
-    await fetchPost("user/update", optionMaker(data, "PATCH", token));
-    toast.success(`${field === "name" ? "Name" : "Email"} updated successfully!`);
-    if (field === "name") setEditing(false);
-    else setEditingEmail(false);
-    dispatch(fetchUserInfoUntilSuccess()); // refresh user info
-  } catch (err) {
-    console.error(err);
-    toast.error(`Failed to update ${field}`);
-  } finally {
-    setLoading(false);
-  }
-};
+  useEffect(() => {
+    if (user) {
+      setName(user.name || "");
+      setEmail(user.email || "");
+    }
+  }, [user]);
+  
+
+ const handleSave = async (field) => {
+    if (!token) {
+      toast.error("Token missing, please login again");
+      return;
+    }
+    try {
+      setLoading(true);
+      const data = field === "name" ? { name } : { email };
+      await fetchPost("user/update", optionMaker(data, "PATCH", token));
+      toast.success(`${field === "name" ? "Name" : "Email"} updated successfully!`);
+      if (field === "name") setEditingName(false);
+      else setEditingEmail(false);
+
+      
+      dispatch(fetchUserInfoUntilSuccess());
+
+    } catch (err) {
+      console.error(err);
+      toast.error(`Failed to update ${field}`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="flex flex-col items-center w-full min-h-screen bg-[#f7f7fa] px-4 pt-16">
@@ -72,7 +78,7 @@ function ProfilePage() {
           >
             <td style={td_style}>Name</td>
             <td style={td_style}>
-              {editing ? (
+              {editingName ? (
                 <div className="flex gap-2 items-center">
                   <input
                     type="text"
@@ -80,17 +86,17 @@ function ProfilePage() {
                     onChange={(e) => setName(e.target.value)}
                     className="border rounded p-1 text-[#222]"
                   />
-                  <Button onClick={handleSave} disabled={loading}>
+                  <Button onClick={() => handleSave("name")} disabled={loading}>
                     Save
                   </Button>
-                  <Button onClick={() => { setEditing(false); setName(user.name); }}>
+                  <Button onClick={() => { setEditingName(false); setName(user.name); }}>
                     Cancel
                   </Button>
                 </div>
               ) : (
                 <div className="flex gap-2 items-center">
                   {name}
-                  <Button onClick={() => setEditing(true)}>Edit</Button>
+                  <Button onClick={() => setEditingName(true)}>Edit</Button>
                 </div>
               )}
             </td>
