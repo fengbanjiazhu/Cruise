@@ -32,16 +32,14 @@ function Register() {
       emailRef.current.focus();
       return toast.error("Email is not valid");
     }
-    if (!password.trim()) {
+    if (password.trim().length < 6) {
       passwordRef.current.focus();
-      return toast.error("Password is required");
+      return toast.error("Password is not valid, at least 6 characters");
     }
-
     if (!passwordConfirm.trim()) {
       passwordConfirmRef.current.focus();
       return toast.error("Please confirm your password");
     }
-
     if (password !== passwordConfirm) {
       passwordConfirmRef.current.focus();
       return toast.error("Passwords do not match");

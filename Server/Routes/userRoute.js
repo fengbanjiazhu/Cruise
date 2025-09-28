@@ -10,11 +10,10 @@ userRoute.route("/").get(protect, getMe);
 
 userRoute.route("/login").post(login);
 userRoute.route("/register").post(signup);
-// userRoute.route("/all").get(protect, restrictTo("admin"),getAllUser);
 
 userRoute.route("/checkEmail").get(checkEmail);
 
 userRoute.route("/list").patch(protect, addToUserList).delete(protect, removeFromUserList);
-userRoute.route("/admin").get(protect, getAllUsers);
+userRoute.route("/admin").get(protect, restrictTo("admin"), getAllUsers);
 
 export default userRoute;

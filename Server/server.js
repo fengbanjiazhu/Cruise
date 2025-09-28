@@ -15,8 +15,6 @@ if (process.env.NODE_ENV !== "production") {
   dotenv.config({ path: "./Server/config.env" });
 }
 
-// dotenv.config({ path: "./Server/config.env" });
-
 app.use(
   cors({
     origin: "*",
@@ -38,7 +36,7 @@ app.use("/api/user", userRoute);
 app.use("/api/path", pathRoute);
 app.use("/api/review", reviewRoute);
 
-//
+// Global Error Handler
 app.use(errorController);
 
 const DB = process.env.DATABASE.replace("<db_password>", process.env.DATABASE_PASSWORD);

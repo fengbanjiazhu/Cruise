@@ -37,7 +37,6 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/allpaths" element={<AllPaths />} />
             <Route path="/path/:pathID" element={<PathDetail />} />
-            {/* <Route path="/profile" element={<Profile />} /> */}
 
             {/* Only logged in users can access these */}
             {isLoggedIn && <Route path="/createpath" element={<CreatePath />} />}
