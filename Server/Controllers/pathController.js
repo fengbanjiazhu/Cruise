@@ -5,8 +5,11 @@ import { updateOne, getOne, getAll, deleteOne, createOne } from "./centralContro
 // export const createOnePath = createOne(Path);
 export const createOnePath = async (req, res, next) => {
   const errors = [];
-  const { name, locations, profile, waypoints, distance, duration } = req.body;
+  // Only allowing logged users to create paths
+  const user = req.user;
+  const { name, locations, profile, waypoints, distance, duration, description } = req.body;
 
+  // Validation from Mongoose Scheme has been updated, could be removed
   if (!name || typeof name !== "string" || name.trim().length < 8) {
     errors.push("Name is required and must be at least 8 characters.");
   }
@@ -33,8 +36,20 @@ export const createOnePath = async (req, res, next) => {
     });
   }
 
+  // Added filter to exclude unexpected data from body
+  const path_filter = {
+    name,
+    locations,
+    profile,
+    waypoints,
+    distance,
+    duration,
+    description,
+    creator: user._id,
+  };
+
   try {
-    const doc = await Path.create(req.body);
+    const doc = await Path.create(path_filter);
     res.status(201).json({
       status: "success",
       data: {
