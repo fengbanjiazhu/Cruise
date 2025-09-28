@@ -14,7 +14,7 @@ function SearchBar() {
       <SheetTrigger className="border-slate-300">Search</SheetTrigger>
       <SheetContent className="w-[200px] sm:w-[300px] mt-14 rounded-lg pt-10 ">
         <SheetHeader>
-          <SheetTitle>Choose your action</SheetTitle>
+          <SheetTitle>Search Options</SheetTitle>
           <SheetDescription>
             <SearchForm />
           </SheetDescription>
