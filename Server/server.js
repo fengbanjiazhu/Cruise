@@ -15,7 +15,9 @@ import Incident from "./Models/incidentModel.js";
 
 const app = express();
 
-dotenv.config({ path: "./Server/config.env" });
+if (process.env.NODE_ENV !== "production") {
+  dotenv.config({ path: "./Server/config.env" });
+}
 
 app.use(
   cors({
@@ -64,7 +66,7 @@ app.use("/api/path", pathRoute);
 app.use("/api/review", reviewRoute);
 app.use("/api/incidents", incidentRoute);
 
-//
+// Global Error Handler
 app.use(errorController);
 
 const DB = process.env.DATABASE.replace(

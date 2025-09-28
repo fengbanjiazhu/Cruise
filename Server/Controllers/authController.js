@@ -4,18 +4,18 @@ import bcrypt from "bcryptjs";
 import catchAsync from "../utils/catchAsync.js";
 import cusError from "../utils/cusError.js";
 
-import User from "../models/userModel.js";
+import User from "../Models/userModel.js";
 
 export const hashPassword = async function (password) {
   return await bcrypt.hash(password, 12);
 };
 
-const correctPassword = async function (typedInPassword, dbSavedPassword) {
+export const correctPassword = async function (typedInPassword, dbSavedPassword) {
   if (!dbSavedPassword || !typedInPassword) return null;
   return await bcrypt.compare(typedInPassword, dbSavedPassword);
 };
 
-const signToken = (user) => {
+export const signToken = (user) => {
   const { _id } = user;
   return jwt.sign({ id: _id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
@@ -61,7 +61,7 @@ export const login = catchAsync(async (req, res, next) => {
     return next(new cusError("Please provide email and password", 400));
   }
 
-  const user = await User.findOne({ email }).select("+password +active");
+  const user = await User.findOne({ email }).select("+password +active").populate("savedList");
 
   const correct = await correctPassword(password, user.password);
 

@@ -25,7 +25,7 @@ export const userInfoSlice = createSlice({
     },
     updateUser: (state, action) => {
       if (state.user) {
-        state.user = { ...state.user, ...action.payload };
+        state.user = action.payload;
       }
     },
     startLoadingUser: (state) => {
@@ -44,7 +44,10 @@ export const userInfoSlice = createSlice({
 
 export const fetchUserInfoUntilSuccess = () => async (dispatch, getState) => {
   const token = getState().userInfo.token;
-  if (!token) return;
+  const user = getState().userInfo.user;
+  // console.log("TOKEN::", token);
+
+  if ((user != null && user != undefined) || !token) return;
 
   dispatch(startLoadingUser());
 
@@ -53,7 +56,7 @@ export const fetchUserInfoUntilSuccess = () => async (dispatch, getState) => {
       const data = await fetchGet("user/", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      dispatch(setUser({ user: data.data, loadingUser: true }));
+      dispatch(setUser({ user: data.data, token, loadingUser: true }));
       dispatch(endLoadingUser());
     } catch (err) {
       console.log("User fetch failed, retrying in 1s...", err);

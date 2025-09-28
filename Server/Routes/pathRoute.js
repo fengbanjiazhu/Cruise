@@ -3,11 +3,18 @@ import {
   createOnePath,
   getOnePath,
   getAllPaths,
+  updateOnePath,
+  deleteOnePath,
 } from "../Controllers/pathController.js";
+import { protect } from "../Controllers/authController.js";
 
 const pathRoute = express.Router();
 
-pathRoute.route("/").post(createOnePath).get(getAllPaths);
-pathRoute.route("/:id").get(getOnePath);
+pathRoute.route("/").get(getAllPaths).post(protect, createOnePath);
+pathRoute
+  .route("/:id")
+  .get(getOnePath)
+  .patch(protect, updateOnePath)
+  .delete(protect, deleteOnePath);
 
 export default pathRoute;

@@ -11,7 +11,9 @@ node_modules
 dist
 dist-ssr
 *.local
-*.test.js
+# *.test.js
+# *.test.jsx
+/Client/src/_TEST/_IntegrationTest*
 
 # Editor directories and files
 .vscode/*

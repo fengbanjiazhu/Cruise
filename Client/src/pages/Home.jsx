@@ -7,7 +7,7 @@ import map from "@/assets/map.jpg";
 import earth from "@/assets/earth.png";
 
 import React, { useRef } from "react";
-import Card from "../components/UI/Card";
+import Card from "../components/ui/OldCard";
 import { Parallax, ParallaxLayer } from "@react-spring/parallax";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";

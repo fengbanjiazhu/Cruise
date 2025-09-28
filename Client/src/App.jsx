@@ -4,19 +4,20 @@ import { Toaster } from "react-hot-toast";
 import "./index.css";
 import "./App.css";
 
-import Layout from "./components/UI/Layout";
+import Layout from "./components/ui/Layout";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import CreatePath from "./pages/CreatePath";
-import Path from "./pages/Path";
+import AllPaths from "./pages/AllPaths";
 import Profile from "./pages/Profile";
 import Admin from "./pages/AdminPage/page";
 import Login from "./pages/Login";
 import Register from "./pages/Registration";
+import PathDetail from "./pages/PathDetail";
+import Review from "./pages/Review";
 
 import { fetchUserInfoUntilSuccess } from "./store/slices/userInfoSlice";
 import { useEffect } from "react";
-import Review from "./pages/Review";
 
 function App() {
   const dispatch = useDispatch();
@@ -34,13 +35,14 @@ function App() {
         <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
-            <Route path="/path" element={<Path />} />
-            {/* <Route path="/profile" element={<Profile />} /> */}
+            <Route path="/allpaths" element={<AllPaths />} />
+            <Route path="/path/:pathID" element={<PathDetail />} />
 
-            {isLoggedIn && <Route path="/profile" element={<Profile />} />}
-            {isLoggedIn && <Route path="/review" element={<Review />} />}
-            {isLoggedIn && <Route path="/admin" element={<Admin />} />}
+            {/* Only logged in users can access these */}
             {isLoggedIn && <Route path="/createpath" element={<CreatePath />} />}
+            {isLoggedIn && <Route path="/review" element={<Review />} />}
+            {isLoggedIn && <Route path="/profile" element={<Profile />} />}
+            {isLoggedIn && <Route path="/admin" element={<Admin />} />}
 
             {!isLoggedIn && <Route path="/login" element={<Login />} />}
             {!isLoggedIn && <Route path="/register" element={<Register />} />}

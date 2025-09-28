@@ -4,7 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import logo from "@/assets/cruise_logo.png";
 
 function Header() {
-  const { isLoggedIn } = useSelector((state) => state.userInfo);
+  const { isLoggedIn, user } = useSelector((state) => state.userInfo);
+  const isAdmin = user?.role === "admin";
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const logout = () => {
@@ -21,12 +22,12 @@ function Header() {
 
         <nav className="align-center">
           <NavLink to="/">Home</NavLink>
-          <NavLink to="/path">Path</NavLink>
+          <NavLink to="/allpaths">Path</NavLink>
 
           {isLoggedIn && <NavLink to="/createpath">Create Path</NavLink>}
           {isLoggedIn && <NavLink to="/review">Reviews</NavLink>}
           {isLoggedIn && <NavLink to="/profile">Profile</NavLink>}
-          {isLoggedIn && <NavLink to="/admin">Admin</NavLink>}
+          {isLoggedIn && isAdmin && <NavLink to="/admin">Admin</NavLink>}
 
           {isLoggedIn && (
             <a onClick={logout} role="button">

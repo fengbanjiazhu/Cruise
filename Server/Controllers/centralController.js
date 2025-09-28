@@ -37,7 +37,6 @@ export const updateOne = (Model) =>
 
 export const createOne = (Model) =>
   catchAsync(async (req, res, next) => {
-
     const doc = await Model.create(req.body);
 
     res.status(201).json({
@@ -67,12 +66,17 @@ export const getOne = (Model, popOptions) =>
     });
   });
 
-export const getAll = (Model) =>
+export const getAll = (Model, popOptions) =>
   catchAsync(async (req, res, next) => {
     let filter = {};
     if (req.params.pathId) filter = { path: req.params.pathId };
 
+    filter = { ...filter, ...req.query };
+
     const features = new QueryFeatures(Model.find(filter), req.query).filter().sort().limitFields();
+
+    if (popOptions) features.query = features.query.populate(popOptions);
+
     let doc = await features.query;
 
     res.status(200).json({
@@ -83,5 +87,3 @@ export const getAll = (Model) =>
       },
     });
   });
-
-

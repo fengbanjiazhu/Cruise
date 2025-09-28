@@ -6,6 +6,10 @@ import {
   signup,
 } from "../Controllers/authController.js";
 import {
+  addToUserList,
+  removeFromUserList,
+} from "../Controllers/favListController.js";
+import {
   getMe,
   updateUser,
   checkEmail,
@@ -19,10 +23,13 @@ userRoute.route("/").get(protect, getMe);
 
 userRoute.route("/login").post(login);
 userRoute.route("/register").post(signup);
-// userRoute.route("/all").get(protect, restrictTo("admin"),getAllUser);
+
 userRoute.route("/checkEmail").get(checkEmail);
 
-// Remove role restriction but keep authentication
-userRoute.route("/admin").get(protect, getAllUsers); // Any authenticated user can access
+userRoute
+  .route("/list")
+  .patch(protect, addToUserList)
+  .delete(protect, removeFromUserList);
+userRoute.route("/admin").get(protect, restrictTo("admin"), getAllUsers);
 
 export default userRoute;

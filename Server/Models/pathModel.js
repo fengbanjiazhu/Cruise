@@ -9,16 +9,18 @@ const pathSchema = new mongoose.Schema(
       required: [true, "A path must have a name"],
       trim: true,
       maxlength: [40, "A path name must not more than 40 characters"],
-      minlength: [8, "A path name must not less than 10 characters"],
+      minlength: [8, "A path name must be at least 8 characters"],
     },
     slug: String,
     distance: {
       type: Number,
       required: [true, "A path must have a total distance"],
+      validate: [(v) => v > 0, "Distance must be greater than 0"],
     },
     duration: {
       type: Number,
       required: [true, "A path must have a duration"],
+      validate: [(v) => v > 0, "Duration must be greater than 0"],
     },
     rating: {
       type: Number,
@@ -65,7 +67,7 @@ const pathSchema = new mongoose.Schema(
         },
       ],
       required: true,
-      validate: (v) => v.length > 0,
+      validate: [(v) => v.length > 1, "At least 2 locations are required"],
     },
     waypoints: {
       type: [
@@ -76,9 +78,9 @@ const pathSchema = new mongoose.Schema(
         },
       ],
       required: true,
-      validate: (v) => v.length > 0,
+      validate: [(v) => v.length > 1, "At least 2 waypoints are required"],
     },
-    creator: { type: mongoose.Schema.ObjectId, ref: "User" },
+    creator: { type: mongoose.Schema.ObjectId, ref: "User", required: true },
     blocked: {
       type: Boolean,
       default: false,
@@ -103,13 +105,18 @@ const pathSchema = new mongoose.Schema(
 //   localField: '_id',
 // });
 
+pathSchema.pre(/^find/, function (next) {
+  this.find({ blocked: { $ne: "true" } });
+  next();
+});
+
 pathSchema.pre("save", function (next) {
   this.slug = slugify(this.name, { lower: true });
   next();
 });
 
 pathSchema.pre("save", function (next) {
-  if (this.locations && this.locations.length > 0) {
+  if (this.locations && this.locations.length > 1) {
     const loc = this.locations[0];
     if (loc.lat != null && loc.lng != null) {
       this.startLocation.type = "Point";
