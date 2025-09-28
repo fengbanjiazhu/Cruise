@@ -27,6 +27,7 @@ function Header() {
           {isLoggedIn && <NavLink to="/createpath">Create Path</NavLink>}
           {isLoggedIn && <NavLink to="/review">Reviews</NavLink>}
           {isLoggedIn && <NavLink to="/profile">Profile</NavLink>}
+          {isLoggedIn && <NavLink to="/profile2">Profile 2</NavLink>}
           {isLoggedIn && isAdmin && <NavLink to="/admin">Admin</NavLink>}
 
           {isLoggedIn && (

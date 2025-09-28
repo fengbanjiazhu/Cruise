@@ -25,3 +25,18 @@ export const checkEmail = catchAsync(async (req, res, next) => {
     exists: !!user, // true if user exists, false otherwise
   });
 });
+
+export const updateCurrentUser = catchAsync(async (req, res, next) => {
+  const doc = await User.findByIdAndUpdate(req.user._id, req.body, {
+    new: true,
+    runValidators: true,
+  });
+
+  if (!doc) return next(new cusError("No user found", 404));
+
+  res.status(200).json({
+    status: "success",
+    data: { data: doc },
+  });
+});
+
