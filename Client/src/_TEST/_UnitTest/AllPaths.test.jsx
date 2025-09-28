@@ -45,7 +45,8 @@ describe("AllPaths", () => {
         </MemoryRouter>
       </Provider>
     );
-    expect(screen.getByText(/Loading paths/i)).toBeInTheDocument();
+    // Loading component renders "Loading" (not "Loading paths")
+    expect(screen.getByText(/Loading/i)).toBeInTheDocument();
     await waitFor(() => expect(screen.getByText("Path 1")).toBeInTheDocument());
   });
 
@@ -58,6 +59,10 @@ describe("AllPaths", () => {
         </MemoryRouter>
       </Provider>
     );
-    await waitFor(() => expect(screen.getByText(/API error/i)).toBeInTheDocument());
+    // Use a flexible matcher to find the error message
+    await waitFor(() => {
+      const errorNode = screen.queryByText((content) => content.includes("API error"));
+      expect(errorNode).toBeInTheDocument();
+    });
   });
 });

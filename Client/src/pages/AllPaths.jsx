@@ -1,11 +1,20 @@
+import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+// Service
+import { fetchGet } from "../utils/api";
+// UI
+import { Button } from "@/components/ui/button";
+
 import { MapContainer, TileLayer } from "react-leaflet";
 import WaypointMarkers from "../components/Paths/WaypointMarkers";
 import RouteBetweenWaypoints from "../components/Paths/RouteBetweenWaypoints";
-import React, { useState, useEffect } from "react";
-import { fetchGet } from "../utils/api";
-import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+//
 import SavePathButton from "../components/Paths/SavePathButton";
+import SearchBar from "../components/Search/SearchBar";
+
+import NoResult from "../components/Paths/NoResult";
+import Loading from "../components/ui/Loading";
 
 const th_style = {
   padding: "0.85rem",
@@ -16,7 +25,7 @@ const th_style = {
 
 const td_style = { padding: "0.85rem", color: "#555" };
 
-const tr_style = { padding: "2rem", textAlign: "center", color: "#fff" };
+// const tr_style = { padding: "2rem", textAlign: "center", color: "#fff" };
 
 function MapWithRoute({ waypoints, profile }) {
   // Convert waypoints to expected format for WaypointMarkers/RouteBetweenWaypoints
@@ -49,24 +58,32 @@ function AllPaths() {
   const [error, setError] = useState(null);
   const [openPathIds, setOpenPathIds] = useState([]);
   const { user } = useSelector((state) => state.userInfo);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   const saved = user?.savedList?.map((path) => path._id) || [];
 
   useEffect(() => {
-    async function fetchPaths() {
-      setLoading(true);
-      setError(null);
+    const fetchPaths = async () => {
       try {
-        const res = await fetchGet("path", {});
-        setPaths(res.data.data || []);
+        setLoading(true);
+        let url = "path";
+        const queryString = searchParams.toString();
+        if (queryString) {
+          url += `?${queryString}`;
+        }
+        const res = await fetchGet(url, {});
+        setPaths(res.data.data);
       } catch (err) {
+        console.error(err);
         setError(err.message || "Failed to fetch paths");
       } finally {
         setLoading(false);
       }
-    }
+    };
+
     fetchPaths();
-  }, []);
+  }, [searchParams]);
 
   const handleTogglePath = (pathId) => {
     setOpenPathIds((ids) =>
@@ -76,44 +93,45 @@ function AllPaths() {
 
   const isSaved = (pathId) => saved.includes(pathId);
 
+  if (loading) return <Loading />;
+
+  if (error)
+    return (
+      <NoResult title="Something Went Wrong" message={error}>
+        <Button onClick={() => navigate("/")}>Back to Home</Button>
+      </NoResult>
+    );
+
+  if (paths.length === 0)
+    return (
+      <NoResult>
+        <Button onClick={() => setSearchParams({})}>Clear Filters</Button>
+      </NoResult>
+    );
+
   return (
-    <div className="flex flex-col items-center w-full min-h-screen bg-[#f7f7fa] px-4">
-      <h1 className="text-[2.2rem] font-bold tracking-[-0.01em] text-[#222] mt-10 mb-6 text-center leading-[1.2]">
-        User Created Paths
-      </h1>
-      <table className="w-full max-w-[900px] border-separate border-spacing-0 rounded-xl overflow-hidden shadow-[0_2px_12px_0_rgba(0,0,0,0.06)] bg-white mt-2 text-[#222] border border-[#ececf0]">
-        <thead className="bg-[#f7f7fa] text-[#555] border-b border-[#ececf0]">
-          <tr>
-            <th style={th_style}>Name</th>
-            <th style={th_style}>Profile</th>
-            <th style={th_style}>Description</th>
-            <th style={th_style}>Duration</th>
-            <th style={th_style}>Creator</th>
-            <th className="p-[0.85rem]"></th>
-            <th className="p-[0.85rem]"></th>
-          </tr>
-        </thead>
-        <tbody>
-          {loading ? (
+    <>
+      <div className="flex flex-col items-center w-full min-h-screen bg-[#f7f7fa] px-4 pb-16">
+        <div className="fixed top-20 right-10">
+          <SearchBar />
+        </div>
+        <h1 className="text-[2.2rem] font-bold tracking-[-0.01em] text-[#222] mt-10 mb-6 text-center leading-[1.2]">
+          User Created Paths
+        </h1>
+        <table className="w-full max-w-[900px] border-separate border-spacing-0 rounded-xl overflow-hidden shadow-[0_2px_12px_0_rgba(0,0,0,0.06)] bg-white mt-2 text-[#222] border border-[#ececf0]">
+          <thead className="bg-[#f7f7fa] text-[#555] border-b border-[#ececf0]">
             <tr>
-              <td colSpan={6} style={tr_style}>
-                Loading paths…
-              </td>
+              <th style={th_style}>Name</th>
+              <th style={th_style}>Profile</th>
+              <th style={th_style}>Description</th>
+              <th style={th_style}>Duration</th>
+              <th style={th_style}>Creator</th>
+              <th className="p-[0.85rem]"></th>
+              <th className="p-[0.85rem]"></th>
             </tr>
-          ) : error ? (
-            <tr>
-              <td colSpan={6} style={tr_style}>
-                {error}
-              </td>
-            </tr>
-          ) : paths.length === 0 ? (
-            <tr>
-              <td colSpan={6} style={tr_style}>
-                No paths found.
-              </td>
-            </tr>
-          ) : (
-            paths.map((path, idx) => (
+          </thead>
+          <tbody>
+            {paths.map((path, idx) => (
               <React.Fragment key={path._id}>
                 <tr
                   style={{
@@ -188,11 +206,11 @@ function AllPaths() {
                   </tr>
                 )}
               </React.Fragment>
-            ))
-          )}
-        </tbody>
-      </table>
-    </div>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
   );
 }
 

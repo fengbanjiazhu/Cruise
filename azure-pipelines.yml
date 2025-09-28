@@ -10,7 +10,6 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  NODE_ENV: 'production'
   JWT_SECRET: $(jwt)
   JWT_EXPIRES_IN: '14d'
   JWT_COOKIE_EXPIRES_IN: 14
@@ -24,13 +23,28 @@ steps:
   displayName: 'Install Node.js'
 
 - script: |
-    npm install
-  displayName: 'Install dependencies'
+    npm install --include=dev
+  displayName: 'Install dependencies including devDependencies'
 
 - script: |
-    # npm run test
-  displayName: 'Run tests'
+    npm run test-be
+  displayName: 'Run backend unit tests'
+  env:
+    JWT_SECRET: $(JWT_SECRET)
+
+
+- script: |
+    npm run test-fe
+  displayName: 'Run frontend unit tests'
+  env:
+    NODE_ENV: development
+
+# - script: |
+#     npm run inte-test
+#   displayName: 'Run integration tests'
 
 - script: |
     npm run build
   displayName: 'Build frontend (Vite)'
+  env:
+    NODE_ENV: production

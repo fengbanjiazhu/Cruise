@@ -1,10 +1,17 @@
-import { Skeleton } from "./skeleton";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 function Loading({ classNames }) {
   return (
-    <div className="flex flex-col space-y-3 mx-auto mt-5">
-      <Skeleton className={`h-[125px] w-[250px] rounded-xl ${classNames}`} />
-    </div>
+    <Card
+      className={`w-ful h-full m-auto max-w-[900px] rounded-xl bg-white text-[#222] border border-[#ececf0] ${classNames}`}
+    >
+      <CardHeader>
+        <CardTitle className="flex gap-2">
+          Loading <AiOutlineLoading3Quarters size={20} className="animate-spin text-blue-500" />
+        </CardTitle>
+      </CardHeader>
+    </Card>
   );
 }
 

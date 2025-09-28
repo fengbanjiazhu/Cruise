@@ -3,27 +3,9 @@ import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import PathDetail from "../../pages/PathDetail.jsx";
 
-import { Provider } from "react-redux";
-import { configureStore } from "@reduxjs/toolkit";
-import userInfoReducer from "../../store/slices/userInfoSlice";
-import { MemoryRouter } from "react-router-dom";
-
-// Define store for all tests
-const store = configureStore({
-  reducer: { userInfo: userInfoReducer },
-  preloadedState: {
-    userInfo: { user: { _id: "u1" }, token: null, isLoggedIn: true, loadingUser: false },
-  },
-});
-
-// Mock react-router-dom useParams
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useParams: () => ({ pathID: "123" }),
-}));
-
-// Mock API fetchGet
+// Mock fetchPost and optionMaker for PATCH/DELETE
 jest.mock("../../utils/api", () => ({
+  ...jest.requireActual("../../utils/api"),
   fetchGet: jest.fn(() =>
     Promise.resolve({
       data: {
@@ -46,7 +28,29 @@ jest.mock("../../utils/api", () => ({
       },
     })
   ),
+  fetchPost: jest.fn(),
+  optionMaker: jest.fn(),
 }));
+
+import { Provider } from "react-redux";
+import { configureStore } from "@reduxjs/toolkit";
+import userInfoReducer from "../../store/slices/userInfoSlice";
+import { MemoryRouter } from "react-router-dom";
+
+// Define store for all tests
+const store = configureStore({
+  reducer: { userInfo: userInfoReducer },
+  preloadedState: {
+    userInfo: { user: { _id: "u1" }, token: null, isLoggedIn: true, loadingUser: false },
+  },
+});
+
+// Mock react-router-dom useParams
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useParams: () => ({ pathID: "123" }),
+}));
+
 
 // UI tests
 
@@ -86,14 +90,10 @@ describe("PathDetail UI", () => {
     await waitFor(() => expect(screen.getByText(/Fetch error/i)).toBeInTheDocument());
   });
   test("edit modal PATCHes path and reloads on success", async () => {
-    // Mock fetch for PATCH
-    global.fetch = jest.fn((url, opts) => {
-      if (opts.method === "PATCH") {
-        return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
-      }
-      // fallback to GET
-      return Promise.resolve({ ok: true, json: () => Promise.resolve({ data: { data: {} } }) });
-    });
+    // Mock fetchPatch and optionMaker
+    const { fetchPost, optionMaker } = require("../../utils/api");
+    fetchPost.mockImplementationOnce(() => Promise.resolve({ data: { data: { _id: "123", name: "Edited Path" } } }));
+    optionMaker.mockImplementation((data, method, token) => ({ method, body: JSON.stringify(data), headers: { Authorization: `Bearer ${token}` } }));
     render(
       <Provider store={store}>
         <MemoryRouter>
@@ -108,31 +108,24 @@ describe("PathDetail UI", () => {
     fireEvent.change(screen.getByLabelText(/Route name/i), { target: { value: "Edited Path" } });
     // Save changes
     fireEvent.click(screen.getByText(/Save Changes/i));
-    await waitFor(() =>
-      expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining("/api/path/"),
-        expect.objectContaining({ method: "PATCH" })
-      )
-    );
-    // Success: PATCH called
+    await waitFor(() => {
+      expect(fetchPost).toHaveBeenCalled();
+      const calls = optionMaker.mock.calls;
+      expect(
+        calls.some(
+          ([payload, method]) =>
+            method === "PATCH" && payload.name === "Edited Path"
+        )
+      ).toBe(true);
+    });
   });
 
   test("delete button sends DELETE and redirects", async () => {
-    // Mock fetch for DELETE
-    global.fetch = jest.fn((url, opts) => {
-      if (opts.method === "DELETE") {
-        return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
-      }
-      // fallback to GET
-      return Promise.resolve({ ok: true, json: () => Promise.resolve({ data: { data: {} } }) });
-    });
-    // Mock window.confirm to always return true
+    // Mock fetchPost and optionMaker for DELETE
+    const { fetchPost, optionMaker } = require("../../utils/api");
+    fetchPost.mockImplementationOnce(() => Promise.resolve({ data: { data: {} } }));
+    optionMaker.mockImplementation((data, method, token) => ({ method, body: JSON.stringify(data), headers: { Authorization: `Bearer ${token}` } }));
     window.confirm = jest.fn(() => true);
-    // Mock window.alert to silence jsdom errors
-    // window.alert = jest.fn();
-    // Mock window.location.reload to silence jsdom errors
-    delete window.location;
-    // window.location = { reload: jest.fn() };
     render(
       <Provider store={store}>
         <MemoryRouter>
@@ -143,14 +136,16 @@ describe("PathDetail UI", () => {
     // Click delete
     await waitFor(() => screen.getByRole("button", { name: /Delete Path/i }));
     fireEvent.click(screen.getByRole("button", { name: /Delete Path/i }));
-    // Should call fetch with DELETE
-    await waitFor(() =>
-      expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining("/api/path/"),
-        expect.objectContaining({ method: "DELETE" })
-      )
-    );
-    // Success: DELETE called
+    await waitFor(() => {
+      expect(fetchPost).toHaveBeenCalled();
+      const calls = optionMaker.mock.calls;
+      expect(
+        calls.some(
+          ([payload, method]) =>
+            method === "DELETE" && payload.pathID === "123"
+        )
+      ).toBe(true);
+    });
   });
 });
 

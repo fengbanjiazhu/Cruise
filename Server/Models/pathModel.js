@@ -103,6 +103,11 @@ const pathSchema = new mongoose.Schema(
 //   localField: '_id',
 // });
 
+pathSchema.pre(/^find/, function (next) {
+  this.find({ blocked: { $ne: "true" } });
+  next();
+});
+
 pathSchema.pre("save", function (next) {
   this.slug = slugify(this.name, { lower: true });
   next();
