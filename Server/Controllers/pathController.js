@@ -115,7 +115,11 @@ export const updateOnePath = async (req, res, next) => {
     });
   }
 };
-export const getOnePath = getOne(Path);
+export const getOnePath = getOne(Path, {
+  path: "creator",
+  select: "name",
+});
+
 export const getAllPaths = getAll(Path, {
   path: "creator",
   select: "name",

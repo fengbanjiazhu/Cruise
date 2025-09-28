@@ -1,18 +1,21 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { IoHeartDislike } from "react-icons/io5";
+import { useDispatch, useSelector } from "react-redux";
+import { updateUser } from "../../store/slices/userInfoSlice";
+import { useNavigate } from "react-router-dom";
 
+import { fetchPost, optionMaker } from "../../utils/api";
+
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
 
-import { fetchPost, optionMaker } from "../../utils/api";
-import { toast } from "react-hot-toast";
-import { useDispatch, useSelector } from "react-redux";
-import { updateUser } from "../../store/slices/userInfoSlice";
+import { IoHeartDislike } from "react-icons/io5";
+import { FaMapMarkedAlt } from "react-icons/fa";
 
 function PathBriefTab({ path }) {
   const { name, profile, distance, duration, _id } = path;
   const { token } = useSelector((state) => state.userInfo);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const onRemove = async function () {
     try {
@@ -22,6 +25,10 @@ function PathBriefTab({ path }) {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const onCheckDetail = function () {
+    navigate(`/path/${_id}`);
   };
 
   return (
@@ -43,9 +50,13 @@ function PathBriefTab({ path }) {
           <span>{duration} mins</span>
         </CardDescription>
 
-        <div className="flex gap-2">
+        <div className="flex gap-6">
           <Button onClick={onRemove} variant="secondary" size="icon" className="size-8">
             <IoHeartDislike />
+          </Button>
+
+          <Button onClick={onCheckDetail} variant="secondary" size="icon" className="size-8">
+            <FaMapMarkedAlt />
           </Button>
         </div>
       </CardHeader>
