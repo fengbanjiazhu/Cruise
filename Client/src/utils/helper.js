@@ -1,3 +1,5 @@
+import validator from "validator";
+
 export const getLocation = async () => {
   if (!navigator.geolocation) {
     throw new Error("Geolocation is not supported by your browser");
@@ -19,3 +21,8 @@ export const getLocation = async () => {
 };
 
 export const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/;
+
+export const isValidLocation = (location) => {
+  const valid = validator.isLatLong(`${location.lat},${location.lng}`);
+  return valid;
+};

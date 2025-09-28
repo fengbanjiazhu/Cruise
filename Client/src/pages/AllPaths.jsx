@@ -9,10 +9,11 @@ import { Button } from "@/components/ui/button";
 import { MapContainer, TileLayer } from "react-leaflet";
 import WaypointMarkers from "../components/Paths/WaypointMarkers";
 import RouteBetweenWaypoints from "../components/Paths/RouteBetweenWaypoints";
-//
+// Search & Filter
 import SavePathButton from "../components/Paths/SavePathButton";
 import SearchBar from "../components/Search/SearchBar";
-
+import ClearSearchBtn from "../components/Search/ClearSearchBtn";
+// Status UI
 import NoResult from "../components/Paths/NoResult";
 import Loading from "../components/ui/Loading";
 
@@ -62,6 +63,7 @@ function AllPaths() {
   const navigate = useNavigate();
 
   const saved = user?.savedList?.map((path) => path._id) || [];
+  const hasParams = searchParams.toString() !== "";
 
   useEffect(() => {
     const fetchPaths = async () => {
@@ -112,8 +114,9 @@ function AllPaths() {
   return (
     <>
       <div className="flex flex-col items-center w-full min-h-screen bg-[#f7f7fa] px-4 pb-16">
-        <div className="fixed top-20 right-10">
+        <div className="fixed top-20 right-10 flex flex-col gap-4">
           <SearchBar />
+          {hasParams && <ClearSearchBtn title="Reset" />}
         </div>
         <h1 className="text-[2.2rem] font-bold tracking-[-0.01em] text-[#222] mt-10 mb-6 text-center leading-[1.2]">
           User Created Paths

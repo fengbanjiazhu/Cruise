@@ -46,7 +46,7 @@ function LocationGetter({ location, setLocation, radius, setRadius }) {
           <Input
             id="lng"
             value={location.lng}
-            onChange={(e) => setLocation({ ...location, lat: e.target.value })}
+            onChange={(e) => setLocation({ ...location, lng: e.target.value })}
           />
         </div>
       </div>
