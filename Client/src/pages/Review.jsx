@@ -1,119 +1,77 @@
 import React, { useEffect, useState }  from "react";
-import toast from "react-hot-toast";
-import { fetchGet, fetchPost, optionMaker } from "../utils/api";
+import { useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
+//import toast from "react-hot-toast";
+import { fetchGet} from "../utils/api";
+import CreateReview from "./createReview";
 
 function Review() {
-    const [post, setPost] = useState(null);
-    const [returnedReviews, setReturnedReviews] = useState(null);
-    const [review, setReview] = useState("Enter Review");
-    const [rating, setRating] = useState(null)    
-    const pathID = "68b41827015cdced49eabf39";
-    const userID = "68abbad440fef1e01fe82b34";
+    const location = useLocation();
+    const currentUser = useSelector(state => state.userInfo.user);
+    const pathId = location.state?.id;
+    const [pathData, setPathData] = useState(null);
+    const [reviews, setReviews] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    async function getReview() {
+  useEffect(() => {
+    if (!pathId) return;
+
+    setLoading(true); // Reset loading state
+    setError(null);   // Reset error state
+
+    const fetchPath = async () => {
+      try {
+        const data = await fetchGet(`path/${pathId}`);
+        setPathData(data.data.data);
+        //console.log(data.data.data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchReviews = async () => {
         try {
-            const returnReviews = await fetchGet("review/"+pathID);
-            setReturnedReviews(returnReviews); 
-            console.log(returnReviews);
-        } catch (error) {
-            console.log(error);
-            toast.error("Failed to fetch review, try again later");
+            const data = await fetchGet(`review/${pathId}`);
+            setReviews(data.data.data);
+            console.log(data);
+        } catch (err) {
+            console.error(err);
         }
     }
 
-    async function getPost() {
-        const id = "path/"+pathID;
-        try {
-            const data = await fetchGet(id);
-            setPost(data);
-            //console.log(data);
-            //console.log(data);
-        } catch (error) {
-            console.error(error);
-            toast.error("Failed to fetch path, try again later");
-        }
-    }
+    fetchPath();
+    fetchReviews();
+  }, [pathId]);
 
-    async function leaveReview() {
-        const sendData = {
-            review: review,
-            raiting: rating,
-            path: pathID,
-            user: userID
+  
 
-        }
-
-        try {
-            await fetchPost("review/CreateReview", optionMaker(sendData));
-            toast.success("Congrats! You have left a new review!");
-        } catch (error) {
-            console.log(error);
-            toast.error("Failed to create review, try again later");
-        }
-    }
-
-    // call getPost when component first renders
-    useEffect(() => {
-        getPost();
-        getReview();
-    }, []);
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
-    <div style={{
-        display:"flex",
-        flexDirection: "row"
-        }}>
+    <main>
+        <div>
+            <h1>Review Path</h1>
+            <p>Name: {pathData.name}</p>
+            <p>Creator: {pathData.creator?.name}</p>
+            <p>Description: {pathData.description}</p>
+            <p>ID: {pathData.id}</p>
+        </div>
+        <CreateReview pathId={pathId} userId={currentUser._id}/>
         <section>
-            <h1>Path</h1>
-            {post ? (
-                <>
-                <p>Review:</p>
-                <textarea
-                className="border p-2 w-full"
-                value={review}
-                onChange={(e) => setReview(e.target.value)}
-                />
-                <input
-                    type="radio"
-                    name="stars"
-                    value="1"
-                    checked={rating === 1}
-                    onChange={(e) => setRating(e.target.value)}
-                />
-
-                <input
-                    type="radio"
-                    name="stars"
-                    value="2"
-                    checked={rating === 2}
-                    onChange={(e) => setRating(e.target.value)}
-                />
-
-                <button
-                onClick={leaveReview}
-                className="btn text-slate-900 mt-4 w-full hover:bg-transparent hover:text-white hover:border-white"
-                >
-                Submit Review
-                </button>
-                <pre>{JSON.stringify(post, null, 2)}</pre>
-                </>
-                
-            ) : (
-                <p>Loading...</p>
-            )}
+            {reviews.map((review) => (
+            <div key={review._id} className="bg-[#ffffff] rounded-[8px] [box-shadow:0_4px_6px_rgba(0,_0,_0,_0.1)] p-[24px] m-[16px]">
+                <p><strong>{review.user.name}</strong></p>
+                <p>{review.review}</p>
+                <small>{new Date(review.createdAt).toLocaleString()}</small>
+            </div>
+            ))}
         </section>
-        <section>
-            <h1>Review</h1>
-            {returnedReviews ? (
-                <>
-                <pre>{JSON.stringify(returnedReviews, null, 2)}</pre>
-                </>
-            ) : (
-                <p>Loading...</p>
-            )}
-        </section>
-    </div>
+    </main>
+
   );
 }
-
 export default Review;

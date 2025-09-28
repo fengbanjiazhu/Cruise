@@ -5,3 +5,4 @@ import { updateOne, getOne, getAll, deleteOne, createOne } from "./centralContro
 export const getOnePath = getOne(Path);
 export const createOneReview = createOne(Review);
 export const getAllReview = getAll(Review);
+export const getOneReview = getOne(Review);
