@@ -1,6 +1,7 @@
 import User from "../Models/userModel.js";
 import catchAsync from "../utils/catchAsync.js";
 import { updateOne, getOne, getAll, deleteOne } from "./centralController.js";
+import multer from "multer";
 
 export const getAllUsers = getAll(User);
 export const getUser = getOne(User);
@@ -39,4 +40,31 @@ export const updateCurrentUser = catchAsync(async (req, res, next) => {
     data: { data: doc },
   });
 });
+
+export const updateUserPhoto = catchAsync(async (req, res, next) => {
+  if (!req.file) return next(new cusError("No file uploaded", 400));
+
+  const doc = await User.findByIdAndUpdate(
+    req.user._id,
+    { photo: req.file.filename },
+    { new: true, runValidators: true }
+  );
+
+  if (!doc) return next(new cusError("No user found", 404));
+
+  res.status(200).json({
+    status: "success",
+    data: { data: doc },
+  });
+});
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, "uploads/"),
+  filename: (req, file, cb) => {
+    const ext = file.mimetype.split("/")[1];
+    cb(null, `user-${req.user._id}-${Date.now()}.${ext}`);
+  },
+});
+
+export const uploadUserPhoto = multer({ storage }).single("photo");
 
