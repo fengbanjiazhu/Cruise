@@ -78,13 +78,22 @@ function IncidentDetailModal({ incident, isOpen, onClose }) {
     if (!path) return "Unknown User";
 
     try {
+      console.log("Getting creator name from path:", path);
+
       // Handle different possible data structures
       if (path.creator) {
         // Case 1: Creator is an object with name property
         if (typeof path.creator === "object" && path.creator !== null) {
+          // Check directly for name property
           if (path.creator.name) return path.creator.name;
           if (path.creator.email) return path.creator.email;
           if (path.creator.username) return path.creator.username;
+
+          // Sometimes MongoDB may return nested structure
+          if (path.creator._doc) {
+            if (path.creator._doc.name) return path.creator._doc.name;
+            if (path.creator._doc.email) return path.creator._doc.email;
+          }
         }
 
         // Case 2: Creator is a string but not an ID
@@ -96,28 +105,11 @@ function IncidentDetailModal({ incident, isOpen, onClose }) {
         }
       }
 
-      // Case 3: Try createdBy if creator doesn't have usable info
-      if (path.createdBy) {
-        if (typeof path.createdBy === "object" && path.createdBy !== null) {
-          if (path.createdBy.name) return path.createdBy.name;
-          if (path.createdBy.email) return path.createdBy.email;
-          if (path.createdBy.username) return path.createdBy.username;
-        }
-
-        if (
-          typeof path.createdBy === "string" &&
-          !/^[0-9a-f]{24}$/i.test(path.createdBy)
-        ) {
-          return path.createdBy;
-        }
-      }
-
-      // Case 4: Look for user data
+      // Try looking at "user" field
       if (path.user) {
         if (typeof path.user === "object" && path.user !== null) {
           if (path.user.name) return path.user.name;
           if (path.user.email) return path.user.email;
-          if (path.user.username) return path.user.username;
         }
       }
 
@@ -346,7 +338,18 @@ function IncidentDetailModal({ incident, isOpen, onClose }) {
                               : "N/A"}
                           </td>
                           <td style={td_style}>
-                            {getCreatorName(pathDetails)}
+                            {(() => {
+                              // Detailed debug logging for creator name
+                              console.log("Rendering creator name with:", {
+                                creator: pathDetails.creator,
+                                creatorType: typeof pathDetails.creator,
+                                isObject:
+                                  typeof pathDetails.creator === "object",
+                                name: pathDetails.creator?.name,
+                                calculatedValue: getCreatorName(pathDetails),
+                              });
+                              return getCreatorName(pathDetails);
+                            })()}
                           </td>
                         </tr>
                       </tbody>

@@ -216,4 +216,7 @@ export const getAllPaths = async (req, res, next) => {
   }
 };
 
-export const getOnePath = getOne(Path);
+export const getOnePath = getOne(Path, {
+  path: "creator",
+  select: "name email",
+});
