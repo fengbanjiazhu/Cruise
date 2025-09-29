@@ -1,5 +1,9 @@
 import express from "express";
-import { getOnePath, createOneReview, getAllReview } from "../Controllers/reviewController.js";
+import {
+  getOnePath,
+  createOneReview,
+  getAllReview,
+} from "../Controllers/reviewController.js";
 
 const reviewRoute = express.Router();
 

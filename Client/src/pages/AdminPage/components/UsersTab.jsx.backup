@@ -107,6 +107,11 @@ function UsersTab() {
     return localStorage.getItem("jwt");
   };
 
+  const getToken = () => {
+    if (reduxToken) return reduxToken;
+    return localStorage.getItem("jwt");
+  };
+
   const openModal = (user) => {
     setSelectedUser(user);
     setIsModalOpen(true);

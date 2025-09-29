@@ -8,6 +8,10 @@ import userRoute from "./Routes/userRoute.js";
 import pathRoute from "./Routes/pathRoute.js";
 import errorController from "./Controllers/errorController.js";
 import reviewRoute from "./Routes/reviewRoute.js";
+import incidentRoute from "./Routes/incidentRoute.js";
+
+// For testing
+import Incident from "./Models/incidentModel.js";
 
 const app = express();
 
@@ -31,15 +35,44 @@ app.use(function (req, res, next) {
   next();
 });
 
+// Test endpoint to check if incident API is working
+app.get("/api/test-incident", async (req, res) => {
+  try {
+    // Check if we have any incidents
+    const count = await Incident.countDocuments();
+
+    // Create a test incident if none exist
+    if (count === 0) {
+      await Incident.create({
+        id: "INC-2401",
+        title: "Test Incident",
+        severity: "medium",
+        status: "open",
+        assignee: "Test User",
+      });
+      return res.json({ message: "Test incident created!" });
+    }
+
+    return res.json({ message: `Found ${count} existing incidents` });
+  } catch (err) {
+    console.error("Test incident error:", err);
+    return res.status(500).json({ error: err.message });
+  }
+});
+
 // Routes
 app.use("/api/user", userRoute);
 app.use("/api/path", pathRoute);
 app.use("/api/review", reviewRoute);
+app.use("/api/incidents", incidentRoute);
 
 // Global Error Handler
 app.use(errorController);
 
-const DB = process.env.DATABASE.replace("<db_password>", process.env.DATABASE_PASSWORD);
+const DB = process.env.DATABASE.replace(
+  "<db_password>",
+  process.env.DATABASE_PASSWORD
+);
 
 mongoose
   .connect(DB)
