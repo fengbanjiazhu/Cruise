@@ -84,13 +84,13 @@ export const fetchDelete = async (endpoint, options = {}) => {
   try {
     const response = await fetch(urlMaker(endpoint), {
       method: "DELETE",
-      ...options
+      ...options,
     });
 
     // Handle responses that might not have JSON content (like 204 No Content)
     let resData = null;
     const contentType = response.headers.get("content-type");
-    
+
     if (contentType && contentType.includes("application/json")) {
       resData = await response.json();
     }
@@ -173,9 +173,7 @@ export const fetchGet = async (endpoint, options = {}) => {
 };
 
 export const checkEmail = async (email) => {
-  const response = await fetchGet(
-    `${API_ROUTES.user.checkEmail}?email=${email}`
-  );
+  const response = await fetchGet(`user/checkEmail?email=${email}`);
   return response;
 };
 

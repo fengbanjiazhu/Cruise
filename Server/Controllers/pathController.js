@@ -193,28 +193,10 @@ export const deleteOnePath = async (req, res, next) => {
   }
 };
 
-export const getAllPaths = async (req, res, next) => {
-  try {
-    console.log("Fetching all paths");
-    // Fetch paths, excluding blocked ones, optionally include creator information
-    const paths = await Path.find({ blocked: { $ne: true } }).populate({
-      path: "creator",
-      select: "name email",
-    });
-
-    console.log(`Found ${paths.length} active paths (blocked paths excluded)`);
-
-    // Return with proper content type
-    res.status(200).header("Content-Type", "application/json").json({
-      status: "success",
-      results: paths.length,
-      data: paths,
-    });
-  } catch (err) {
-    console.error("Error in getAllPaths:", err);
-    next(err);
-  }
-};
+export const getAllPaths = getAll(Path, {
+  path: "creator",
+  select: "name",
+});
 
 export const getOnePath = getOne(Path, {
   path: "creator",

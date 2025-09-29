@@ -83,7 +83,7 @@ function AllPaths() {
           url += `?${queryString}`;
         }
         const res = await fetchGet(url, {});
-        setPaths(res.data);
+        setPaths(res.data.data);
       } catch (err) {
         console.error(err);
         setError(err.message || "Failed to fetch paths");
