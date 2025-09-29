@@ -11,6 +11,7 @@ class QueryFeatures {
     excludeFields.forEach((el) => delete queryObj[el]);
 
     const mongoQuery = {};
+    const processedKeys = new Set();
 
     for (const [key, value] of Object.entries(queryObj)) {
       if (["lat", "lng", "radius"].includes(key)) continue;
@@ -21,6 +22,7 @@ class QueryFeatures {
         const op = `$${match[2]}`;
         if (!mongoQuery[field]) mongoQuery[field] = {};
         mongoQuery[field][op] = Number(value);
+        processedKeys.add(key);
       } else if (typeof value === "string") {
         mongoQuery[key] = { $regex: value, $options: "i" };
       } else {
@@ -40,12 +42,11 @@ class QueryFeatures {
       };
     }
 
-    console.log(mongoQuery);
+    for (const k of processedKeys) {
+      delete this.query._conditions[k];
+    }
 
-    console.log("CONDITIONS:", mongoQuery._conditions);
-
-    // this.query = this.query.find(mongoQuery);
-    this.query = this.query.model.find(mongoQuery);
+    this.query = this.query.find(mongoQuery);
 
     return this;
   }
