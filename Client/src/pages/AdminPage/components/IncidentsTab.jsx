@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
 import { triggerPathsRefresh } from "../../../store/slices/adminSlice";
 import Pill from "./Pill";
+import IncidentDetailModal from "./IncidentDetailModal";
 import {
   formatDate,
   incidentSeverityClass,
@@ -26,6 +27,8 @@ function IncidentsTab() {
   const [confirmingDelete, setConfirmingDelete] = useState(null);
   const [activeTab, setActiveTab] = useState("active");
   const [refreshing, setRefreshing] = useState(false);
+  const [viewingIncident, setViewingIncident] = useState(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
 
   // Smooth animation variants
   const containerVariants = {
@@ -207,6 +210,16 @@ function IncidentsTab() {
     setConfirmingDelete(null);
   };
 
+  const handleViewIncident = (incident) => {
+    setViewingIncident(incident);
+    setShowDetailModal(true);
+  };
+
+  const handleCloseDetailModal = () => {
+    setShowDetailModal(false);
+    setViewingIncident(null);
+  };
+
   // Filter incidents based on status
   const activeIncidents = incidents.filter(
     (incident) => incident.status === "pending"
@@ -294,7 +307,7 @@ function IncidentsTab() {
                     <td className="whitespace-nowrap px-6 py-4 text-right">
                       <div className="flex items-center justify-end space-x-2">
                         <motion.button
-                          onClick={() => console.log("View incident", i.id)}
+                          onClick={() => handleViewIncident(i)}
                           className="rounded-lg bg-white border border-blue-300 px-3 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-50 transition-all duration-300"
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
@@ -541,6 +554,17 @@ function IncidentsTab() {
           )}
         </AnimatePresence>
       )}
+
+      {/* Add the IncidentDetailModal */}
+      <AnimatePresence>
+        {showDetailModal && viewingIncident && (
+          <IncidentDetailModal
+            incident={viewingIncident}
+            isOpen={showDetailModal}
+            onClose={handleCloseDetailModal}
+          />
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
