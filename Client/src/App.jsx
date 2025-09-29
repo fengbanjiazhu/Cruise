@@ -40,6 +40,7 @@ function App() {
 
             {/* Only logged in users can access these */}
             {isLoggedIn && <Route path="/createpath" element={<CreatePath />} />}
+
             {isLoggedIn && <Route path="/review" element={<Review />} />}
             {isLoggedIn && <Route path="/profile" element={<Profile />} />}
             {isLoggedIn && <Route path="/admin" element={<Admin />} />}

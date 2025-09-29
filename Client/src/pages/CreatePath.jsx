@@ -9,7 +9,7 @@ import WaypointMarkers from "../components/Paths/WaypointMarkers";
 import { fetchPost, optionMaker } from "../utils/api";
 
 function CreatePath() {
-  const { user, token } = useSelector((state) => state.userInfo);
+  const { user: currentUser, token } = useSelector((state) => state.userInfo);
   const [routeName, setRouteName] = useState("");
   const [description, setDescription] = useState("");
   const [waypoints, setWaypoints] = useState([]);
@@ -20,7 +20,6 @@ function CreatePath() {
   const [isValidating, setIsValidating] = useState(false);
   const mapRef = useRef();
   const [routeSteps, setRouteSteps] = useState(null);
-  const { currentUser } = user;
 
   const [routingProfile, setRoutingProfile] = useState("foot"); // 'car' | 'bike' | 'foot'
   const [scenicMode, setScenicMode] = useState(true); // show alternatives for scenic choices

@@ -109,7 +109,7 @@ function Register() {
 
         <button
           onClick={handleRegister}
-          className="btn text-white mt-4 w-full hover:bg-transparent hover:text-white hover:border-white"
+          className="btn text-slate-900 mt-4 w-full hover:bg-transparent hover:text-white hover:border-white"
         >
           Register
         </button>
