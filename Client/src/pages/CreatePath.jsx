@@ -74,7 +74,6 @@ function CreatePath() {
       return toast.error("Please add at least 2 waypoints");
     }
 
-    const sendData = buildPayload();
 
     try {
       const sendData = buildPayload();

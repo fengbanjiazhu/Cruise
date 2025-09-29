@@ -116,12 +116,10 @@ export const updateOnePath = async (req, res, next) => {
     }
 
     if (pathDoc.creator.toString() !== user._id.toString()) {
-      return res
-        .status(403)
-        .json({
-          status: "fail",
-          message: "You are not allowed to update this path",
-        });
+      return res.status(403).json({
+        status: "fail",
+        message: "You are not allowed to update this path",
+      });
     }
 
     const doc = await Path.findByIdAndUpdate(req.params.id, req.body, {
@@ -149,15 +147,7 @@ export const updateOnePath = async (req, res, next) => {
     });
   }
 };
-export const getOnePath = getOne(Path, {
-  path: "creator",
-  select: "name",
-});
 
-export const getAllPaths = getAll(Path, {
-  path: "creator",
-  select: "name",
-});
 export const deleteOnePath = async (req, res, next) => {
   const user = req.user;
 
@@ -174,12 +164,10 @@ export const deleteOnePath = async (req, res, next) => {
       pathDoc.creator.toString() !== user._id.toString() &&
       user.role !== "admin"
     ) {
-      return res
-        .status(403)
-        .json({
-          status: "fail",
-          message: "You are not allowed to delete this path",
-        });
+      return res.status(403).json({
+        status: "fail",
+        message: "You are not allowed to delete this path",
+      });
     }
 
     const doc = await Path.findByIdAndDelete(req.params.id);

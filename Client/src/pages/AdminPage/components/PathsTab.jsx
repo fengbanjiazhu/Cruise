@@ -9,7 +9,7 @@ function PathsTab() {
   const [error, setError] = useState(null);
   const [showReportModal, setShowReportModal] = useState(false);
   const [selectedPath, setSelectedPath] = useState(null);
-  
+
   // Get the refresh trigger from Redux store
   const refreshPaths = useSelector((state) => state.admin.refreshPaths);
 

@@ -76,12 +76,34 @@ export const fetchPost = async (endpoint, options) => {
     const errorMsg = resData.errors
       ? resData.errors.join(", ")
       : resData.message || "Unknown error";
-    const errorMsg = resData.errors
-      ? resData.errors.join(", ")
-      : resData.message || "Unknown error";
     throw new Error(errorMsg);
   }
   return resData;
+};
+export const fetchDelete = async (endpoint, options = {}) => {
+  try {
+    const response = await fetch(urlMaker(endpoint), {
+      method: "DELETE",
+      ...options
+    });
+
+    // Handle responses that might not have JSON content (like 204 No Content)
+    let resData = null;
+    const contentType = response.headers.get("content-type");
+    
+    if (contentType && contentType.includes("application/json")) {
+      resData = await response.json();
+    }
+
+    if (!successCodes.includes(response.status) || !response.ok) {
+      throw new Error(resData?.message || `Error ${response.status}`);
+    }
+
+    return resData;
+  } catch (err) {
+    console.error(`Error in fetchDelete for ${endpoint}:`, err);
+    throw err;
+  }
 };
 
 export const fetchGet = async (endpoint, options = {}) => {

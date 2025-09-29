@@ -16,6 +16,8 @@ import ClearSearchBtn from "../components/Search/ClearSearchBtn";
 // Status UI
 import NoResult from "../components/Paths/NoResult";
 import Loading from "../components/ui/Loading";
+// Report Modal
+import ReportPathModal from "./AdminPage/components/ReportPathModal";
 
 const th_style = {
   padding: "0.85rem",
@@ -48,7 +50,11 @@ function MapWithRoute({ waypoints, profile }) {
         attribution="&copy; Stadia Maps, &copy; OpenMapTiles &copy; OpenStreetMap contributors"
       />
       <WaypointMarkers waypoints={formattedWaypoints} setWaypoints={() => {}} />
-      <RouteBetweenWaypoints waypoints={formattedWaypoints} profile={profile} scenic={false} />
+      <RouteBetweenWaypoints
+        waypoints={formattedWaypoints}
+        profile={profile}
+        scenic={false}
+      />
     </MapContainer>
   );
 }
@@ -58,6 +64,8 @@ function AllPaths() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [openPathIds, setOpenPathIds] = useState([]);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [selectedPath, setSelectedPath] = useState(null);
   const { user } = useSelector((state) => state.userInfo);
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -75,7 +83,7 @@ function AllPaths() {
           url += `?${queryString}`;
         }
         const res = await fetchGet(url, {});
-        setPaths(res.data.data);
+        setPaths(res.data);
       } catch (err) {
         console.error(err);
         setError(err.message || "Failed to fetch paths");
@@ -89,8 +97,25 @@ function AllPaths() {
 
   const handleTogglePath = (pathId) => {
     setOpenPathIds((ids) =>
-      ids.includes(pathId) ? ids.filter((id) => id !== pathId) : [...ids, pathId]
+      ids.includes(pathId)
+        ? ids.filter((id) => id !== pathId)
+        : [...ids, pathId]
     );
+  };
+
+  const handleReportClick = (path) => {
+    setSelectedPath(path);
+    setShowReportModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowReportModal(false);
+    setSelectedPath(null);
+  };
+
+  const handleReportSubmit = () => {
+    handleCloseModal();
+    // Show a success message if needed
   };
 
   const isSaved = (pathId) => saved.includes(pathId);
@@ -131,6 +156,7 @@ function AllPaths() {
               <th style={th_style}>Creator</th>
               <th className="p-[0.85rem]"></th>
               <th className="p-[0.85rem]"></th>
+              <th className="p-[0.85rem]"></th>
             </tr>
           </thead>
           <tbody>
@@ -141,16 +167,24 @@ function AllPaths() {
                     background: idx % 2 === 0 ? "#f7f7fa" : "#fff",
                     transition: "background 0.2s",
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = "#ececf0")}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.background = "#ececf0")
+                  }
                   onMouseLeave={(e) =>
-                    (e.currentTarget.style.background = idx % 2 === 0 ? "#f7f7fa" : "#fff")
+                    (e.currentTarget.style.background =
+                      idx % 2 === 0 ? "#f7f7fa" : "#fff")
                   }
                 >
-                  <td className="p-[0.85rem] font-medium text-[#222]">{path.name}</td>
-                  <td style={td_style}>
-                    {path.profile?.charAt(0).toUpperCase() + path.profile?.slice(1)}
+                  <td className="p-[0.85rem] font-medium text-[#222]">
+                    {path.name}
                   </td>
-                  <td style={td_style}>{path.description || "No description."}</td>
+                  <td style={td_style}>
+                    {path.profile?.charAt(0).toUpperCase() +
+                      path.profile?.slice(1)}
+                  </td>
+                  <td style={td_style}>
+                    {path.description || "No description."}
+                  </td>
                   <td style={td_style}>{path.duration} min</td>
                   <td style={td_style}>{path.creator?.name || "Unknown"}</td>
                   <td style={{ padding: "0.85rem" }}>
@@ -159,7 +193,9 @@ function AllPaths() {
                       style={{
                         padding: "0.45rem 1.1rem",
                         borderRadius: "0.6rem",
-                        background: openPathIds.includes(path._id) ? "#ececf0" : "#f7f7fa",
+                        background: openPathIds.includes(path._id)
+                          ? "#ececf0"
+                          : "#f7f7fa",
                         color: "#222",
                         fontWeight: 500,
                         border: "1px solid #ececf0",
@@ -169,11 +205,38 @@ function AllPaths() {
                         transition: "background 0.2s, border 0.2s",
                       }}
                     >
-                      {openPathIds.includes(path._id) ? "Close preview" : "Quick view"}
+                      {openPathIds.includes(path._id)
+                        ? "Close preview"
+                        : "Quick view"}
                     </button>
                   </td>
                   <td className="p-[0.85rem]">
-                    <SavePathButton isSaved={isSaved(path._id)} pathId={path._id} />
+                    <SavePathButton
+                      isSaved={isSaved(path._id)}
+                      pathId={path._id}
+                    />
+                  </td>
+                  <td className="p-[0.85rem]">
+                    <button
+                      onClick={() => handleReportClick(path)}
+                      className="text-red-500 hover:text-red-700 transition-colors duration-200 bg-transparent border-none p-0 cursor-pointer"
+                      title="Report Path"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                        className="size-6"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M3 3v1.5M3 21v-6m0 0 2.77-.693a9 9 0 0 1 6.208.682l.108.054a9 9 0 0 0 6.086.71l3.114-.732a48.524 48.524 0 0 1-.005-10.499l-3.11.732a9 9 0 0 1-6.085-.711l-.108-.054a9 9 0 0 0-6.208-.682L3 4.5M3 15V4.5"
+                        />
+                      </svg>
+                    </button>
                   </td>
                 </tr>
                 {openPathIds.includes(path._id) && (
@@ -183,28 +246,34 @@ function AllPaths() {
                       className="bg-[#f7f7fa] p-0 rounded-b-xl border-t border-[#ececf0]"
                     >
                       {/* Only show the map for quick view */}
-                      {Array.isArray(path.waypoints) && path.waypoints.length >= 2 && (
-                        <div className="min-h-[220px] h-[clamp(220px,40vw,340px)] w-full rounded-xl overflow-hidden shadow-[0_2px_12px_0_rgba(0,0,0,0.06)] m-0 relative flex items-center justify-center bg-white p-2 border border-[#ececf0]">
-                          <MapWithRoute waypoints={path.waypoints} profile={path.profile} />
-                          <div className="absolute top-4 right-4 z-[1000] pointer-events-auto flex flex-row gap-2">
-                            <Link
-                              to={`/path/${path._id}`}
-                              className="px-[1.2rem] py-2.5 rounded-[0.6rem] bg-[#ececf0] text-[#222] font-medium border border-[#ececf0] no-underline shadow-none text-[0.98rem] relative z-[1001] transition-colors duration-200 cursor-pointer outline-none"
-                              onMouseOver={(e) => {
-                                e.currentTarget.style.background = "#f7f7fa";
-                                e.currentTarget.style.border = "1px solid #d1d5db";
-                              }}
-                              onMouseOut={(e) => {
-                                e.currentTarget.style.background = "#ececf0";
-                                e.currentTarget.style.border = "1px solid #ececf0";
-                              }}
-                              tabIndex={0}
-                            >
-                              Explore Full Path
-                            </Link>
+                      {Array.isArray(path.waypoints) &&
+                        path.waypoints.length >= 2 && (
+                          <div className="min-h-[220px] h-[clamp(220px,40vw,340px)] w-full rounded-xl overflow-hidden shadow-[0_2px_12px_0_rgba(0,0,0,0.06)] m-0 relative flex items-center justify-center bg-white p-2 border border-[#ececf0]">
+                            <MapWithRoute
+                              waypoints={path.waypoints}
+                              profile={path.profile}
+                            />
+                            <div className="absolute top-4 right-4 z-[1000] pointer-events-auto flex flex-row gap-2">
+                              <Link
+                                to={`/path/${path._id}`}
+                                className="px-[1.2rem] py-2.5 rounded-[0.6rem] bg-[#ececf0] text-[#222] font-medium border border-[#ececf0] no-underline shadow-none text-[0.98rem] relative z-[1001] transition-colors duration-200 cursor-pointer outline-none"
+                                onMouseOver={(e) => {
+                                  e.currentTarget.style.background = "#f7f7fa";
+                                  e.currentTarget.style.border =
+                                    "1px solid #d1d5db";
+                                }}
+                                onMouseOut={(e) => {
+                                  e.currentTarget.style.background = "#ececf0";
+                                  e.currentTarget.style.border =
+                                    "1px solid #ececf0";
+                                }}
+                                tabIndex={0}
+                              >
+                                Explore Full Path
+                              </Link>
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
                     </td>
                   </tr>
                 )}
@@ -213,6 +282,15 @@ function AllPaths() {
           </tbody>
         </table>
       </div>
+
+      {showReportModal && selectedPath && (
+        <ReportPathModal
+          path={selectedPath}
+          isOpen={showReportModal}
+          onClose={handleCloseModal}
+          onSubmit={handleReportSubmit}
+        />
+      )}
     </>
   );
 }
