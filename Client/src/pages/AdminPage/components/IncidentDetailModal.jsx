@@ -28,21 +28,41 @@ function IncidentDetailModal({ incident, isOpen, onClose }) {
     try {
       console.log("Fetching path details for ID:", pathId);
       setLoading(true);
+
+      // Add query parameter to populate creator
+      const endpoint = `${API_ROUTES.path.getById(pathId)}?populate=creator`;
+      console.log("Using endpoint with populate:", endpoint);
+
       // Use the correct path endpoint
-      const response = await fetchGet(API_ROUTES.path.getById(pathId));
+      const response = await fetchGet(endpoint);
       console.log("Path details received:", response);
 
       // Handle different response structures
+      let pathData;
       if (response && response.data && response.data.data) {
         // Server returns {status, data: {data: {...}}}
-        setPathDetails(response.data.data);
+        pathData = response.data.data;
+        setPathDetails(pathData);
       } else if (response && response.data) {
         // Server returns {status, data: {...}}
-        setPathDetails(response.data);
+        pathData = response.data;
+        setPathDetails(pathData);
       } else {
         // Direct response
-        setPathDetails(response);
+        pathData = response;
+        setPathDetails(pathData);
       }
+
+      // Log detailed creator information for debugging
+      console.log("Path creator information:", {
+        creatorExists: !!pathData?.creator,
+        creatorType: pathData?.creator ? typeof pathData.creator : "undefined",
+        creatorValue: pathData?.creator,
+        creatorDetails:
+          typeof pathData?.creator === "object"
+            ? { name: pathData.creator.name, email: pathData.creator.email }
+            : "Not an object",
+      });
 
       setError(null);
     } catch (err) {
@@ -55,19 +75,57 @@ function IncidentDetailModal({ incident, isOpen, onClose }) {
 
   // Helper function to extract creator name
   const getCreatorName = (path) => {
-    if (!path) return "Unknown";
+    if (!path) return "Unknown User";
 
-    // Handle different possible data structures
-    if (path.creator && typeof path.creator === "object") {
-      return path.creator.name || path.creator.email || "Unknown";
-    } else if (path.creator && typeof path.creator === "string") {
-      return path.creator;
-    } else if (path.createdBy) {
-      return typeof path.createdBy === "object"
-        ? path.createdBy.name || path.createdBy.email || "Unknown"
-        : path.createdBy;
-    } else {
-      return "Unknown";
+    try {
+      // Handle different possible data structures
+      if (path.creator) {
+        // Case 1: Creator is an object with name property
+        if (typeof path.creator === "object" && path.creator !== null) {
+          if (path.creator.name) return path.creator.name;
+          if (path.creator.email) return path.creator.email;
+          if (path.creator.username) return path.creator.username;
+        }
+
+        // Case 2: Creator is a string but not an ID
+        if (typeof path.creator === "string") {
+          // Check if this looks like an ID (MongoDB ObjectID is typically 24 hex chars)
+          if (!/^[0-9a-f]{24}$/i.test(path.creator)) {
+            return path.creator;
+          }
+        }
+      }
+
+      // Case 3: Try createdBy if creator doesn't have usable info
+      if (path.createdBy) {
+        if (typeof path.createdBy === "object" && path.createdBy !== null) {
+          if (path.createdBy.name) return path.createdBy.name;
+          if (path.createdBy.email) return path.createdBy.email;
+          if (path.createdBy.username) return path.createdBy.username;
+        }
+
+        if (
+          typeof path.createdBy === "string" &&
+          !/^[0-9a-f]{24}$/i.test(path.createdBy)
+        ) {
+          return path.createdBy;
+        }
+      }
+
+      // Case 4: Look for user data
+      if (path.user) {
+        if (typeof path.user === "object" && path.user !== null) {
+          if (path.user.name) return path.user.name;
+          if (path.user.email) return path.user.email;
+          if (path.user.username) return path.user.username;
+        }
+      }
+
+      // Default fallback
+      return "Unknown User";
+    } catch (err) {
+      console.error("Error extracting creator name:", err);
+      return "Unknown User";
     }
   };
 
