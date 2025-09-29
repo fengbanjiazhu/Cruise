@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import UsersTab from "./components/UsersTab";
 import IncidentsTab from "./components/IncidentsTab";
-import PathsTab from "./components/PathsTab";
 
 function Admin() {
   const [activeTab, setActiveTab] = useState("users");
@@ -33,23 +32,12 @@ function Admin() {
           >
             Incidents
           </button>
-          <button
-            className={`px-6 py-3 font-medium text-sm rounded-lg transition-all duration-200 ${
-              activeTab === "paths"
-                ? "bg-blue-600 text-white shadow-md"
-                : "bg-white text-gray-700 hover:bg-blue-50 hover:text-blue-600 border border-gray-200"
-            }`}
-            onClick={() => setActiveTab("paths")}
-          >
-            Paths
-          </button>
         </div>
 
         {/* -=-=-=-=-=-=-=-=-=-=- Tab Content -=-=-==-=-=-=-=-==-=-=-=-*/}
         <div className="p-6">
           {activeTab === "users" && <UsersTab />}
           {activeTab === "incidents" && <IncidentsTab />}
-          {activeTab === "paths" && <PathsTab />}
         </div>
       </div>
     </div>
