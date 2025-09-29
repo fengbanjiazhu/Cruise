@@ -5,11 +5,12 @@ import FavList from "../components/Profiles/FavList";
 
 function Profile() {
   const { user } = useSelector((state) => state.userInfo);
-  const { name, email, role, savedList } = user;
-
+  
   if (!user) {
     return <p>Loading...</p>;
   }
+  const { name, email, role, savedList } = user;
+
 
   return (
     <div className="flex flex-col md:flex-row md:space-x-10 space-y-10 md:space-y-0">

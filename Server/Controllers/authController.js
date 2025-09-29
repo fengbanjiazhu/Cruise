@@ -119,3 +119,45 @@ export const restrictTo = (...roles) => {
     next();
   };
 };
+
+
+export const updatePassword = catchAsync(async (req, res, next) => {
+  const { oldPassword, newPassword, newPasswordConfirm } = req.body;
+
+  // 1. Check all fields are provided
+  if (!oldPassword || !newPassword || !newPasswordConfirm) {
+    return next(new cusError("Please provide all required fields", 400));
+  }
+
+  // 2. Check if new passwords match
+  if (newPassword !== newPasswordConfirm) {
+    return next(new cusError("New passwords do not match", 400));
+  }
+
+  // 3. Get current user including password
+  const user = await User.findById(req.user._id).select("+password");
+  if (!user) {
+    return next(new cusError("User not found", 404));
+  }
+
+  // 4. Verify current password
+  const correct = await correctPassword(oldPassword, user.password);
+  if (!correct) {
+    return next(new cusError("Your current password is incorrect", 401));
+  }
+
+  // 5. Hash new password
+  const hashedPassword = await hashPassword(newPassword);
+
+  // 6. Update password directly in DB (bypass passwordConfirm validation)
+  await User.findByIdAndUpdate(
+    req.user._id,
+    { password: hashedPassword },
+    { new: true, runValidators: false }
+  );
+
+  res.status(200).json({
+    status: "success",
+    message: "Password updated successfully",
+  });
+});
