@@ -27,12 +27,12 @@ steps:
     npm install --include=dev
   displayName: 'Install dependencies including devDependencies'
 
-- script: |
-    npm run server-prod
-  displayName: 'Start Server'
-  env:
-    DATABASE: $(DATABASE)
-    DATABASE_PASSWORD: $(DATABASE_PASSWORD)
+# - script: |
+#     npm run server-prod
+#   displayName: 'Start Server'
+#   env:
+#     DATABASE: $(DATABASE)
+#     DATABASE_PASSWORD: $(DATABASE_PASSWORD)
 
 - script: |
     npm run test-be
