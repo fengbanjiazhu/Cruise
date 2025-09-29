@@ -10,7 +10,7 @@ import { protect } from "../Controllers/authController.js";
 
 const pathRoute = express.Router();
 
-pathRoute.route("/").get(getAllPaths).post(createOnePath);
+pathRoute.route("/").get(getAllPaths).post(protect, createOnePath);
 pathRoute
   .route("/:id")
   .get(getOnePath)

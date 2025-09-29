@@ -9,12 +9,15 @@ import { Button } from "@/components/ui/button";
 import { MapContainer, TileLayer } from "react-leaflet";
 import WaypointMarkers from "../components/Paths/WaypointMarkers";
 import RouteBetweenWaypoints from "../components/Paths/RouteBetweenWaypoints";
-//
+// Search & Filter
 import SavePathButton from "../components/Paths/SavePathButton";
 import SearchBar from "../components/Search/SearchBar";
-
+import ClearSearchBtn from "../components/Search/ClearSearchBtn";
+// Status UI
 import NoResult from "../components/Paths/NoResult";
 import Loading from "../components/ui/Loading";
+// Report Modal
+import ReportPathModal from "./AdminPage/components/ReportPathModal";
 
 const th_style = {
   padding: "0.85rem",
@@ -57,11 +60,14 @@ function AllPaths() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [openPathIds, setOpenPathIds] = useState([]);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [selectedPath, setSelectedPath] = useState(null);
   const { user } = useSelector((state) => state.userInfo);
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
   const saved = user?.savedList?.map((path) => path._id) || [];
+  const hasParams = searchParams.toString() !== "";
 
   useEffect(() => {
     const fetchPaths = async () => {
@@ -91,6 +97,21 @@ function AllPaths() {
     );
   };
 
+  const handleReportClick = (path) => {
+    setSelectedPath(path);
+    setShowReportModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowReportModal(false);
+    setSelectedPath(null);
+  };
+
+  const handleReportSubmit = () => {
+    handleCloseModal();
+    // Show a success message if needed
+  };
+
   const isSaved = (pathId) => saved.includes(pathId);
 
   if (loading) return <Loading />;
@@ -112,8 +133,9 @@ function AllPaths() {
   return (
     <>
       <div className="flex flex-col items-center w-full min-h-screen bg-[#f7f7fa] px-4 pb-16">
-        <div className="fixed top-20 right-10">
+        <div className="fixed top-20 right-10 flex flex-col gap-4">
           <SearchBar />
+          {hasParams && <ClearSearchBtn title="Reset" />}
         </div>
         <h1 className="text-[2.2rem] font-bold tracking-[-0.01em] text-[#222] mt-10 mb-6 text-center leading-[1.2]">
           User Created Paths
@@ -126,6 +148,7 @@ function AllPaths() {
               <th style={th_style}>Description</th>
               <th style={th_style}>Duration</th>
               <th style={th_style}>Creator</th>
+              <th className="p-[0.85rem]"></th>
               <th className="p-[0.85rem]"></th>
               <th className="p-[0.85rem]"></th>
             </tr>
@@ -172,11 +195,33 @@ function AllPaths() {
                   <td className="p-[0.85rem]">
                     <SavePathButton isSaved={isSaved(path._id)} pathId={path._id} />
                   </td>
+                  <td className="p-[0.85rem]">
+                    <button
+                      onClick={() => handleReportClick(path)}
+                      className="text-red-500 hover:text-red-700 transition-colors duration-200 bg-transparent border-none p-0 cursor-pointer"
+                      title="Report Path"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                        className="size-6"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M3 3v1.5M3 21v-6m0 0 2.77-.693a9 9 0 0 1 6.208.682l.108.054a9 9 0 0 0 6.086.71l3.114-.732a48.524 48.524 0 0 1-.005-10.499l-3.11.732a9 9 0 0 1-6.085-.711l-.108-.054a9 9 0 0 0-6.208-.682L3 4.5M3 15V4.5"
+                        />
+                      </svg>
+                    </button>
+                  </td>
                 </tr>
                 {openPathIds.includes(path._id) && (
                   <tr>
                     <td
-                      colSpan={7}
+                      colSpan={8}
                       className="bg-[#f7f7fa] p-0 rounded-b-xl border-t border-[#ececf0]"
                     >
                       {/* Only show the map for quick view */}
@@ -210,6 +255,15 @@ function AllPaths() {
           </tbody>
         </table>
       </div>
+
+      {showReportModal && selectedPath && (
+        <ReportPathModal
+          path={selectedPath}
+          isOpen={showReportModal}
+          onClose={handleCloseModal}
+          onSubmit={handleReportSubmit}
+        />
+      )}
     </>
   );
 }

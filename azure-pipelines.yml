@@ -15,6 +15,7 @@ variables:
   JWT_COOKIE_EXPIRES_IN: 14
   DATABASE: $(db)
   DATABASE_PASSWORD: $(dbpass)
+  TEST_USER_PASSWORD: $(pwd)
 
 steps:
 - task: NodeTool@0
@@ -26,12 +27,19 @@ steps:
     npm install --include=dev
   displayName: 'Install dependencies including devDependencies'
 
+# - script: |
+#     npm run server-prod
+#   displayName: 'Start Server'
+#   env:
+#     DATABASE: $(DATABASE)
+#     DATABASE_PASSWORD: $(DATABASE_PASSWORD)
+
 - script: |
     npm run test-be
   displayName: 'Run backend unit tests'
   env:
     JWT_SECRET: $(JWT_SECRET)
-
+    TEST_USER_PASSWORD: $(TEST_USER_PASSWORD)
 
 - script: |
     npm run test-fe

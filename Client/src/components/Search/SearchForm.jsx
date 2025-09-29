@@ -1,16 +1,16 @@
-import DurationSetter from "./DurationSetter";
+import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { isValidLocation } from "../../utils/helper";
+import toast from "react-hot-toast";
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 
+import DurationSetter from "./DurationSetter";
 import LocationGetter from "./LocationGetter";
-
 import ProfileSelector from "./ProfileSelector";
-
-import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import toast from "react-hot-toast";
+import ClearSearchBtn from "./ClearSearchBtn";
 
 function SearchForm({ className }) {
   const [location, setLocation] = useState({ lat: null, lng: null });
@@ -25,26 +25,20 @@ function SearchForm({ className }) {
   const onApply = function () {
     const params = {};
 
-    if (durationVal) {
-      params[`duration[${durationOp}]`] = durationVal;
-    }
-
-    if (profile && profile !== "null") {
-      params.profile = profile;
-    }
+    if (searchName) params.name = searchName;
+    if (durationVal) params[`duration[${durationOp}]`] = durationVal;
+    if (profile && profile !== "null") params.profile = profile;
 
     if (radius && location?.lat && location?.lng) {
       params.radius = radius;
+      const valid = isValidLocation(location);
+      if (!valid) return toast.error("Invalid location format");
       params.lat = location.lat;
       params.lng = location.lng;
     }
 
-    if (searchName) {
-      params.name = searchName;
-    }
-
     if (Object.keys(params).length === 0) {
-      return toast.error("Please select at least one filter");
+      return toast.error("Please select at least one condition");
     }
 
     setSearchParams(params);
@@ -72,9 +66,7 @@ function SearchForm({ className }) {
 
       <ProfileSelector profile={profile} setProfile={setProfile} />
       <Button onClick={onApply}>Apply Condition</Button>
-      <Button className="bg-red-500 text-white rounded" onClick={() => setSearchParams({})}>
-        Clear Condition
-      </Button>
+      <ClearSearchBtn />
     </div>
   );
 }

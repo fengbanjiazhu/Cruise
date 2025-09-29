@@ -40,7 +40,9 @@ function RouteBetweenWaypoints({ waypoints, profile = "foot", scenic = true, han
     if (routeRef.current) {
       try {
         map.removeControl(routeRef.current);
-      } catch {}
+      } catch {
+        // Ignore removal errors
+      }
       routeRef.current = null;
     }
 
@@ -95,7 +97,9 @@ function RouteBetweenWaypoints({ waypoints, profile = "foot", scenic = true, han
       if (routeRef.current) {
         try {
           map.removeControl(routeRef.current);
-        } catch {}
+        } catch {
+        // Ignore removal errors
+      }
         routeRef.current = null;
       }
     };

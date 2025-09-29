@@ -33,7 +33,7 @@ describe("AllPaths", () => {
             profile: "urban",
             description: "Desc",
             duration: 10,
-            creator: { name: "Alice" },
+            creator: { _id: "u1", name: "Alice" },
           },
         ],
       },

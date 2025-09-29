@@ -3,8 +3,6 @@ import Card from "../components/ui/OldCard";
 import { useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { fetchPost, optionMaker, checkEmail } from "../utils/api";
-import { useDispatch } from "react-redux";
-import { setUser } from "../store/slices/userInfoSlice";
 import { useNavigate } from "react-router-dom";
 
 const inputClass = `w-full rounded p-2 text-black focus:border-red-500 focus-ring-2`;
@@ -32,16 +30,14 @@ function Register() {
       emailRef.current.focus();
       return toast.error("Email is not valid");
     }
-    if (!password.trim()) {
+    if (password.trim().length < 6) {
       passwordRef.current.focus();
-      return toast.error("Password is required");
+      return toast.error("Password is not valid, at least 6 characters");
     }
-
     if (!passwordConfirm.trim()) {
       passwordConfirmRef.current.focus();
       return toast.error("Please confirm your password");
     }
-
     if (password !== passwordConfirm) {
       passwordConfirmRef.current.focus();
       return toast.error("Passwords do not match");
