@@ -294,63 +294,6 @@ function IncidentDetailModal({ incident, isOpen, onClose }) {
                       </tbody>
                     </table>
                   </div>
-
-                  {/* Additional Path Details */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-                    <div className="space-y-3">
-                      <div>
-                        <span className="text-sm text-gray-500 block">
-                          Distance
-                        </span>
-                        <p className="font-medium mt-1 text-gray-800">
-                          {pathDetails.distance
-                            ? `${(pathDetails.distance / 1000).toFixed(2)} km`
-                            : "N/A"}
-                        </p>
-                      </div>
-                      <div>
-                        <span className="text-sm text-gray-500 block">
-                          Rating
-                        </span>
-                        <div className="flex items-center mt-1">
-                          <span className="text-yellow-500 mr-1">★</span>
-                          <span className="font-medium text-gray-800">
-                            {pathDetails.ratingsAverage
-                              ? `${pathDetails.ratingsAverage} (${
-                                  pathDetails.ratingsQuantity || 0
-                                } reviews)`
-                              : "No ratings"}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="space-y-3">
-                      <div>
-                        <span className="text-sm text-gray-500 block">
-                          Status
-                        </span>
-                        <p
-                          className={`font-medium mt-1 ${
-                            pathDetails.blocked
-                              ? "text-red-600"
-                              : "text-green-600"
-                          }`}
-                        >
-                          {pathDetails.blocked ? "Blocked" : "Active"}
-                        </p>
-                      </div>
-                      <div>
-                        <span className="text-sm text-gray-500 block">
-                          Created At
-                        </span>
-                        <p className="font-medium mt-1 text-gray-800">
-                          {pathDetails.createdAt
-                            ? formatDate(pathDetails.createdAt)
-                            : "N/A"}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
                 </div>
               ) : (
                 <div className="text-gray-500 py-4">
