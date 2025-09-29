@@ -211,7 +211,30 @@ function IncidentsTab() {
   };
 
   const handleViewIncident = (incident) => {
-    setViewingIncident(incident);
+    console.log("View incident clicked:", incident);
+    if (!incident) {
+      console.error("No incident data available");
+      return;
+    }
+
+    // Create a clean copy of the incident data with all required fields
+    const incidentData = {
+      id: incident.id,
+      title: incident.title,
+      severity: incident.severity,
+      status: incident.status,
+      createdAt: incident.createdAt,
+      updatedAt: incident.updatedAt,
+      targetId: incident.targetId,
+      targetType: incident.targetType,
+      // Include any additional fields that might be needed
+      description: incident.description,
+      reportedBy: incident.reportedBy,
+      assignee: incident.assignee,
+    };
+
+    console.log("Prepared incident data for modal:", incidentData);
+    setViewingIncident(incidentData);
     setShowDetailModal(true);
   };
 
@@ -558,11 +581,14 @@ function IncidentsTab() {
       {/* Add the IncidentDetailModal */}
       <AnimatePresence>
         {showDetailModal && viewingIncident && (
-          <IncidentDetailModal
-            incident={viewingIncident}
-            isOpen={showDetailModal}
-            onClose={handleCloseDetailModal}
-          />
+          <>
+            {console.log("Rendering modal with incident:", viewingIncident)}
+            <IncidentDetailModal
+              incident={viewingIncident}
+              isOpen={showDetailModal}
+              onClose={handleCloseDetailModal}
+            />
+          </>
         )}
       </AnimatePresence>
     </motion.div>
