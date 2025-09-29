@@ -36,7 +36,7 @@ function Review() {
         try {
             const data = await fetchGet(`review/${pathId}`);
             setReviews(data.data.data);
-            console.log(data);
+            //console.log(data);
         } catch (err) {
             console.error(err);
         }
