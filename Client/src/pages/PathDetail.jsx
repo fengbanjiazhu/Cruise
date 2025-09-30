@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Review from "./Review"
 import { useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { MapContainer, TileLayer, Polyline, useMapEvents } from "react-leaflet";
@@ -280,6 +281,15 @@ function PathDetail() {
             </div>
           </div>
         )}
+      </div>
+      <div
+        className="text-gray-900 absolute z-[900] max-w-[400px] w-[90vw] bg-[rgba(255,255,255,0.95)] shadow-[0_4px_24px_rgba(0,0,0,0.08)] rounded-[12px] border-0 p-8 font-sans transition-transform transition-opacity duration-300"
+        style={{
+          transition: "transform 0.4s cubic-bezier(.68,-0.55,.27,1.55), opacity 0.3s",
+          top: "22rem",
+          right: "2rem"
+        }}
+      ><Review pathId={pathID} />
       </div>
       {/* Toggle button when card is hidden */}
       {!cardVisible && (

@@ -1,14 +1,11 @@
 import React, { useEffect, useState }  from "react";
 import { useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
 //import toast from "react-hot-toast";
 import { fetchGet} from "../utils/api";
 import CreateReview from "./createReview";
 
-function Review() {
-    const location = useLocation();
+function Review({pathId}) {
     const currentUser = useSelector(state => state.userInfo.user);
-    const pathId = location.state?.id;
     const [pathData, setPathData] = useState(null);
     const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -53,13 +50,6 @@ function Review() {
 
   return (
     <main>
-        <div>
-            <h1>Review Path</h1>
-            <p>Name: {pathData.name}</p>
-            <p>Creator: {pathData.creator?.name}</p>
-            <p>Description: {pathData.description}</p>
-            <p>ID: {pathData.id}</p>
-        </div>
         <CreateReview pathId={pathId} userId={currentUser._id}/>
         <section>
             {reviews.map((review) => (
@@ -75,3 +65,13 @@ function Review() {
   );
 }
 export default Review;
+
+/* 
+<div>
+            <h1>Review Path</h1>
+            <p>Name: {pathData.name}</p>
+            <p>Creator: {pathData.creator?.name}</p>
+            <p>Description: {pathData.description}</p>
+            <p>ID: {pathData.id}</p>
+        </div>
+*/
