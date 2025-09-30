@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Pill from "./Pill";
 import { statusPillClass } from "../utils/formatters";
-import { getAllUsers, fetchPost, optionMaker } from "../../../utils/api";
+import { getAllUsers, fetchPost, optionMaker,fetchDelete } from "../../../utils/api";
 import { useSelector } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-hot-toast";
@@ -171,6 +171,31 @@ const handleSave = async () => {
   }
 };
 
+const handleDelete = async () => {
+  if (!reduxToken) return toast.error("Token missing");
+  if (!selectedUser?._id) return toast.error("No user selected");
+
+  const confirm = window.confirm(
+    `Are you sure you want to permanently delete ${selectedUser.name}?`
+  );
+  if (!confirm) return;
+
+  try {
+    await fetchDelete(`user/admin/${selectedUser._id}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${reduxToken}`,
+      },
+    });
+
+    toast.success("User deleted successfully!");
+    setUsers(prev => prev.filter(u => u._id !== selectedUser._id));
+    closeEditModal();
+  } catch (err) {
+    console.error(err);
+    toast.error("Failed to delete user");
+  }
+};
   // Rest of the component remains the same
   return (
     <motion.div initial="hidden" animate="visible" variants={containerVariants}>
@@ -488,6 +513,13 @@ const handleSave = async () => {
                   onClick={handleSave}
                >
                 Save
+              </button>
+
+              <button
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-200"
+                  onClick={handleDelete}
+                >
+                  Delete
               </button>
               </div>
             </motion.div>
