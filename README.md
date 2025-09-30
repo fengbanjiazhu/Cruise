@@ -54,6 +54,8 @@
 
 - **Frontend**
   - Admin Page
+  - Report Components (on admin page)
+  - User List Components (on admin page)
   - **Features**
     - `User Lists` (browse) functions
     - `Report Submit and Handling` (user submit, admin handle) functions
@@ -67,6 +69,7 @@
 - **Frontend**
   - Profile Page
   - Register Page
+  - User List Components (on admin page)
   - **Features**
     - `User Profile Management` (user management) functions
     - `Admin User Control` (admin user management) functions
