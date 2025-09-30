@@ -65,7 +65,7 @@ export const login = catchAsync(async (req, res, next) => {
 
   const correct = await correctPassword(password, user.password);
 
-  if (!correct ) {
+  if (!correct || !user) {
     return next(new cusError("Incorrect email or password", 401));
   }
 
