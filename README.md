@@ -34,28 +34,65 @@
 ### F Jeffrey R
 
 - **Frontend**
-  - Project initialization and structure setup
-    - React Router setup
-    - Redux setup
-  - Reusable API handling functions
+  - Landing Page
+  - Login Page
+  - Fav List Component (on profile page)
+  - Search Bar Component (on all path page)
   - **Features**
-    - `Login` (page), `logout` functionality
-    - `Favorite list` (components) functionality
-    - `Path search` (components) functionality
+    - `Login/Logout` functions
+    - `Favorite list Management` (Browse, Add, Remove) functions
+    - `Path Search Filtering` (Search, Filter) functions
 - **Backend**
-  - Database setup and connection (MongoDB + Mongoose)
-    - Mongoose schemas initialization
-  - Server initialization (Node.js + Express)
-  - Reusable Central Controller
+  - Central Controller
   - Global error handling controller
   - **Features**
     - `Auth controller` (JWT, protect, restrictTo, login, logout functions)
-    - `Fav Path controller` (with Add, Delete functions)
+    - `Fav Path controller`
+    - `Path Search` (Implemented By Customized Request Class)
 
 ### John L
 
+- **Frontend**
+  - Admin Page
+  - **Features**
+    - `User Lists` (browse) functions
+    - `Report Submit and Handling` (user submit, admin handle) functions
+- **Backend**
+  - **Features**
+    - `Incident controller` (Report create/submit, handle functions)
+    - `User controller` (with getAll functions)
+
 ### N Jin T
+
+- **Frontend**
+  - Profile Page
+  - Register Page
+  - **Features**
+    - `User Profile Management` (user management) functions
+    - `Admin User Control` (admin user management) functions
+- **Backend**
+  - **Features**
+    - `Auth Controller` (Register functions)
+    - `User Controller` (with Update, Delete functions)
 
 ### Sean P
 
+- **Frontend**
+  - Review and Rating Component (On detail page)
+  - **Features**
+    - `Review and Rating` (Leave, Update, Delete Review) functions
+- **Backend**
+  - **Features**
+    - `Review and Rating Controller`
+
 ### Tom J
+
+- **Frontend**
+  - All Path Page
+  - Create Path Page
+  - Path Detail Page
+  - **Features**
+    - `Path Management` (Create, Browse, Update, Delete Path) functions
+- **Backend**
+  - **Features**
+    - `Path controller`
