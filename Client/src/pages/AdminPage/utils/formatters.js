@@ -16,7 +16,7 @@ export const statusPillClass = (status) => {
   switch (status) {
     case "active":
       return "bg-green-100 text-green-700 ring-1 ring-inset ring-green-600/20";
-    case "inactive":
+    case "non-active":
       return "bg-gray-100 text-gray-700 ring-1 ring-inset ring-gray-600/20";
     case "suspended":
       return "bg-rose-100 text-rose-700 ring-1 ring-inset ring-rose-600/20";

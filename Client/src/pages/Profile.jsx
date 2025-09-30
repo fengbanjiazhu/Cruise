@@ -2,6 +2,10 @@ import { useSelector } from "react-redux";
 import Card from "../components/ui/OldCard";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import FavList from "../components/Profiles/FavList";
+import { Dialog, DialogTrigger, DialogContent } from "../components/ui/dialog";
+import ProfilePage from "../components/Profiles/updateprofile";
+import { Button } from "../components/ui/button";
+
 
 function Profile() {
   const { user } = useSelector((state) => state.userInfo);
@@ -24,6 +28,17 @@ function Profile() {
         <p>Welcome back, {name}</p>
         <p>Email: {email}</p>
         <p>Role: {role}</p>
+
+
+        {/* Button to open*/}
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button className="mt-4">Update Profile</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <ProfilePage />
+          </DialogContent>
+          </Dialog>
       </Card>
 
       <FavList savedList={savedList} />

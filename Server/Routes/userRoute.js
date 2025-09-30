@@ -2,7 +2,7 @@ import express from "express";
 
 import { protect, restrictTo, login, signup, updatePassword } from "../Controllers/authController.js";
 import { addToUserList, removeFromUserList } from "../Controllers/favListController.js";
-import { getMe, updateCurrentUser, checkEmail, getAllUsers,updateUserPhoto } from "../Controllers/userController.js";
+import { getMe, updateCurrentUser, checkEmail, getAllUsers,updateUserPhoto ,updateAnyUser} from "../Controllers/userController.js";
 import { uploadUserPhoto } from "../Controllers/userController.js";
 
 const userRoute = express.Router();
@@ -26,5 +26,8 @@ userRoute
   .patch(protect, addToUserList)
   .delete(protect, removeFromUserList);
 userRoute.route("/admin").get(protect, restrictTo("admin"), getAllUsers);
+userRoute
+  .route("/admin/:id")
+  .patch(protect, restrictTo("admin"), updateAnyUser);
 
 export default userRoute;

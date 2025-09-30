@@ -51,7 +51,7 @@ const userSchema = new mongoose.Schema({
   active: {
     type: Boolean,
     default: true,
-    select: false,
+    
   },
 });
 
@@ -62,6 +62,7 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
+//temporary commneted out so that table can show activa and inactive users
 userSchema.pre(/^find/, function (next) {
   this.find({ active: { $ne: "false" } });
   next();

@@ -65,11 +65,11 @@ export const login = catchAsync(async (req, res, next) => {
 
   const correct = await correctPassword(password, user.password);
 
-  if (!correct || !user) {
+  if (!correct ) {
     return next(new cusError("Incorrect email or password", 401));
   }
 
-  if (!user.active) {
+  if (!user.active && user.role !== "admin") {
     return next(new cusError("Please contact support to re-activate your account", 401));
   }
 
