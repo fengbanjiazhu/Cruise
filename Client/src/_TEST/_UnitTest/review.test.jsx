@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import CreateReview from "../../pages/CreateReview.jsx";
+import CreateReview from "../../pages/createReview";
 import { fetchGet, fetchPost } from "../../utils/api";
 
 jest.mock("../../utils/api", () => ({
