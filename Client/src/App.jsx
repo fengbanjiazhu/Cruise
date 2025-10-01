@@ -15,7 +15,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Registration";
 import PathDetail from "./pages/PathDetail";
 import Review from "./pages/Review";
-import Profile2 from "./pages/profile2";
+
 
 
 
