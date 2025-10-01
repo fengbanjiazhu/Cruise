@@ -58,6 +58,24 @@ function ProfilePage() {
       toast.error("Token missing, please login again");
       return;
     }
+
+    if (field === "name" && !name.trim()) {
+    toast.error("Name cannot be empty");
+    return;
+  }
+
+  if (field === "email") {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    toast.error("Please enter a valid email address");
+    return;
+  }
+}
+
+    if (field === "email" && !email.trim()) {
+    toast.error("Please enter an email");
+    return;
+  }
     try {
       setLoading(true);
       if (field === "email" && email === user.email) {
@@ -68,7 +86,7 @@ function ProfilePage() {
     // Frontend check for email duplication
     if (field === "email") {
       const result = await checkEmail(email);
-      if (result?.exist) {
+      if (result?.exists) {
         toast.error("This email is already taken");
         return; // Stop before sending request
       }
@@ -85,7 +103,8 @@ function ProfilePage() {
 
     } catch (err) {
       console.error(err);
-      toast.error(`Failed to update ${field}`);
+      const backendMsg = err?.response?.data?.message || `Failed to update ${field}`;
+      toast.error(backendMsg);
     } finally {
       setLoading(false);
     }
@@ -167,7 +186,7 @@ return (
         <table className="w-full max-w-[500px] border-separate border-spacing-0 rounded-xl overflow-hidden shadow-[0_2px_12px_0_rgba(0,0,0,0.06)] bg-white border border-[#ececf0]">
                 <thead className="bg-[#f7f7fa] text-[#555] border-b border-[#ececf0]">
                   <tr>
-                    <th style={th_style}>Data</th>
+                    <th style={th_style}>Details</th>
                     
                   </tr>
                 </thead>
