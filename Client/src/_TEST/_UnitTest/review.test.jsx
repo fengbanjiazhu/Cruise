@@ -1,73 +1,109 @@
 import React from "react";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import PathDetail from "../../pages/PathDetail.jsx";
+import CreateReview from "../../pages/CreateReview.jsx";
+import { fetchGet, fetchPost } from "../../utils/api";
 
-// Mock fetchPost and optionMaker for PATCH/DELETE
 jest.mock("../../utils/api", () => ({
-  ...jest.requireActual("../../utils/api"),
-  fetchGet: jest.fn(() =>
-    Promise.resolve({
-      data: {
-        data: {
-          _id: "123",
-          name: "Test Path",
-          description: "A test path description.",
-          profile: "foot",
-          duration: 42,
-          creator: { _id: "u1" },
-          waypoints: [
-            { lat: 1, lng: 2, label: "Start" },
-            { lat: 3, lng: 4, label: "End" },
-          ],
-          locations: [
-            { lat: 1, lng: 2 },
-            { lat: 3, lng: 4 },
-          ],
-        },
-      },
-    })
-  ),
+  fetchGet: jest.fn(),
   fetchPost: jest.fn(),
-  optionMaker: jest.fn(),
 }));
 
-import { Provider } from "react-redux";
-import { configureStore } from "@reduxjs/toolkit";
-import userInfoReducer from "../../store/slices/userInfoSlice.js";
-import { MemoryRouter } from "react-router-dom";
-
-// Define store for all tests
-const store = configureStore({
-  reducer: { userInfo: userInfoReducer },
-  preloadedState: {
-    userInfo: { user: { _id: "u1" }, token: null, isLoggedIn: true, loadingUser: false },
-  },
+beforeAll(() => {
+  Object.defineProperty(window, "location", {
+    writable: true,
+    value: { reload: jest.fn() },
+  });
 });
 
-// Mock react-router-dom useParams
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useParams: () => ({ pathID: "123" }),
-}));
+describe("CreateReview", () => {
+  const pathId = "p1";
+  const userId = "u1";
 
-// UI tests
-
-describe("PathDetail UI", () => {
-  test("renders loading, then path details", async () => {
-    render(
-      <Provider store={store}>
-        <MemoryRouter>
-          <PathDetail />
-        </MemoryRouter>
-      </Provider>
-    );
-    expect(screen.getByText(/Loading path/i)).toBeInTheDocument();
-    await waitFor(() =>
-      expect(screen.getByRole("heading", { name: /Test Path/i })).toBeInTheDocument()
-    );
-    expect(screen.getByText(/Write your review.../i)).toBeInTheDocument();
-    expect(screen.getByText(/Submit Review/i)).toBeInTheDocument();
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
+  test("renders form for new review when no existing review", async () => {
+    // Make fetchGet reject (no review found)
+    fetchGet.mockRejectedValueOnce(new Error("No review"));
+
+    render(<CreateReview pathId={pathId} userId={userId} />);
+
+    expect(await screen.findByPlaceholderText("Write your review...")).toBeInTheDocument();
+    expect(screen.getByText("Submit Review")).toBeInTheDocument();
+    expect(screen.queryByText("Delete")).not.toBeInTheDocument();
+  });
+
+  test("renders form with existing review data", async () => {
+    fetchGet.mockResolvedValueOnce({
+      data: {
+        data: {
+          id: "r1",
+          review: "Great path!",
+          rating: 4,
+        },
+      },
+    });
+
+    render(<CreateReview pathId={pathId} userId={userId} />);
+
+    expect(await screen.findByDisplayValue("Great path!")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("4")).toBeInTheDocument();
+    expect(screen.getByText("Update Review")).toBeInTheDocument();
+    expect(screen.getByText("Delete")).toBeInTheDocument();
+  });
+
+  test("submits new review", async () => {
+    fetchGet.mockRejectedValueOnce(new Error("No review")); // no review initially
+    fetchPost.mockResolvedValueOnce({ data: { message: "created" } });
+
+    render(<CreateReview pathId={pathId} userId={userId} />);
+
+    const textarea = await screen.findByPlaceholderText("Write your review...");
+    fireEvent.change(textarea, { target: { value: "My review" } });
+    fireEvent.click(screen.getByText("Submit Review"));
+
+    await waitFor(() =>
+      expect(fetchPost).toHaveBeenCalledWith("review/CreateReview", expect.any(Object))
+    );
+    expect(window.location.reload).toHaveBeenCalled();
+  });
+
+  test("updates existing review", async () => {
+    fetchGet.mockResolvedValueOnce({
+      data: {
+        data: { id: "r1", review: "Old review", rating: 3 },
+      },
+    });
+    fetchPost.mockResolvedValueOnce({ data: { message: "updated" } });
+
+    render(<CreateReview pathId={pathId} userId={userId} />);
+
+    const textarea = await screen.findByDisplayValue("Old review");
+    fireEvent.change(textarea, { target: { value: "Updated review" } });
+    fireEvent.click(screen.getByText("Update Review"));
+
+    await waitFor(() =>
+      expect(fetchPost).toHaveBeenCalledWith("review/r1", expect.any(Object))
+    );
+  });
+
+  test("deletes existing review", async () => {
+    fetchGet.mockResolvedValueOnce({
+      data: {
+        data: { id: "r1", review: "Old review", rating: 3 },
+      },
+    });
+    fetchPost.mockResolvedValueOnce({ data: { message: "deleted" } });
+
+    render(<CreateReview pathId={pathId} userId={userId} />);
+
+    fireEvent.click(await screen.findByText("Delete"));
+
+    await waitFor(() =>
+      expect(fetchPost).toHaveBeenCalledWith("review/r1", { method: "DELETE" })
+    );
+    expect(window.location.reload).toHaveBeenCalled();
+  });
 });
