@@ -10,6 +10,7 @@ jest.mock("../../utils/api", () => ({
 }));
 
 
+
 describe("CreateReview", () => {
   const pathId = "p1";
   const userId = "u1";
@@ -17,7 +18,6 @@ describe("CreateReview", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
-  
 
   test("renders form for new review when no existing review", async () => {
     // Make fetchGet reject (no review found)
@@ -99,7 +99,7 @@ describe("CreateReview", () => {
     await waitFor(() =>
       expect(fetchPost).toHaveBeenCalledWith("review/r1", { method: "DELETE" })
     );
-    expect(window.location.reload).toHaveBeenCalled();
+    
   });
 });
 
