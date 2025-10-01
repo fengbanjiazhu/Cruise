@@ -10,10 +10,9 @@ jest.mock("../../utils/api", () => ({
 }));
 
 beforeAll(() => {
-  Object.defineProperty(window, "location", {
-    writable: true,
-    value: { reload: jest.fn() },
-  });
+  // Just replace reload, don't redefine location
+  delete window.location;
+  window.location = { ...window.location, reload: jest.fn() };
 });
 
 describe("CreateReview", () => {
@@ -106,4 +105,8 @@ describe("CreateReview", () => {
     );
     expect(window.location.reload).toHaveBeenCalled();
   });
+});
+
+afterAll(() => {
+  jest.restoreAllMocks();
 });
