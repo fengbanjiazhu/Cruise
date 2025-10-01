@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 
 import catchAsync from "../utils/catchAsync.js";
 import cusError from "../utils/cusError.js";
+import * as authController from "./authController.js";
 
 import User from "../Models/userModel.js";
 
@@ -121,43 +122,34 @@ export const restrictTo = (...roles) => {
 };
 
 
-export const updatePassword = catchAsync(async (req, res, next) => {
+
+export const updatePasswordLogic = async (req, res, next) => {
   const { oldPassword, newPassword, newPasswordConfirm } = req.body;
 
-  // 1. Check all fields are provided
   if (!oldPassword || !newPassword || !newPasswordConfirm) {
     return next(new cusError("Please provide all required fields", 400));
   }
 
-  // 2. Check if new passwords match
   if (newPassword !== newPasswordConfirm) {
     return next(new cusError("New passwords do not match", 400));
   }
 
-  // 3. Get current user including password
   const user = await User.findById(req.user._id).select("+password");
-  if (!user) {
-    return next(new cusError("User not found", 404));
-  }
+  if (!user) return next(new cusError("User not found", 404));
 
-  // 4. Verify current password
-  const correct = await correctPassword(oldPassword, user.password);
-  if (!correct) {
-    return next(new cusError("Your current password is incorrect", 401));
-  }
+  const correct = await authController.correctPassword(oldPassword, user.password);
 
-  // 5. Hash new password
-  const hashedPassword = await hashPassword(newPassword);
+  if (!correct) return next(new cusError("Your current password is incorrect", 401));
 
-  // 6. Update password directly in DB (bypass passwordConfirm validation)
+  const hashedPassword = await authController.hashPassword(newPassword);
+
   await User.findByIdAndUpdate(
     req.user._id,
     { password: hashedPassword },
     { new: true, runValidators: false }
   );
 
-  res.status(200).json({
-    status: "success",
-    message: "Password updated successfully",
-  });
-});
+  res.status(200).json({ status: "success", message: "Password updated successfully" });
+};
+
+export const updatePassword = catchAsync(updatePasswordLogic);

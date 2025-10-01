@@ -28,6 +28,35 @@ const th_style = {
 const td_style = { padding: "0.85rem", color: "#555" };
 const backendURL = "http://localhost:8000/uploads/";
 
+export const validatePasswordChange = ({ currentPassword, newPassword }) => {
+  const errors = {};
+  if (!currentPassword || !newPassword) {
+    errors.password = "Please fill in both current and new password";
+  }
+  return errors;
+};
+
+export const updatePasswordAPI = async (oldPassword, newPassword, token) => {
+  return fetchPost(
+    "user/update-password",
+    optionMaker(
+      { oldPassword, newPassword, newPasswordConfirm: newPassword },
+      "PATCH",
+      token
+    )
+  );
+};
+
+export const validateEmailChange = async (email, currentEmail) => {
+  if (!email) return { error: "Email cannot be empty" };
+  if (email === currentEmail) return { error: "Email unchanged" };
+
+  const result = await checkEmail(email);
+  if (result?.exist) return { error: "This email is already taken" };
+
+  return { error: null };
+};
+
 function ProfilePage() {
   
   const dispatch = useDispatch();
@@ -60,19 +89,16 @@ function ProfilePage() {
     }
     try {
       setLoading(true);
-      if (field === "email" && email === user.email) {
-      toast.error("Email unchanged");
-      return;
-    }
-
-    // Frontend check for email duplication
-    if (field === "email") {
-      const result = await checkEmail(email);
-      if (result?.exist) {
-        toast.error("This email is already taken");
-        return; // Stop before sending request
+      if (field === "email") {
+      const { error } = await validateEmailChange(email, user.email);
+      if (error) {
+        toast.error(error);
+        return;
       }
     }
+
+    
+    
       const data = field === "name" ? { name } : { email };
       await fetchPost("user/update", optionMaker(data, "PATCH", token));
       toast.success(`${field === "name" ? "Name" : "Email"} updated successfully!`);
@@ -91,21 +117,21 @@ function ProfilePage() {
     }
   };
 
+  
+
   const handleSavePassword = async () => {
     if (!token) {
       toast.error("Token missing, please login again");
       return;
     }
-    if (!currentPassword || !newPassword) {
-      toast.error("Please fill in both current and new password");
-      return;
-    }
+    const errors = validatePasswordChange({ currentPassword, newPassword });
+  if (errors.password) {
+    toast.error(errors.password);
+    return;
+  }
     try {
       setLoading(true);
-      await fetchPost(
-        "user/update-password",
-        optionMaker({ oldPassword: currentPassword, newPassword, newPasswordConfirm: newPassword }, "PATCH", token)
-      );
+      await updatePasswordAPI(currentPassword, newPassword, token);
       toast.success("Password updated successfully!");
       setEditingPassword(false);
       setCurrentPassword("");

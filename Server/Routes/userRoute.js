@@ -1,6 +1,6 @@
 import express from "express";
 
-import { protect, restrictTo, login, signup, updatePassword } from "../Controllers/authController.js";
+import { protect, restrictTo, login, signup, updatePasswordLogic  } from "../Controllers/authController.js";
 import { addToUserList, removeFromUserList } from "../Controllers/favListController.js";
 import { getMe, updateCurrentUser, checkEmail, getAllUsers,updateUserPhoto ,updateAnyUser} from "../Controllers/userController.js";
 import { uploadUserPhoto,deleteUser } from "../Controllers/userController.js";
@@ -19,7 +19,7 @@ userRoute
   .patch(protect, uploadUserPhoto, updateUserPhoto);
 
 userRoute.route("/checkEmail").get(checkEmail);
-userRoute.route("/update-password").patch(protect, updatePassword);
+userRoute.route("/update-password").patch(protect, updatePasswordLogic);
 
 userRoute
   .route("/list")
