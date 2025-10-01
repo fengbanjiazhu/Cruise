@@ -310,9 +310,10 @@ const handleDelete = async () => {
                       {u.role}
                     </td>
                     <td className="whitespace-nowrap px-4 py-3 flex items-center justify-between">
-                      <Pill className={statusPillClass(u.active ? "active" : "non-active")} >
+                      <Pill className={statusPillClass(u.active ? "active" : "non-active")}  >
                         {u.active ? "Active" : "Non-active"}
                       </Pill>
+                      <div className="flex gap-2 ml-auto">
                       <motion.button
                         className="ml-4 rounded-lg bg-white border border-blue-300 px-3 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-50 transition-all duration-200"
                         whileHover={{ scale: 1.02 }}
@@ -350,7 +351,7 @@ const handleDelete = async () => {
 
 
 
-                      
+                      </div>
                     </td>
                   </motion.tr>
                 ))
