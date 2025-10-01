@@ -10,9 +10,7 @@ jest.mock("../../utils/api", () => ({
 }));
 
 beforeAll(() => {
-  // Just replace reload, don't redefine location
-  delete window.location;
-  window.location = { ...window.location, reload: jest.fn() };
+  jest.spyOn(window.location, "reload").mockImplementation(() => {});
 });
 
 describe("CreateReview", () => {
