@@ -10,7 +10,13 @@ jest.mock("../../utils/api", () => ({
 }));
 
 beforeAll(() => {
-  jest.spyOn(window.location, "reload").mockImplementation(() => {});
+  Object.defineProperty(window, "location", {
+    writable: true,
+    value: {
+      ...window.location,
+      reload: jest.fn(),
+    },
+  });
 });
 
 describe("CreateReview", () => {
