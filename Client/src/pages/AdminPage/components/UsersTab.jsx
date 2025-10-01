@@ -17,6 +17,7 @@ function UsersTab() {
   const [selectedUser, setSelectedUser] = useState({ active: true });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   // Smooth animation variants (mirroring IncidentsTab)
   const containerVariants = {
@@ -135,8 +136,32 @@ const closeEditModal = () => {
   setSelectedUser(null);
 };
 
+const openDeleteModal = (user) => {
+  setSelectedUser(user);
+  setIsDeleteModalOpen(true);
+};
+
+const closeDeleteModal = () => {
+  setIsDeleteModalOpen(false);
+  setSelectedUser(null);
+};
+
 const handleSave = async () => {
   if (!reduxToken) return toast.error("Token missing");
+
+  if (!selectedUser.name?.trim() || !selectedUser.email?.trim()) {
+    return toast.error("Name and email cannot be empty");
+  }
+
+  const emailExists = users.some(
+    (u) =>
+      u._id !== selectedUser._id &&
+      u.email.toLowerCase() === selectedUser.email.toLowerCase()
+  );
+
+  if (emailExists) {
+    return toast.error("Email already exists");
+  }
 
   console.log("Updating user ID:", selectedUser._id);
   console.log("Updated name:", selectedUser.name);
@@ -175,10 +200,10 @@ const handleDelete = async () => {
   if (!reduxToken) return toast.error("Token missing");
   if (!selectedUser?._id) return toast.error("No user selected");
 
-  const confirm = window.confirm(
-    `Are you sure you want to permanently delete ${selectedUser.name}?`
-  );
-  if (!confirm) return;
+  // const confirm = window.confirm(
+  //   `Are you sure you want to permanently delete ${selectedUser.name}?`
+  // );
+  // if (!confirm) return;
 
   try {
     await fetchDelete(`user/admin/${selectedUser._id}`, {
@@ -191,6 +216,7 @@ const handleDelete = async () => {
     toast.success("User deleted successfully!");
     setUsers(prev => prev.filter(u => u._id !== selectedUser._id));
     closeEditModal();
+    closeDeleteModal();
   } catch (err) {
     console.error(err);
     toast.error("Failed to delete user");
@@ -284,7 +310,7 @@ const handleDelete = async () => {
                       {u.role}
                     </td>
                     <td className="whitespace-nowrap px-4 py-3 flex items-center justify-between">
-                      <Pill className={statusPillClass(u.active ? "active" : "non-active")}>
+                      <Pill className={statusPillClass(u.active ? "active" : "non-active")} >
                         {u.active ? "Active" : "Non-active"}
                       </Pill>
                       <motion.button
@@ -296,6 +322,16 @@ const handleDelete = async () => {
                       >
                         View
                       </motion.button>
+                      {/* <motion.button
+                        className="ml-2 rounded-lg bg-green-600 text-white px-3 py-1.5 text-xs font-medium hover:bg-green-700 transition-all duration-200"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => openEditModal(u)}
+                      >
+                        Edit
+                      </motion.button> */}
+
+                      {u.role !== "admin" ? (
                       <motion.button
                         className="ml-2 rounded-lg bg-green-600 text-white px-3 py-1.5 text-xs font-medium hover:bg-green-700 transition-all duration-200"
                         whileHover={{ scale: 1.02 }}
@@ -304,6 +340,15 @@ const handleDelete = async () => {
                       >
                         Edit
                       </motion.button>
+                    ) : (
+                      <motion.button
+                        className="ml-2 rounded-lg bg-transparent px-3 py-1.5 text-xs font-medium invisible"
+                      >
+                        Edit
+                      </motion.button>
+                    )}
+
+
 
                       
                     </td>
@@ -431,7 +476,7 @@ const handleDelete = async () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={closeEditModal}
+            // onClick={closeEditModal}
           >
             <motion.div
               className="bg-white rounded-lg p-6 max-w-md w-[90%]"
@@ -517,7 +562,7 @@ const handleDelete = async () => {
 
               <button
                 className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-200"
-                  onClick={handleDelete}
+                  onClick={() => openDeleteModal(selectedUser)}
                 >
                   Delete
               </button>
@@ -526,6 +571,54 @@ const handleDelete = async () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <AnimatePresence>
+        {isDeleteModalOpen && selectedUser && (
+          <motion.div
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            onClick={closeDeleteModal}
+          >
+            <motion.div
+              className="bg-white rounded-lg p-6 max-w-sm w-[90%]"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-lg font-medium text-gray-900 mb-4">
+                Confirm Delete !
+              </h3>
+              <p className="text-sm text-gray-700 mb-6">
+                Are you sure you want to permanently delete <strong>{selectedUser.name}</strong>? 
+              </p>
+
+              <div className="flex justify-end gap-2">
+                <button
+                  className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
+                  onClick={closeDeleteModal}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-200"
+                  onClick={async () => {
+                    await handleDelete();
+                    closeDeleteModal();
+                  }}
+                >
+                  Delete
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
 
       {!error && !loading && (
         <motion.p
