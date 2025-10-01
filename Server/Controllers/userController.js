@@ -4,16 +4,8 @@ import { updateOne, getOne, getAll, deleteOne } from "./centralController.js";
 import multer from "multer";
 import cusError from "../utils/cusError.js";
 
-// export const getAllUsers = getAll(User);
+export const getAllUsers = getAll(User);
 
-export const getAllUsers = catchAsync(async (req, res, next) => {
-  const allUsers = await User.findAllIncludingInactive();
-  res.status(200).json({
-    status: "success",
-    results: allUsers.length,
-    data: allUsers,
-  });
-});
 export const getUser = getOne(User);
 export const updateUser = updateOne(User);
 export const deleteUser = deleteOne(User);
@@ -77,7 +69,6 @@ const storage = multer.diskStorage({
 });
 
 export const uploadUserPhoto = multer({ storage }).single("photo");
-
 
 export const updateAnyUser = catchAsync(async (req, res, next) => {
   const { id } = req.params;

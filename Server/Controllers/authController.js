@@ -103,7 +103,7 @@ export const protect = catchAsync(async (req, res, next) => {
 
   const currentUser = await User.findById(result.id);
 
-  if (!currentUser) {
+  if (!currentUser || !currentUser.active) {
     return next(new cusError("The user no longer exist", 401));
   }
 
@@ -119,7 +119,6 @@ export const restrictTo = (...roles) => {
     next();
   };
 };
-
 
 export const updatePassword = catchAsync(async (req, res, next) => {
   const { oldPassword, newPassword, newPasswordConfirm } = req.body;
