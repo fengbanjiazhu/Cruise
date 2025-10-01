@@ -15,7 +15,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Registration";
 import PathDetail from "./pages/PathDetail";
 import Review from "./pages/Review";
-import Profile2 from "./pages/profile2";
+
 
 
 
@@ -46,7 +46,7 @@ function App() {
 
             {isLoggedIn && <Route path="/review" element={<Review />} />}
             {isLoggedIn && <Route path="/profile" element={<Profile />} />}
-            {isLoggedIn && <Route path="/profile2" element={<Profile2 />} />}
+            {/* {isLoggedIn && <Route path="/profile2" element={<Profile2 />} />} */}
             {isLoggedIn && <Route path="/admin" element={<Admin />} />}
 
             {!isLoggedIn && <Route path="/login" element={<Login />} />}

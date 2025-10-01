@@ -2,8 +2,18 @@ import User from "../Models/userModel.js";
 import catchAsync from "../utils/catchAsync.js";
 import { updateOne, getOne, getAll, deleteOne } from "./centralController.js";
 import multer from "multer";
+import cusError from "../utils/cusError.js";
 
-export const getAllUsers = getAll(User);
+// export const getAllUsers = getAll(User);
+
+export const getAllUsers = catchAsync(async (req, res, next) => {
+  const allUsers = await User.findAllIncludingInactive();
+  res.status(200).json({
+    status: "success",
+    results: allUsers.length,
+    data: allUsers,
+  });
+});
 export const getUser = getOne(User);
 export const updateUser = updateOne(User);
 export const deleteUser = deleteOne(User);
@@ -68,3 +78,25 @@ const storage = multer.diskStorage({
 
 export const uploadUserPhoto = multer({ storage }).single("photo");
 
+
+export const updateAnyUser = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+  console.log("Backend received ID:", id);
+  console.log("Body:", req.body);
+
+  if (req.body.active !== undefined) {
+    req.body.active = Boolean(req.body.active);
+  }
+
+  const doc = await User.findByIdAndUpdate(id, req.body, {
+    new: true,
+    runValidators: true,
+  }).select("+active");
+
+  if (!doc) return next(new cusError("No user found", 404));
+
+  res.status(200).json({
+    status: "success",
+    data: { data: doc },
+  });
+});

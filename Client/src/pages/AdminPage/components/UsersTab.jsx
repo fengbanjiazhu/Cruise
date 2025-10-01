@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import Pill from "./Pill";
 import { statusPillClass } from "../utils/formatters";
-import { getAllUsers } from "../../../utils/api";
+import { getAllUsers, fetchPost, optionMaker,fetchDelete } from "../../../utils/api";
 import { useSelector } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "react-hot-toast";
+
 
 function UsersTab() {
   const [users, setUsers] = useState([]);
@@ -12,8 +14,9 @@ function UsersTab() {
   const { token: reduxToken, isLoggedIn } = useSelector(
     (state) => state.userInfo
   );
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUser, setSelectedUser] = useState({ active: true });
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   // Smooth animation variants (mirroring IncidentsTab)
   const containerVariants = {
@@ -85,6 +88,7 @@ function UsersTab() {
 
         if (usersArray.length > 0) {
           setUsers(usersArray);
+          console.log("All loaded users:", usersArray.map(u => ({ name: u.name, active: u.active })));
           setError(null);
         } else {
           console.warn("Empty or invalid user data received:", userData);
@@ -117,6 +121,81 @@ function UsersTab() {
     setSelectedUser(null);
   };
 
+
+  const openEditModal = (user) => {
+  setSelectedUser({
+    ...user,
+    active: user.active !== undefined ? user.active : true, 
+  });
+  setIsEditModalOpen(true);
+};
+
+const closeEditModal = () => {
+  setIsEditModalOpen(false);
+  setSelectedUser(null);
+};
+
+const handleSave = async () => {
+  if (!reduxToken) return toast.error("Token missing");
+
+  console.log("Updating user ID:", selectedUser._id);
+  console.log("Updated name:", selectedUser.name);
+
+  try {
+    const updatedData = { 
+  name: selectedUser.name,
+  email: selectedUser.email,
+  active: selectedUser.active,
+  };
+
+  console.log("Sending update to backend:", updatedData);
+
+    await fetchPost(
+      `user/admin/${selectedUser._id}`, 
+       optionMaker(updatedData, "PATCH", reduxToken)
+    );
+    
+    toast.success("User updated successfully!");
+
+    
+    setUsers(prev =>
+      prev.map(u =>
+        u._id === selectedUser._id ? { ...u, ...updatedData } : u
+      )
+    );
+
+    closeEditModal();
+  } catch (err) {
+    console.error(err);
+    toast.error("Failed to update user");
+  }
+};
+
+const handleDelete = async () => {
+  if (!reduxToken) return toast.error("Token missing");
+  if (!selectedUser?._id) return toast.error("No user selected");
+
+  const confirm = window.confirm(
+    `Are you sure you want to permanently delete ${selectedUser.name}?`
+  );
+  if (!confirm) return;
+
+  try {
+    await fetchDelete(`user/admin/${selectedUser._id}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${reduxToken}`,
+      },
+    });
+
+    toast.success("User deleted successfully!");
+    setUsers(prev => prev.filter(u => u._id !== selectedUser._id));
+    closeEditModal();
+  } catch (err) {
+    console.error(err);
+    toast.error("Failed to delete user");
+  }
+};
   // Rest of the component remains the same
   return (
     <motion.div initial="hidden" animate="visible" variants={containerVariants}>
@@ -205,8 +284,8 @@ function UsersTab() {
                       {u.role}
                     </td>
                     <td className="whitespace-nowrap px-4 py-3 flex items-center justify-between">
-                      <Pill className={statusPillClass(u.status || "active")}>
-                        {u.status || "active"}
+                      <Pill className={statusPillClass(u.active ? "active" : "non-active")}>
+                        {u.active ? "Active" : "Non-active"}
                       </Pill>
                       <motion.button
                         className="ml-4 rounded-lg bg-white border border-blue-300 px-3 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-50 transition-all duration-200"
@@ -217,6 +296,16 @@ function UsersTab() {
                       >
                         View
                       </motion.button>
+                      <motion.button
+                        className="ml-2 rounded-lg bg-green-600 text-white px-3 py-1.5 text-xs font-medium hover:bg-green-700 transition-all duration-200"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => openEditModal(u)}
+                      >
+                        Edit
+                      </motion.button>
+
+                      
                     </td>
                   </motion.tr>
                 ))
@@ -299,7 +388,7 @@ function UsersTab() {
                 <div className="flex justify-between">
                   <span className="text-gray-500">Status:</span>
                   <span className="font-medium">
-                    {selectedUser.status || "active"}
+                    {selectedUser.active ? "Active" : "Non-active"}
                   </span>
                 </div>
                 {selectedUser.createdAt && (
@@ -327,6 +416,111 @@ function UsersTab() {
                 >
                   Close
                 </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Edit Modal */}
+
+      <AnimatePresence>
+        {isEditModalOpen && selectedUser && (
+          <motion.div
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={closeEditModal}
+          >
+            <motion.div
+              className="bg-white rounded-lg p-6 max-w-md w-[90%]"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header with close button */}
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-medium text-gray-900">Edit User</h3>
+                <button
+                  className="text-gray-900 hover:text-gray-700 bg-gray-100 border border-gray-300 rounded-full px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  onClick={closeEditModal}
+                  aria-label="Close"
+                  title="Close"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Name input only */}
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1">Name</label>
+                  <input
+                    type="text"
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                    value={selectedUser.name || ""}
+                    onChange={(e) =>
+                      setSelectedUser({ ...selectedUser, name: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1">Email</label>
+                  <input
+                    type="email"
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                    value={selectedUser.email || ""}
+                    onChange={(e) =>
+                      setSelectedUser({ ...selectedUser, email: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1">Status</label>
+                  <select
+                    
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                    value={selectedUser.active ? "active" : "non-active"}
+                    onChange={(e) =>
+                      setSelectedUser({ ...selectedUser,  active: e.target.value === "active", })
+                    }
+                  >
+                    <option value="active">Active</option>
+                    <option value="non-active">Non-active</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Action buttons */}
+              <div className="mt-6 flex justify-end gap-2">
+                <button
+                  className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
+                    onClick={closeEditModal}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 bg-white text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50 transition-colors duration-200"
+                  onClick={handleSave}
+               >
+                Save
+              </button>
+
+              <button
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-200"
+                  onClick={handleDelete}
+                >
+                  Delete
+              </button>
               </div>
             </motion.div>
           </motion.div>
