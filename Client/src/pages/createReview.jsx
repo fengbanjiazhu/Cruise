@@ -85,7 +85,10 @@ function CreateReview({ pathId, userId }) {
         console.log("Deleted review:", res);
 		window.location.reload();
     } catch (err) {
-        window.location.reload();
+        setReview("");
+        setRating(5);
+        setReviewID("");
+        setReviewed(false);
         console.error(err);
     } 
   };

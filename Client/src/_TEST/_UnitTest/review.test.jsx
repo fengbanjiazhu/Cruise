@@ -9,15 +9,6 @@ jest.mock("../../utils/api", () => ({
   fetchPost: jest.fn(),
 }));
 
-beforeAll(() => {
-  Object.defineProperty(window, "location", {
-    writable: true,
-    value: {
-      ...window.location,
-      reload: jest.fn(),
-    },
-  });
-});
 
 describe("CreateReview", () => {
   const pathId = "p1";
@@ -26,6 +17,7 @@ describe("CreateReview", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
+  
 
   test("renders form for new review when no existing review", async () => {
     // Make fetchGet reject (no review found)
