@@ -11,7 +11,6 @@ export const formatDate = (iso) => {
   return Number.isNaN(d.getTime()) ? "—" : dateFmt.format(d);
 };
 
-// Style class helpers
 export const statusPillClass = (status) => {
   switch (status) {
     case "active":

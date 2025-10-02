@@ -10,7 +10,6 @@ function ReportPathModal({ path, isOpen, onClose, onSubmit }) {
   const userInfo = useSelector((state) => state.userInfo);
   const [incidentId, setIncidentId] = useState("");
 
-  // Generate an incident ID on component mount
   useEffect(() => {
     const generateIncidentId = () => {
       const prefix = "INC";
@@ -47,11 +46,10 @@ function ReportPathModal({ path, isOpen, onClose, onSubmit }) {
         severity: severity,
         targetId: path._id,
         targetType: "Path",
-        user: userInfo?.user?._id, // Safely access user ID
+        user: userInfo?.user?._id,
         status: "pending",
       };
 
-      // Log the incident data we're sending
       console.log("Submitting incident data:", incidentData);
 
       await fetchPost(API_ROUTES.incident.create, {

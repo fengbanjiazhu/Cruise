@@ -30,7 +30,6 @@ function IncidentsTab() {
   const [viewingIncident, setViewingIncident] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
 
-  // Smooth animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -163,7 +162,6 @@ function IncidentsTab() {
         body: JSON.stringify({ status: "approved" }),
       });
 
-      // Refresh with animation
       await fetchIncidents(true);
       dispatch(triggerPathsRefresh());
       setTestResponse(
@@ -195,7 +193,6 @@ function IncidentsTab() {
         },
       });
 
-      // Refresh with animation
       await fetchIncidents(true);
       setTestResponse(`Incident ${incidentId} marked as rejected`);
     } catch (err) {
@@ -217,7 +214,6 @@ function IncidentsTab() {
       return;
     }
 
-    // Create a clean copy of the incident data with all required fields
     const incidentData = {
       id: incident.id,
       title: incident.title,
@@ -227,7 +223,6 @@ function IncidentsTab() {
       updatedAt: incident.updatedAt,
       targetId: incident.targetId,
       targetType: incident.targetType,
-      // Include any additional fields that might be needed
       description: incident.description,
       reportedBy: incident.reportedBy,
       assignee: incident.assignee,
@@ -243,7 +238,6 @@ function IncidentsTab() {
     setViewingIncident(null);
   };
 
-  // Filter incidents based on status
   const activeIncidents = incidents.filter(
     (incident) => incident.status === "pending"
   );
