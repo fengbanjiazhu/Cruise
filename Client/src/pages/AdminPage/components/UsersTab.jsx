@@ -15,7 +15,6 @@ function UsersTab() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Smooth animation variants (mirroring IncidentsTab)
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
