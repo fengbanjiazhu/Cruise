@@ -3,6 +3,8 @@ import { updateCurrentUser } from "../Controllers/userController.js";
 import * as authController from "../Controllers/authController.js"; 
 import User from "../Models/userModel.js";
 import { updatePasswordLogic } from "../Controllers/authController.js";
+import { checkEmail } from "../Controllers/userController.js";
+
 
 
 
@@ -19,6 +21,19 @@ describe("updateCurrentUser & updatePassword", () => {
     jest.spyOn(authController, "correctPassword").mockImplementation(async (typed, db) => typed === db);
     jest.spyOn(authController, "hashPassword").mockImplementation(async (pw) => `hashed-${pw}`);
   });
+
+  it("checkEmail returns true if email exists", async () => {
+  const req = { query: { email: "existing@example.com" } };
+
+  // Mock User.findOne to simulate existing email
+  jest.spyOn(User, "findOne").mockResolvedValue({ _id: "123", email: "existing@example.com" });
+
+  await checkEmail(req, res, next);
+
+  expect(User.findOne).toHaveBeenCalledWith({ email: "existing@example.com" });
+  expect(res.status).toHaveBeenCalledWith(200);
+  expect(res.json).toHaveBeenCalledWith({ exists: true });
+});
 
   it("updateCurrentUser updates name/email", async () => {
     const req = { user: { _id: "123" }, body: { name: "New Name", email: "new@example.com" } };
