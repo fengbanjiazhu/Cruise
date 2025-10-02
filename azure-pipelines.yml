@@ -28,6 +28,12 @@ steps:
     displayName: "Install dependencies including devDependencies"
 
   - script: |
+      npm run test-fe
+    displayName: "Run frontend unit tests"
+    env:
+      NODE_ENV: development
+
+  - script: |
       npm run test-be
     displayName: "Run backend unit tests"
     env:
