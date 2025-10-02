@@ -163,3 +163,5 @@ describe("PathDetail fetchGet", () => {
   });
 });
 */
+
+test.skip("Skip test from different memeber", () => {});
