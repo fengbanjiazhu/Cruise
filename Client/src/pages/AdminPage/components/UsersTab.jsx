@@ -18,6 +18,7 @@ function UsersTab() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [searchName, setSearchName] = useState("");
 
   // Smooth animation variants (mirroring IncidentsTab)
   const containerVariants = {
@@ -222,6 +223,10 @@ const handleDelete = async () => {
     toast.error("Failed to delete user");
   }
 };
+
+ const filteredUsers = users.filter(u =>
+    u.name.toLowerCase().includes(searchName.toLowerCase())
+  );
   // Rest of the component remains the same
   return (
     <motion.div initial="hidden" animate="visible" variants={containerVariants}>
@@ -231,6 +236,16 @@ const handleDelete = async () => {
       >
         <h2 className="text-xl font-semibold text-gray-950">User Management</h2>
       </motion.div>
+
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Search Name"
+          value={searchName}
+          onChange={(e) => setSearchName(e.target.value)}
+          className="border px-3 py-2 rounded-md w-full sm:w-1/3"
+        />
+      </div>
 
       <motion.div
         className="overflow-x-auto rounded-lg border"
@@ -285,8 +300,8 @@ const handleDelete = async () => {
                     {error}
                   </td>
                 </motion.tr>
-              ) : users.length > 0 ? (
-                users.map((u, index) => (
+              ) : filteredUsers.length > 0 ? (
+                filteredUsers.map((u, index) => (
                   <motion.tr
                     key={u._id || u.id}
                     initial="hidden"
@@ -628,7 +643,7 @@ const handleDelete = async () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
         >
-          Showing {users.length} users from database
+          Showing {filteredUsers.length} users from database
         </motion.p>
       )}
     </motion.div>
