@@ -34,6 +34,10 @@ export const createOnePath = async (req, res, next) => {
   }
 
   try {
+    // Attach creator if authenticated
+    if (req.user && req.user._id) {
+      req.body.creator = req.user._id;
+    }
     const doc = await Path.create(req.body);
     res.status(201).json({
       status: "success",

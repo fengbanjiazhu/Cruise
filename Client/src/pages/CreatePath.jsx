@@ -44,9 +44,10 @@ function CreatePath() {
   const validateServerSide = async () => {
     setIsValidating(true);
     setServerErrors([]);
+  const token = currentUser?.token || localStorage.getItem('jwt');
     try {
       const payload = buildPayload();
-      await fetchPost("path/", optionMaker(payload));
+      await fetchPost("path/", optionMaker(payload, "POST", token));
       // success logic...
       return { ok: true };
     } catch (error) {
@@ -68,10 +69,10 @@ function CreatePath() {
     }
 
     const sendData = buildPayload();
+  const token = currentUser?.token || localStorage.getItem('jwt');
 
     try {
-      const sendData = buildPayload();
-      await fetchPost("path/", optionMaker(sendData));
+      await fetchPost("path/", optionMaker(sendData, "POST", token));
       toast.success("Congrats! You have created a new path!");
     } catch (error) {
       toast.error(error.message); // Show error as popup

@@ -41,8 +41,75 @@ const updatedPath = {
   ]
 };
 
+
+import app from '../server.js';
+
 describe('Path API', () => {
-  it('should always pass this basic test', () => {
-    expect(true).toBe(true);
+  let token;
+  const testUser = {
+    name: 'Test User',
+    email: 'testuser_path_api@example.com',
+    password: 'TestPass123!',
+    passwordConfirm: 'TestPass123!'
+  };
+
+  beforeAll(async () => {
+    // Register user (ignore errors if already exists)
+    try {
+      await request(app)
+        .post('/api/user/register')
+        .send(testUser);
+    } catch (e) {}
+    // Login user
+    const loginRes = await request(app)
+      .post('/api/user/login')
+      .send({ email: testUser.email, password: testUser.password });
+    token = loginRes.body.token || loginRes.body.data?.token;
+    if (!token && loginRes.headers['set-cookie']) {
+      // fallback: try to extract from cookie if needed
+      const cookie = loginRes.headers['set-cookie'].find(c => c.includes('jwt='));
+      if (cookie) token = cookie.split('jwt=')[1].split(';')[0];
+    }
+  });
+
+  afterAll(async () => {
+    await mongoose.connection.close();
+  });
+
+  it('should create a new path', async () => {
+    const res = await request(app)
+      .post('/api/path')
+      .set('Authorization', `Bearer ${token}`)
+      .send(dummyPath)
+      .expect(201);
+    console.log('CREATE PATH RESPONSE:', res.body);
+    expect(res.body.data).toBeDefined();
+    expect(res.body.data.data).toBeDefined();
+    expect(res.body.data.data.name).toBe(dummyPath.name);
+    createdPathId = res.body.data.data._id;
+  });
+
+  it('should update the created path', async () => {
+    const res = await request(app)
+      .patch(`/api/path/${createdPathId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send(updatedPath);
+    console.log('UPDATE PATH FULL RESPONSE:', res);
+    expect(res.status).toBe(200);
+    expect(res.body.data).toBeDefined();
+    expect(res.body.data.data).toBeDefined();
+    expect(res.body.data.data.name).toBe(updatedPath.name);
+  });
+
+  it('should delete the created path', async () => {
+    const res = await request(app)
+      .delete(`/api/path/${createdPathId}`)
+      .set('Authorization', `Bearer ${token}`);
+    console.log('DELETE PATH FULL RESPONSE:', res);
+    expect(res.status).toBe(200);
+    expect(res.body.status).toBe('success');
+    // Optionally, check that the path is gone
+    const found = await Path.findById(createdPathId);
+    expect(found).toBeNull();
   });
 });
