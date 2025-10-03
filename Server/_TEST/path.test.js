@@ -1,3 +1,5 @@
+
+import { jest } from '@jest/globals';
 // Increase Jest timeout for slow DB operations
 jest.setTimeout(30000);
 

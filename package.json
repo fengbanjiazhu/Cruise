@@ -12,7 +12,7 @@
     "lint": "eslint .",
     "preview": "vite preview --config Client/vite.config.js",
     "test-fe": "jest Client/src/_TEST/_UnitTest --config jest.fe.config.cjs",
-    "test-be": "jest Server/_TEST --config jest.be.config.cjs",
+  "test-be": "node --experimental-vm-modules $(which jest) Server/_TEST --config jest.be.config.mjs",
     "inte-test": "vitest Client/src/_TEST/_IntegrationTest"
   },
   "dependencies": {
