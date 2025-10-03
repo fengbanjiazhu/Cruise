@@ -83,6 +83,8 @@ app.use(errorController);
 // Support both local (.env) and pipeline (db, dbpass) environment variable names
 const DATABASE = process.env.DATABASE || process.env.db;
 const DATABASE_PASSWORD = process.env.DATABASE_PASSWORD || process.env.dbpass;
+console.log('[DB DEBUG] DATABASE:', DATABASE ? DATABASE.slice(0, 10) + '...' : DATABASE);
+console.log('[DB DEBUG] DATABASE_PASSWORD:', DATABASE_PASSWORD ? '***' : DATABASE_PASSWORD);
 if (!DATABASE || !DATABASE_PASSWORD) {
   throw new Error("Missing DATABASE/DB or DATABASE_PASSWORD/DBPASS environment variables");
 }
