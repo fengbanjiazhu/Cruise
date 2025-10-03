@@ -8,6 +8,7 @@ import { fetchGet } from "../utils/api";
 import { FaAngleRight } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import { fetchPost, optionMaker } from "../utils/api";
+import NoResult from "../components/Paths/NoResult";
 
 function PathDetail() {
   const { user: currentUser, token } = useSelector((state) => state.userInfo);
@@ -60,10 +61,18 @@ function PathDetail() {
     fetchPath();
   }, [pathID]);
 
+  if (!currentUser && !token)
+    return (
+      <NoResult
+        title="Login Required"
+        message="You must be logged in to view the path detail page"
+      />
+    );
+
   if (loading) return <div className="mx-auto max-w-7xl px-4 py-6 lg:px-6">Loading path…</div>;
   if (error) return <div className="mx-auto max-w-7xl px-4 py-6 lg:px-6 text-red-600">{error}</div>;
   if (!path) return <div className="mx-auto max-w-7xl px-4 py-6 lg:px-6">No path found.</div>;
-  const isCreator = currentUser && path.creator && currentUser._id === path.creator;
+  const isCreator = currentUser && path.creator && currentUser._id === path.creator._id;
 
   console.log(
     "Is current user the creator of this path?",
@@ -185,7 +194,7 @@ function PathDetail() {
           </ul>
         )}
         {/* Button section at bottom of card for creator */}
-        {currentUser && path.creator && currentUser._id === path.creator && (
+        {isCreator && (
           <div
             style={{
               width: "100%",

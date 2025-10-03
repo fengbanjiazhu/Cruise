@@ -16,7 +16,7 @@ export const statusPillClass = (status) => {
   switch (status) {
     case "active":
       return "bg-green-100 text-green-700 ring-1 ring-inset ring-green-600/20";
-    case "inactive":
+    case "non-active":
       return "bg-gray-100 text-gray-700 ring-1 ring-inset ring-gray-600/20";
     case "suspended":
       return "bg-rose-100 text-rose-700 ring-1 ring-inset ring-rose-600/20";
@@ -50,8 +50,10 @@ export const incidentStatusClass = (status) => {
       return "bg-violet-100 text-violet-700 ring-1 ring-inset ring-violet-600/20";
     case "mitigated":
       return "bg-teal-100 text-teal-700 ring-1 ring-inset ring-teal-600/20";
-    case "resolved":
+    case "approved":
       return "bg-green-100 text-green-700 ring-1 ring-inset ring-green-600/20";
+    case "rejected":
+      return "bg-red-100 text-red-700 ring-1 ring-inset ring-red-600/20";
     case "in backlog":
       return "bg-gray-100 text-gray-700 ring-1 ring-inset ring-gray-600/20";
     default:

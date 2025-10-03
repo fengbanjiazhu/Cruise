@@ -15,7 +15,7 @@ jest.mock("../../utils/api", () => ({
           description: "A test path description.",
           profile: "foot",
           duration: 42,
-          creator: "u1",
+          creator: { _id: "u1" },
           waypoints: [
             { lat: 1, lng: 2, label: "Start" },
             { lat: 3, lng: 4, label: "End" },
@@ -50,7 +50,6 @@ jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useParams: () => ({ pathID: "123" }),
 }));
-
 
 // UI tests
 
@@ -92,8 +91,14 @@ describe("PathDetail UI", () => {
   test("edit modal PATCHes path and reloads on success", async () => {
     // Mock fetchPatch and optionMaker
     const { fetchPost, optionMaker } = require("../../utils/api");
-    fetchPost.mockImplementationOnce(() => Promise.resolve({ data: { data: { _id: "123", name: "Edited Path" } } }));
-    optionMaker.mockImplementation((data, method, token) => ({ method, body: JSON.stringify(data), headers: { Authorization: `Bearer ${token}` } }));
+    fetchPost.mockImplementationOnce(() =>
+      Promise.resolve({ data: { data: { _id: "123", name: "Edited Path" } } })
+    );
+    optionMaker.mockImplementation((data, method, token) => ({
+      method,
+      body: JSON.stringify(data),
+      headers: { Authorization: `Bearer ${token}` },
+    }));
     render(
       <Provider store={store}>
         <MemoryRouter>
@@ -112,10 +117,7 @@ describe("PathDetail UI", () => {
       expect(fetchPost).toHaveBeenCalled();
       const calls = optionMaker.mock.calls;
       expect(
-        calls.some(
-          ([payload, method]) =>
-            method === "PATCH" && payload.name === "Edited Path"
-        )
+        calls.some(([payload, method]) => method === "PATCH" && payload.name === "Edited Path")
       ).toBe(true);
     });
   });
@@ -124,7 +126,11 @@ describe("PathDetail UI", () => {
     // Mock fetchPost and optionMaker for DELETE
     const { fetchPost, optionMaker } = require("../../utils/api");
     fetchPost.mockImplementationOnce(() => Promise.resolve({ data: { data: {} } }));
-    optionMaker.mockImplementation((data, method, token) => ({ method, body: JSON.stringify(data), headers: { Authorization: `Bearer ${token}` } }));
+    optionMaker.mockImplementation((data, method, token) => ({
+      method,
+      body: JSON.stringify(data),
+      headers: { Authorization: `Bearer ${token}` },
+    }));
     window.confirm = jest.fn(() => true);
     render(
       <Provider store={store}>
@@ -140,10 +146,7 @@ describe("PathDetail UI", () => {
       expect(fetchPost).toHaveBeenCalled();
       const calls = optionMaker.mock.calls;
       expect(
-        calls.some(
-          ([payload, method]) =>
-            method === "DELETE" && payload.pathID === "123"
-        )
+        calls.some(([payload, method]) => method === "DELETE" && payload.pathID === "123")
       ).toBe(true);
     });
   });

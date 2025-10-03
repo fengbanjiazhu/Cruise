@@ -24,7 +24,12 @@ function DurationSetter({ compare, setCompare, setValue }) {
           </SelectContent>
         </Select>
 
-        <Input id="duration" placeholder="0" onChange={(e) => setValue(e.target.value)} />
+        <Input
+          id="duration"
+          type="number"
+          placeholder="0"
+          onChange={(e) => setValue(e.target.value)}
+        />
       </div>
     </div>
   );

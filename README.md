@@ -1,12 +1,101 @@
-# React + Vite
+# Cruise
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Tech Stack
 
-Currently, two official plugins are available:
+- **Frontend**: React, Redux, React Router
+- **Backend**: Node.js + Express,
+- **Database**: MongoDB (Mongoose)
+- **Testing**: Jest, Vitest
+- **Authentication**: JWT
+- **UI Framework**: Tailwind CSS, Shadcn UI, react-icons
+- **Map**: React Leaflet, Leaflet Routing Machine, OSRM API
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Repository Structure
 
-## Expanding the ESLint configuration
+- **Client/**: Frontend implementation (React)
+  - `src/components/`: Reusable UI and feature components
+  - `src/assets/`: Static assets
+  - `src/pages/`: Main application pages
+  - `src/store/`: Redux store configuration
+  - `src/utils/`: API functions, helper functions
+  - `App.jsx`: Application router
+  - `main.jsx`: Application root
+- **Server/**: Backend implementation (Node.js + Express)
+  - `Controllers/`: Business logic and request handling
+  - `Models/`: Mongoose database schemas(with validations)
+  - `Routes/`: API route definitions, mapping endpoints to controllers
+  - `utils/`: Reusable utility functions, classes
+  - `config.env`: Environment configuration
+  - `server.js`: Entry point of the backend server
+- **README.md**: Project introduction and usage guide
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Project Allocation
+
+### F Jeffrey R
+
+- **Frontend**
+  - Landing Page
+  - Login Page
+  - Fav List Component (on profile page)
+  - Search Bar Component (on all path page)
+  - **Features**
+    - `Login/Logout` functions
+    - `Favorite list Management` (Browse, Add, Remove) functions
+    - `Path Search Filtering` (Search, Filter) functions
+- **Backend**
+  - Central Controller
+  - Global error handling controller
+  - **Features**
+    - `Auth controller` (JWT, protect, restrictTo, login, logout functions)
+    - `Fav Path controller`
+    - `Path Search` (Implemented By Customized Request Class)
+
+### John L
+
+- **Frontend**
+  - Admin Page
+  - Report Components (on admin page)
+  - User List Components (on admin page)
+  - **Features**
+    - `User Lists` (browse) functions
+    - `Report Submit and Handling` (user submit, admin handle) functions
+- **Backend**
+  - **Features**
+    - `Incident controller` (Report create/submit, handle functions)
+    - `User controller` (with getAll functions)
+
+### N Jin T
+
+- **Frontend**
+  - Profile Page
+  - Register Page
+  - User List Components (on admin page)
+  - **Features**
+    - `User Profile Management` (user management) functions
+    - `Admin User Control` (admin user management) functions
+- **Backend**
+  - **Features**
+    - `Auth Controller` (Register functions)
+    - `User Controller` (with Update, Delete functions)
+
+### Sean P
+
+- **Frontend**
+  - Review and Rating Component (On detail page)
+  - **Features**
+    - `Review and Rating` (Leave, Update, Delete Review) functions
+- **Backend**
+  - **Features**
+    - `Review and Rating Controller`
+
+### Tom J
+
+- **Frontend**
+  - All Path Page
+  - Create Path Page
+  - Path Detail Page
+  - **Features**
+    - `Path Management` (Create, Browse, Update, Delete Path) functions
+- **Backend**
+  - **Features**
+    - `Path controller`

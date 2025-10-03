@@ -16,6 +16,9 @@ import Register from "./pages/Registration";
 import PathDetail from "./pages/PathDetail";
 import Review from "./pages/Review";
 
+
+
+
 import { fetchUserInfoUntilSuccess } from "./store/slices/userInfoSlice";
 import { useEffect } from "react";
 
@@ -37,12 +40,13 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/allpaths" element={<AllPaths />} />
             <Route path="/path/:pathID" element={<PathDetail />} />
-            {/* <Route path="/profile" element={<Profile />} /> */}
 
             {/* Only logged in users can access these */}
             {isLoggedIn && <Route path="/createpath" element={<CreatePath />} />}
+
             {isLoggedIn && <Route path="/review" element={<Review />} />}
             {isLoggedIn && <Route path="/profile" element={<Profile />} />}
+            {/* {isLoggedIn && <Route path="/profile2" element={<Profile2 />} />} */}
             {isLoggedIn && <Route path="/admin" element={<Admin />} />}
 
             {!isLoggedIn && <Route path="/login" element={<Login />} />}

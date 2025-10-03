@@ -11,6 +11,7 @@ class QueryFeatures {
     excludeFields.forEach((el) => delete queryObj[el]);
 
     const mongoQuery = {};
+    const processedKeys = new Set();
 
     for (const [key, value] of Object.entries(queryObj)) {
       if (["lat", "lng", "radius"].includes(key)) continue;
@@ -21,6 +22,7 @@ class QueryFeatures {
         const op = `$${match[2]}`;
         if (!mongoQuery[field]) mongoQuery[field] = {};
         mongoQuery[field][op] = Number(value);
+        processedKeys.add(key);
       } else if (typeof value === "string") {
         mongoQuery[key] = { $regex: value, $options: "i" };
       } else {
@@ -29,9 +31,13 @@ class QueryFeatures {
     }
 
     if (queryObj.lat && queryObj.lng && queryObj.radius) {
-      const lat = parseFloat(queryObj.lat);
-      const lng = parseFloat(queryObj.lng);
-      const radius = parseFloat(queryObj.radius) / 6378.1;
+      ["lat", "lng", "radius"].forEach((k) => processedKeys.add(k));
+
+      const [lat, lng, radius] = [
+        parseFloat(queryObj.lat),
+        parseFloat(queryObj.lng),
+        parseFloat(queryObj.radius) / 6378.1,
+      ];
 
       mongoQuery.startLocation = {
         $geoWithin: {
@@ -40,12 +46,12 @@ class QueryFeatures {
       };
     }
 
-    console.log(mongoQuery);
+    for (const k of processedKeys) {
+      delete this.query._conditions[k];
+    }
 
-    console.log("CONDITIONS:", mongoQuery._conditions);
-
-    // this.query = this.query.find(mongoQuery);
-    this.query = this.query.model.find(mongoQuery);
+    this.query = this.query.find(mongoQuery);
+    // console.log(this.query._conditions);
 
     return this;
   }

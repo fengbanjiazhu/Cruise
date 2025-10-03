@@ -7,7 +7,7 @@ import { useDispatch } from "react-redux";
 import { setUser } from "../store/slices/userInfoSlice";
 import { useNavigate } from "react-router-dom";
 
-const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/;
+import { emailRegex } from "../utils/helper";
 
 const inputClass = `w-full rounded p-2 text-black focus:border-red-500 focus-ring-2`;
 
@@ -24,21 +24,19 @@ function Login() {
       emailRef.current.focus();
       return toast.error("Email is not valid");
     }
-    if (password.trim() === "") {
+    if (password.trim().length < 6) {
       passwordRef.current.focus();
       return toast.error("Password is not valid");
     }
     try {
       const data = await fetchPost("user/login", optionMaker({ email, password }));
       dispatch(setUser(data));
-      localStorage.setItem("jwt", data.token);
+      window.localStorage.setItem("jwt", data.token);
       toast.success("Successfully logged in");
       navigate("/profile");
     } catch (error) {
       toast.error(error.message);
     }
-
-    // toast.success(`Email: ${email}, Password: ${password}`);
   }
 
   return (

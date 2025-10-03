@@ -6,10 +6,12 @@ function LocationTooltip() {
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <CiCircleQuestion size={16} />
+          <span>
+            <CiCircleQuestion size={16} />
+          </span>
         </TooltipTrigger>
         <TooltipContent>
-          <p>Select a starting point and define a radius to search within this distance.</p>
+          <p>Search for paths that start near your chosen location within the radius.</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
