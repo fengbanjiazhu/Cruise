@@ -78,19 +78,20 @@ app.use("/api/incidents", incidentRoute);
 // Global Error Handler
 app.use(errorController);
 
-const DB = process.env.DATABASE.replace(
-  "<db_password>",
-  process.env.DATABASE_PASSWORD
-);
+
+const DB = process.env.DATABASE.replace("<db_password>", process.env.DATABASE_PASSWORD);
 
 mongoose
   .connect(DB)
   .then(() => console.log("DB connection successful"))
   .catch((err) => console.log("Connection ERROR💥:", err));
 
-// Server
-const port = 8000 || process.env.PORT;
+if (process.env.JEST_WORKER_ID === undefined) {
+  // Only start server if not in test
+  const port = process.env.PORT || 8000;
+  app.listen(port, () => {
+    console.log(`app running on ${port}...`);
+  });
+}
 
-app.listen(port, () => {
-  console.log(`app running on ${port}...`);
-});
+export default app;
