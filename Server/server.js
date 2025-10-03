@@ -79,7 +79,14 @@ app.use("/api/incidents", incidentRoute);
 app.use(errorController);
 
 
-const DB = process.env.DATABASE.replace("<db_password>", process.env.DATABASE_PASSWORD);
+
+// Support both local (.env) and pipeline (db, dbpass) environment variable names
+const DATABASE = process.env.DATABASE || process.env.db;
+const DATABASE_PASSWORD = process.env.DATABASE_PASSWORD || process.env.dbpass;
+if (!DATABASE || !DATABASE_PASSWORD) {
+  throw new Error("Missing DATABASE/DB or DATABASE_PASSWORD/DBPASS environment variables");
+}
+const DB = DATABASE.replace("<db_password>", DATABASE_PASSWORD);
 
 mongoose
   .connect(DB)
