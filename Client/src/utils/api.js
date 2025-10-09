@@ -1,4 +1,7 @@
-export const API_URL = "http://localhost:8000/api/";
+// export const API_URL = "http://localhost:8000/api/";
+
+export const API_URL = "https://cruise-7m1b.onrender.com/api/";
+
 const successCodes = [200, 201, 204];
 
 export const API_ROUTES = {
@@ -122,10 +125,7 @@ export const fetchGet = async (endpoint, options = {}) => {
 
     // Log the response status and headers
     console.log(`Response status: ${response.status}`);
-    console.log(
-      "Response headers:",
-      Object.fromEntries([...response.headers.entries()])
-    );
+    console.log("Response headers:", Object.fromEntries([...response.headers.entries()]));
 
     // Handle non-JSON responses
     const contentType = response.headers.get("content-type");
@@ -159,9 +159,7 @@ export const fetchGet = async (endpoint, options = {}) => {
     console.log("Response data:", resData);
 
     if (!successCodes.includes(response.status) || !response.ok) {
-      console.error(
-        `API Error: ${response.status} - ${resData.message || "Unknown error"}`
-      );
+      console.error(`API Error: ${response.status} - ${resData.message || "Unknown error"}`);
       throw new Error(resData.message || `Error ${response.status}`);
     }
 
@@ -179,10 +177,7 @@ export const checkEmail = async (email) => {
 
 export const getAllUsers = async (token) => {
   try {
-    console.log(
-      "getAllUsers called with token:",
-      token ? "Token exists" : "No token"
-    );
+    console.log("getAllUsers called with token:", token ? "Token exists" : "No token");
 
     const options = {
       method: "GET",

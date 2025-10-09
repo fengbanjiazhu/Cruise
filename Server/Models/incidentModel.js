@@ -37,7 +37,6 @@ const IncidentSchema = new mongoose.Schema(
   { timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } }
 );
 
-IncidentSchema.index({ id: 1 });
 IncidentSchema.index({ status: 1, severity: 1 });
 
 export default mongoose.model("Incident", IncidentSchema);
