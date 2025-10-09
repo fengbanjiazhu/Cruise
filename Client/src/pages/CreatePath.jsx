@@ -44,6 +44,7 @@ function CreatePath() {
   const validateServerSide = async () => {
     setIsValidating(true);
     setServerErrors([]);
+  const token = currentUser?.token || localStorage.getItem('jwt');
     try {
       const payload = buildPayload();
       await fetchPost("path/", optionMaker(payload, "POST", token));
@@ -67,8 +68,10 @@ function CreatePath() {
       return toast.error("Please add at least 2 waypoints");
     }
 
+    const sendData = buildPayload();
+  const token = currentUser?.token || localStorage.getItem('jwt');
+
     try {
-      const sendData = buildPayload();
       await fetchPost("path/", optionMaker(sendData, "POST", token));
       toast.success("Congrats! You have created a new path!");
     } catch (error) {

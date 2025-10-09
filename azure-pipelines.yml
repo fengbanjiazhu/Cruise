@@ -40,6 +40,8 @@ steps:
   env:
     JWT_SECRET: $(JWT_SECRET)
     TEST_USER_PASSWORD: $(TEST_USER_PASSWORD)
+    DATABASE: $(DATABASE)
+    DATABASE_PASSWORD: $(DATABASE_PASSWORD)
 
 - script: |
     npm run test-fe
