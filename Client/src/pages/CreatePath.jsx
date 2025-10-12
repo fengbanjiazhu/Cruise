@@ -1,6 +1,12 @@
 import React, { useState, useRef } from "react";
 import { useSelector } from "react-redux";
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  useMapEvents,
+} from "react-leaflet";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-hot-toast";
 
@@ -34,7 +40,8 @@ function CreatePath() {
     distance: routeSteps?.summary.totalDistance,
     duration: routeSteps?.summary.totalTime,
     waypoints: waypoints.map((wp, i) => ({
-      label: wp.label && wp.label.trim() ? wp.label.trim() : `Waypoint ${i + 1}`,
+      label:
+        wp.label && wp.label.trim() ? wp.label.trim() : `Waypoint ${i + 1}`,
       lat: wp.position[0],
       lng: wp.position[1],
     })),
@@ -105,7 +112,8 @@ function CreatePath() {
   const validate = () => {
     const errs = {};
     if (!routeName.trim()) errs.routeName = "Route name is required";
-    if (waypoints.length < 2) errs.waypoints = "At least 2 waypoints are required";
+    if (waypoints.length < 2)
+      errs.waypoints = "At least 2 waypoints are required";
     return errs;
   };
 
@@ -166,10 +174,19 @@ function CreatePath() {
         />
         {pendingLatLng && (
           <Marker position={pendingLatLng}>
-            <Popup closeButton={false} closeOnClick={false} autoClose={false} autoPan={false}>
+            <Popup
+              closeButton={false}
+              closeOnClick={false}
+              autoClose={false}
+              autoPan={false}
+            >
               <div className="w-56 space-y-2">
-                <div className="text-sm font-medium text-gray-900">Add waypoint here?</div>
-                <p className="text-xs text-gray-600">You can rename it below in the list.</p>
+                <div className="text-sm font-medium text-gray-900">
+                  Add waypoint here?
+                </div>
+                <p className="text-xs text-gray-600">
+                  You can rename it below in the list.
+                </p>
                 <div className="flex justify-end gap-2">
                   <button
                     type="button"
@@ -211,14 +228,19 @@ function CreatePath() {
           gap: "1.5rem",
         }}
       >
-        <h1 className="text-xl font-semibold tracking-tight text-black mb-2">Create Path</h1>
+        <h1 className="text-xl font-semibold tracking-tight text-black mb-2">
+          Create Path
+        </h1>
         <p className="text-sm text-gray-600 mb-2">
-          Click on the map to add waypoints. Label each point, then submit to preview the ordered
-          coordinates.
+          Click on the map to add waypoints. Label each point, then submit to
+          preview the ordered coordinates.
         </p>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="routeName" className="block text-sm font-medium text-gray-800">
+            <label
+              htmlFor="routeName"
+              className="block text-sm font-medium text-gray-800"
+            >
               Route name <span className="text-red-500">*</span>
             </label>
             <input
@@ -230,11 +252,16 @@ function CreatePath() {
               className="mt-1 w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm outline-none ring-0 focus:border-gray-900"
             />
             {formErrors.routeName && (
-              <p className="mt-1 text-xs text-red-600">{formErrors.routeName}</p>
+              <p className="mt-1 text-xs text-red-600">
+                {formErrors.routeName}
+              </p>
             )}
           </div>
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-800">
+            <label
+              htmlFor="description"
+              className="block text-sm font-medium text-gray-800"
+            >
               Description
             </label>
             <textarea
@@ -253,7 +280,9 @@ function CreatePath() {
                 {waypoints.length}
               </span>
               {formErrors.waypoints && (
-                <span className="text-xs text-red-600">{formErrors.waypoints}</span>
+                <span className="text-xs text-red-600">
+                  {formErrors.waypoints}
+                </span>
               )}
             </div>
             {waypoints.length === 0 ? (
@@ -274,14 +303,18 @@ function CreatePath() {
                       <div className="text-xs text-gray-600 mb-2">
                         {wp.position[0].toFixed(6)}, {wp.position[1].toFixed(6)}
                       </div>
-                      <label className="block text-xs text-gray-700 mb-1">Rename</label>
+                      <label className="block text-xs text-gray-700 mb-1">
+                        Rename
+                      </label>
                       <input
                         type="text"
                         value={wp.label || ""}
                         onChange={(e) => {
                           const val = e.target.value;
                           setWaypoints((wps) =>
-                            wps.map((w, i) => (i === idx ? { ...w, label: val } : w))
+                            wps.map((w, i) =>
+                              i === idx ? { ...w, label: val } : w
+                            )
                           );
                         }}
                         placeholder={`Waypoint ${idx + 1}`}
@@ -320,7 +353,9 @@ function CreatePath() {
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div>
-              <label className="block text-sm font-medium text-gray-800">Routing profile</label>
+              <label className="block text-sm font-medium text-gray-800">
+                Routing profile
+              </label>
               <select
                 className="mt-1 w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-gray-900"
                 value={routingProfile}
@@ -345,7 +380,9 @@ function CreatePath() {
           </div>
           {serverErrors.length > 0 && (
             <div className="rounded-xl border border-red-200 bg-red-50 p-3">
-              <h4 className="mb-1 text-sm font-semibold text-red-700">Server validation errors</h4>
+              <h4 className="mb-1 text-sm font-semibold text-red-700">
+                Server validation errors
+              </h4>
               <ul className="list-disc pl-5 text-sm text-red-700">
                 {serverErrors.map((e, i) => (
                   <li key={i}>{e}</li>
@@ -365,7 +402,9 @@ function CreatePath() {
               type="button"
               onClick={handleCreatePath}
               disabled={
-                isValidating || Object.keys(validate()).length !== 0 || serverErrors.length > 0
+                isValidating ||
+                Object.keys(validate()).length !== 0 ||
+                serverErrors.length > 0
               }
               className="inline-flex items-center rounded-xl bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-900 disabled:opacity-60 disabled:cursor-not-allowed"
             >
@@ -376,7 +415,9 @@ function CreatePath() {
         {showPreview && (
           <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm text-gray-900 mt-4">
             <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-gray-900">Submission Preview</h3>
+              <h3 className="text-sm font-semibold text-gray-900">
+                Submission Preview
+              </h3>
               <button
                 onClick={() => setShowPreview(false)}
                 className="rounded-lg border px-2 py-1 text-xs bg-black text-white"
@@ -390,7 +431,8 @@ function CreatePath() {
           </div>
         )}
         <p className="mt-2 text-xs text-gray-500">
-          Tip: click anywhere on the map to place a waypoint. Drag markers to fine‑tune positions.
+          Tip: click anywhere on the map to place a waypoint. Drag markers to
+          fine‑tune positions.
         </p>
       </div>
     </div>
