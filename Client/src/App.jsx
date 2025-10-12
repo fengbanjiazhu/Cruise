@@ -17,8 +17,6 @@ import PathDetail from "./pages/PathDetail";
 import Review from "./pages/Review";
 import Profile2 from "./pages/profile2";
 
-
-
 import { fetchUserInfoUntilSuccess } from "./store/slices/userInfoSlice";
 import { useEffect } from "react";
 
@@ -42,7 +40,9 @@ function App() {
             <Route path="/path/:pathID" element={<PathDetail />} />
 
             {/* Only logged in users can access these */}
-            {isLoggedIn && <Route path="/createpath" element={<CreatePath />} />}
+            {isLoggedIn && (
+              <Route path="/createpath" element={<CreatePath />} />
+            )}
 
             {isLoggedIn && <Route path="/review" element={<Review />} />}
             {isLoggedIn && <Route path="/profile" element={<Profile />} />}
@@ -57,7 +57,11 @@ function App() {
         </Routes>
       </BrowserRouter>
 
-      <Toaster position="top-center" gutter={12} containerStyle={{ margin: "1rem" }} />
+      <Toaster
+        position="top-center"
+        gutter={12}
+        containerStyle={{ margin: "1rem" }}
+      />
     </>
   );
 }
