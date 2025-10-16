@@ -1,3 +1,13 @@
+# Auto-merge dev into master if all tests pass and this pipeline runs on dev branch
+- script: |
+    git config --global user.email "pipeline@azure.com"
+    git config --global user.name "Azure Pipeline"
+    git checkout master
+    git pull origin master
+    git merge dev --no-ff -m "Auto-merge dev into master after successful pipeline"
+    git push origin master
+  displayName: 'Merge dev into master if all tests pass'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
 # Node.js with React
 # Build a Node.js project that uses React.
 # Add steps that analyze code, save build artifacts, deploy, and more:
