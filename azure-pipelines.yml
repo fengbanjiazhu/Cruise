@@ -59,13 +59,3 @@ steps:
   env:
     NODE_ENV: production
 
-- script: |
-    git config --global user.email "pipeline@azure.com"
-    git config --global user.name "Azure Pipeline"
-    git fetch origin master:master
-    git checkout master
-    git pull origin master
-    git merge dev --no-ff -m "Auto-merge dev into master after successful pipeline"
-    git push origin master
-  displayName: 'Merge dev into master if all tests pass'
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
