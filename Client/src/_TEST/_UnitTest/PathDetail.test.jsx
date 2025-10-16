@@ -3,6 +3,9 @@ import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import PathDetail from "../../pages/PathDetail.jsx";
 
+// Mock Leaflet Routing Machine to prevent real network requests
+jest.mock("leaflet-routing-machine");
+
 // Mock fetchPost and optionMaker for PATCH/DELETE
 jest.mock("../../utils/api", () => ({
   ...jest.requireActual("../../utils/api"),

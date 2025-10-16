@@ -364,13 +364,16 @@ function PathDetail() {
               }))}
               setWaypoints={null}
             />
-            {/* Draw route as a polyline using locations */}
-            {path.locations.length > 1 && (
-              <Polyline
-                positions={path.locations.map((loc) => [loc.lat, loc.lng])}
-                pathOptions={{ color: "#111827", weight: 5, opacity: 0.95 }}
-              />
-            )}
+            {/* Draw route using OSRM/Leaflet Routing Machine for road-following polyline */}
+            <RouteBetweenWaypoints
+              waypoints={path.waypoints.map((wp) => ({
+                ...wp,
+                position: [wp.lat, wp.lng],
+              }))}
+              profile={path.profile}
+              scenic={false}
+              handleSave={null}
+            />
           </MapContainer>
         )}
       </div>

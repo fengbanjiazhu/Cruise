@@ -22,4 +22,5 @@ module.exports = {
     "\\.(css|less|scss|sass)$": "identity-obj-proxy",
   },
   transformIgnorePatterns: ["/node_modules/(?!(react-leaflet|@react-leaflet/core|leaflet)/)"],
+  setupFilesAfterEnv: ["<rootDir>/Client/src/_TEST/_UnitTest/jest.setup.js"],
 };

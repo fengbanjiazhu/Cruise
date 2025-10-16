@@ -3,6 +3,9 @@ import { render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import AllPaths from "../../pages/AllPaths";
 
+// Mock Leaflet Routing Machine to prevent real network requests
+jest.mock("leaflet-routing-machine");
+
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import userInfoReducer from "../../store/slices/userInfoSlice";
