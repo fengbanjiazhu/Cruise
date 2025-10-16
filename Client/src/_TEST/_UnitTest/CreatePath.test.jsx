@@ -5,6 +5,9 @@ import CreatePath from "../../pages/CreatePath";
 import { Provider } from "react-redux";
 import { store } from "../../store/store";
 
+// Mock Leaflet Routing Machine to prevent real network requests
+jest.mock("leaflet-routing-machine");
+
 // Mock API utils
 jest.mock("../../utils/api", () => ({
   fetchPost: jest.fn(() => Promise.resolve({ data: { ok: true } })),
