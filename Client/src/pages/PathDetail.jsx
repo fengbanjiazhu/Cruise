@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Review from "./Review";
 import ReviewDrawer from "../components/Review/ReviewDrawer";
 import { useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
