@@ -2,9 +2,9 @@ import cors from "cors";
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import path from "path";
-import { fileURLToPath } from "url";
-
+import mongoSanitize from "express-mongo-sanitize";
+import rateLimit from "express-rate-limit";
+import { xss } from "express-xss-sanitizer";
 
 // Routes
 import userRoute from "./Routes/userRoute.js";
@@ -17,8 +17,6 @@ import incidentRoute from "./Routes/incidentRoute.js";
 import Incident from "./Models/incidentModel.js";
 
 const app = express();
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 if (process.env.NODE_ENV !== "production") {
   dotenv.config({ path: "./Server/config.env" });
@@ -32,6 +30,8 @@ app.use(
 
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true, limit: "100kb" }));
+app.use(mongoSanitize());
+app.use(xss());
 
 app.use(function (req, res, next) {
   console.log("Query:", req.query);
@@ -65,27 +65,31 @@ app.get("/api/test-incident", async (req, res) => {
   }
 });
 
+// Rate limiting
+const limiter = rateLimit({
+  max: 100,
+  windowMs: 60 * 60 * 1000,
+  message: "Too many requests from this IP, please try again in an hour!",
+});
+
+app.use("/api", limiter);
 // Routes
 app.use("/api/user", userRoute);
 app.use("/api/path", pathRoute);
 app.use("/api/review", reviewRoute);
-
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
 app.use("/api/incidents", incidentRoute);
-
 
 // Global Error Handler
 app.use(errorController);
 
-
-
 // Support both local (.env) and pipeline (db, dbpass) environment variable names
-const DATABASE = process.env.DATABASE || process.env.db;
-const DATABASE_PASSWORD = process.env.DATABASE_PASSWORD || process.env.dbpass;
+const DATABASE = process.env.DATABASE;
+const DATABASE_PASSWORD = process.env.DATABASE_PASSWORD;
+
 if (!DATABASE || !DATABASE_PASSWORD) {
   throw new Error("Missing DATABASE/DB or DATABASE_PASSWORD/DBPASS environment variables");
 }
+
 const DB = DATABASE.replace("<db_password>", DATABASE_PASSWORD);
 
 mongoose

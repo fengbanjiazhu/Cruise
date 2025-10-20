@@ -16,12 +16,12 @@ class QueryFeatures {
     for (const [key, value] of Object.entries(queryObj)) {
       if (["lat", "lng", "radius"].includes(key)) continue;
 
-      const match = key.match(/^(.+)\[(gte|gt|lte|lt)\]$/);
-      if (match) {
-        const field = match[1];
-        const op = `$${match[2]}`;
-        if (!mongoQuery[field]) mongoQuery[field] = {};
-        mongoQuery[field][op] = Number(value);
+      if (typeof value === "object" && value !== null) {
+        mongoQuery[key] = {};
+        for (const [innerKey, innerValue] of Object.entries(value)) {
+          const op = ["gte", "gt", "lte", "lt"].includes(innerKey) ? `$${innerKey}` : innerKey;
+          mongoQuery[key][op] = Number(innerValue);
+        }
         processedKeys.add(key);
       } else if (typeof value === "string") {
         mongoQuery[key] = { $regex: value, $options: "i" };
@@ -51,7 +51,7 @@ class QueryFeatures {
     }
 
     this.query = this.query.find(mongoQuery);
-    // console.log(this.query._conditions);
+    // console.log("QUERY NOW:", this.query._conditions);
 
     return this;
   }
