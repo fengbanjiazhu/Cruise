@@ -61,13 +61,3 @@ function Review({ pathId }) {
   );
 }
 export default Review;
-
-/* 
-<div>
-            <h1>Review Path</h1>
-            <p>Name: {pathData.name}</p>
-            <p>Creator: {pathData.creator?.name}</p>
-            <p>Description: {pathData.description}</p>
-            <p>ID: {pathData.id}</p>
-        </div>
-*/
