@@ -48,12 +48,13 @@ function Review({ pathId }) {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className="h-80 flex w-full">
-      <div class="grid grid-cols-3 gap-4">
-        <div class="col-span-2 p-4">
+    <div className="h-80 w-full">
+      <div className="grid grid-cols-3 gap-4">
+        <div className="col-span-2 p-4">
+          {/* <h2 className="text-center text-2xl mb-2">Reviews</h2> */}
           <ReviewList reviews={reviews} />
         </div>
-        <div class="col-span-1 p-4">
+        <div className="col-span-1 p-4">
           <CreateReview pathId={pathId} userId={currentUser._id} />
         </div>
       </div>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchPost, fetchGet } from "../utils/api";
+import { Rating, RatingButton } from "@/components/ui/rating";
 
 function CreateReview({ pathId, userId }) {
   const [review, setReview] = useState("");
@@ -92,42 +93,45 @@ function CreateReview({ pathId, userId }) {
     }
   };
 
+  const handleSetRate = function (rating) {
+    // console.log("Rating:", index);
+    setRating(rating);
+  };
+
   return (
     <form
       onSubmit={alreadyReviewed ? handleUpdate : handleSubmit}
-      className="p-4 border rounded-lg shadow-md h-full"
+      className="p-4 border rounded-lg shadow-md h-full gap-4 flex flex-col w-full"
     >
       <textarea
-        className="w-full border p-2 rounded mb-2"
+        className="w-full border p-2 rounded h-32"
         value={review}
         onChange={(e) => setReview(e.target.value)}
         placeholder="Write your review..."
         required
       />
-      <select
-        className="border p-2 rounded mb-2"
-        value={rating}
-        defaultValue={rating}
-        onChange={(e) => setRating(Number(e.target.value))}
-      >
-        {[1, 2, 3, 4, 5].map((n) => (
-          <option key={n} value={n}>
-            {n} ⭐
-          </option>
+      <Rating defaultValue={rating} onValueChange={handleSetRate}>
+        {Array.from({ length: 5 }).map((_, index) => (
+          <RatingButton key={index} />
         ))}
-      </select>
-      <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-        {alreadyReviewed ? <p>Update Review</p> : <p>Submit Review</p>}
-      </button>
-      {alreadyReviewed ? (
+      </Rating>
+      <div>
         <button
-          type="button"
-          onClick={handleDelete}
-          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 ml-2"
+          type="submit"
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
         >
-          Delete
+          {alreadyReviewed ? <p>Update Review</p> : <p>Submit Review</p>}
         </button>
-      ) : null}
+        {alreadyReviewed ? (
+          <button
+            type="button"
+            onClick={handleDelete}
+            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 ml-2"
+          >
+            Delete
+          </button>
+        ) : null}
+      </div>
     </form>
   );
 }
