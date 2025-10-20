@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import Review from "./Review";
+import ReviewDrawer from "../components/Review/ReviewDrawer";
 import { useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { MapContainer, TileLayer, Polyline, useMapEvents } from "react-leaflet";
@@ -193,6 +195,7 @@ function PathDetail() {
             ))}
           </ul>
         )}
+
         {/* Button section at bottom of card for creator */}
         {isCreator && (
           <div
@@ -289,7 +292,10 @@ function PathDetail() {
             </div>
           </div>
         )}
+
+        <ReviewDrawer pathID={pathID} />
       </div>
+
       {/* Toggle button when card is hidden */}
       {!cardVisible && (
         <button
