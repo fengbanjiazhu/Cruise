@@ -31,7 +31,7 @@ function Login() {
     try {
       const data = await fetchPost("user/login", optionMaker({ email, password }));
       dispatch(setUser(data));
-      localStorage.setItem("jwt", data.token);
+      window.localStorage.setItem("jwt", data.token);
       toast.success("Successfully logged in");
       navigate("/profile");
     } catch (error) {

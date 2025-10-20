@@ -31,9 +31,13 @@ class QueryFeatures {
     }
 
     if (queryObj.lat && queryObj.lng && queryObj.radius) {
-      const lat = parseFloat(queryObj.lat);
-      const lng = parseFloat(queryObj.lng);
-      const radius = parseFloat(queryObj.radius) / 6378.1;
+      ["lat", "lng", "radius"].forEach((k) => processedKeys.add(k));
+
+      const [lat, lng, radius] = [
+        parseFloat(queryObj.lat),
+        parseFloat(queryObj.lng),
+        parseFloat(queryObj.radius) / 6378.1,
+      ];
 
       mongoQuery.startLocation = {
         $geoWithin: {
@@ -47,6 +51,7 @@ class QueryFeatures {
     }
 
     this.query = this.query.find(mongoQuery);
+    // console.log(this.query._conditions);
 
     return this;
   }

@@ -3,8 +3,6 @@ import Card from "../components/ui/OldCard";
 import { useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { fetchPost, optionMaker, checkEmail } from "../utils/api";
-import { useDispatch } from "react-redux";
-import { setUser } from "../store/slices/userInfoSlice";
 import { useNavigate } from "react-router-dom";
 
 const inputClass = `w-full rounded p-2 text-black focus:border-red-500 focus-ring-2`;

@@ -2,7 +2,13 @@ import Path from "../Models/pathModel.js";
 import cusError from "../utils/cusError.js";
 import catchAsync from "../utils/catchAsync.js";
 import Review from "../Models/reviewModel.js";
-import { updateOne, getOne, getAll, deleteOne, createOne } from "./centralController.js";
+import {
+  updateOne,
+  getOne,
+  getAll,
+  deleteOne,
+  createOne,
+} from "./centralController.js";
 
 export const test = (Model, popOptions) =>
   catchAsync(async (req, res, next) => {
