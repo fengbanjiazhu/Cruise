@@ -10,9 +10,9 @@ export const deleteOne = (Model) =>
       return next(new cusError("No data found with that ID", 404));
     }
 
-    res.status(204).json({
+    res.status(200).json({
       status: "success",
-      data: null,
+      data: doc,
     });
   });
 
