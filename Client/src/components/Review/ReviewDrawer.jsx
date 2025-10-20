@@ -15,27 +15,23 @@ import { Button } from "@/components/ui/button";
 
 function ReviewDrawer({ pathID }) {
   return (
-    <Drawer>
-      <DrawerTrigger asChild>
-        <Button variant="outline">Open Drawer</Button>
-      </DrawerTrigger>
-      <DrawerContent>
-        <div className="mx-auto w-full max-w-sm">
-          <DrawerHeader>
-            <DrawerTitle>Reviews</DrawerTitle>
-          </DrawerHeader>
-          <div className="p-4 pb-0">
-            <Review pathId={pathID} />
+    <div className="mt-10">
+      <Drawer>
+        <DrawerTrigger asChild>
+          <Button variant="outline">Browse Reviews</Button>
+        </DrawerTrigger>
+        <DrawerContent className="z-[1003]">
+          <div className="mx-1 w-full">
+            <DrawerHeader>
+              <DrawerTitle className="text-center">Reviews</DrawerTitle>
+            </DrawerHeader>
+            <div className="p-4 pb-0 w-full">
+              <Review pathId={pathID} />
+            </div>
           </div>
-          <DrawerFooter>
-            <Button>Submit</Button>
-            <DrawerClose asChild>
-              <Button variant="outline">Cancel</Button>
-            </DrawerClose>
-          </DrawerFooter>
-        </div>
-      </DrawerContent>
-    </Drawer>
+        </DrawerContent>
+      </Drawer>
+    </div>
   );
 }
 

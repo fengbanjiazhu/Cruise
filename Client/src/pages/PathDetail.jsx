@@ -186,7 +186,7 @@ function PathDetail() {
             ))}
           </ul>
         )}
-        <ReviewDrawer pathID={pathID} />
+
         {/* Button section at bottom of card for creator */}
         {isCreator && (
           <div
@@ -283,9 +283,10 @@ function PathDetail() {
             </div>
           </div>
         )}
+
+        <ReviewDrawer pathID={pathID} />
       </div>
 
-      <ReviewDrawer pathID={pathID} />
       {/* Toggle button when card is hidden */}
       {!cardVisible && (
         <button

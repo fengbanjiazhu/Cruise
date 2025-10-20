@@ -129,7 +129,6 @@ function AllPaths() {
               <th style={th_style}>Description</th>
               <th style={th_style}>Duration</th>
               <th style={th_style}>Creator</th>
-              <th style={th_style}>Leave Review</th>
               <th className="p-[0.85rem]"></th>
               <th className="p-[0.85rem]"></th>
             </tr>
@@ -154,26 +153,6 @@ function AllPaths() {
                   <td style={td_style}>{path.description || "No description."}</td>
                   <td style={td_style}>{path.duration} min</td>
                   <td style={td_style}>{path.creator?.name || "Unknown"}</td>
-                  <td style={td_style}>
-                    <button
-                        key={path._id}
-                        onClick={() => navigate("/review", { state: { id: path._id } })}
-                        style={{
-                            padding: "0.45rem 1.1rem",
-                            borderRadius: "0.6rem",
-                            background: openPathIds.includes(path._id) ? "#ececf0" : "#f7f7fa",
-                            color: "#222",
-                            fontWeight: 500,
-                            border: "1px solid #ececf0",
-                            cursor: "pointer",
-                            boxShadow: "none",
-                            fontSize: "0.98rem",
-                            transition: "background 0.2s, border 0.2s",
-                      }}
-                    >
-                      Leave a review
-                    </button>
-                  </td>
                   <td style={{ padding: "0.85rem" }}>
                     <button
                       onClick={() => handleTogglePath(path._id)}

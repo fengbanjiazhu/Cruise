@@ -1,21 +1,22 @@
-import React, { useEffect, useState }  from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 //import toast from "react-hot-toast";
-import { fetchGet} from "../utils/api";
+import { fetchGet } from "../utils/api";
 import CreateReview from "./createReview";
+import ReviewList from "../components/Review/ReviewList";
 
-function Review({pathId}) {
-    const currentUser = useSelector(state => state.userInfo.user);
-    const [pathData, setPathData] = useState(null);
-    const [reviews, setReviews] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+function Review({ pathId }) {
+  const currentUser = useSelector((state) => state.userInfo.user);
+  const [pathData, setPathData] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (!pathId) return;
 
     setLoading(true); // Reset loading state
-    setError(null);   // Reset error state
+    setError(null); // Reset error state
 
     const fetchPath = async () => {
       try {
@@ -30,38 +31,33 @@ function Review({pathId}) {
     };
 
     const fetchReviews = async () => {
-        try {
-            const data = await fetchGet(`review/${pathId}`);
-            setReviews(data.data.data);
-            //console.log(data);
-        } catch (err) {
-            console.error(err);
-        }
-    }
+      try {
+        const data = await fetchGet(`review/${pathId}`);
+        setReviews(data.data.data);
+        //console.log(data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
 
     fetchPath();
     fetchReviews();
   }, [pathId]);
 
-  
-
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <main>
-        <CreateReview pathId={pathId} userId={currentUser._id}/>
-        <section>
-            {reviews.map((review) => (
-            <div key={review._id} className="bg-[#ffffff] rounded-[8px] [box-shadow:0_4px_6px_rgba(0,_0,_0,_0.1)] p-[24px] m-[16px]">
-                <p><strong>{review.user.name}</strong></p>
-                <p>{review.review}</p>
-                <small>{new Date(review.createdAt).toLocaleString()}</small>
-            </div>
-            ))}
-        </section>
-    </main>
-
+    <div className="h-80 flex w-full">
+      <div class="grid grid-cols-3 gap-4">
+        <div class="col-span-2 p-4">
+          <ReviewList reviews={reviews} />
+        </div>
+        <div class="col-span-1 p-4">
+          <CreateReview pathId={pathId} userId={currentUser._id} />
+        </div>
+      </div>
+    </div>
   );
 }
 export default Review;

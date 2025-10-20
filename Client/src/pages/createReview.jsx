@@ -95,7 +95,7 @@ function CreateReview({ pathId, userId }) {
   return (
     <form
       onSubmit={alreadyReviewed ? handleUpdate : handleSubmit}
-      className="p-4 border rounded-lg shadow-md"
+      className="p-4 border rounded-lg shadow-md h-full"
     >
       <textarea
         className="w-full border p-2 rounded mb-2"
