@@ -2,7 +2,7 @@ import cusError from "../utils/cusError.js";
 
 const senErrorProd = (err, req, res) => {
   console.log("Something going on: =============");
-  console.log(err);
+  // console.log(err);
   // API
   if (req.originalUrl.startsWith("/api")) {
     // Operational, trusted error: send a message to client
@@ -14,7 +14,6 @@ const senErrorProd = (err, req, res) => {
     }
 
     // Programming or other unknown error: don't show error details
-    console.error("ERROR!", err);
     return res.status(500).json({
       status: "error",
       msg: "something went very wrong!",
