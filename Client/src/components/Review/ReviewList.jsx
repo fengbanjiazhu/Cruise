@@ -1,8 +1,10 @@
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Rating, RatingButton } from "@/components/ui/rating";
+import NoResult from "../Paths/NoResult";
 
 function ReviewList({ reviews }) {
-  if (!reviews || reviews.length === 0) return null;
+  if (!reviews || reviews.length === 0)
+    return <NoResult title="No Reviews Yet" message="Be the first to leave a review" />;
 
   return (
     <ScrollArea className="rounded-md border h-72 w-full">
