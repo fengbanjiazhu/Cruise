@@ -12,33 +12,33 @@ function Review({ pathId }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const fetchPath = async () => {
+    try {
+      const data = await fetchGet(`path/${pathId}`);
+      setPathData(data.data.data);
+      //console.log(data.data.data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchReviews = async () => {
+    try {
+      const data = await fetchGet(`review/${pathId}`);
+      setReviews(data.data.data);
+      //console.log(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
     if (!pathId) return;
 
     setLoading(true); // Reset loading state
     setError(null); // Reset error state
-
-    const fetchPath = async () => {
-      try {
-        const data = await fetchGet(`path/${pathId}`);
-        setPathData(data.data.data);
-        //console.log(data.data.data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    const fetchReviews = async () => {
-      try {
-        const data = await fetchGet(`review/${pathId}`);
-        setReviews(data.data.data);
-        //console.log(data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
 
     fetchPath();
     fetchReviews();
@@ -49,13 +49,12 @@ function Review({ pathId }) {
 
   return (
     <div className="h-80 w-full">
-      <div className="grid grid-cols-3 gap-4">
-        <div className="col-span-2 p-4">
-          {/* <h2 className="text-center text-2xl mb-2">Reviews</h2> */}
+      <div className="grid grid-cols-3 gap-4 h-full">
+        <div className="col-span-2 p-4 h-full">
           <ReviewList reviews={reviews} />
         </div>
         <div className="col-span-1 p-4">
-          <CreateReview pathId={pathId} userId={currentUser._id} />
+          <CreateReview pathId={pathId} userId={currentUser._id} fetchReviews={fetchReviews} />
         </div>
       </div>
     </div>

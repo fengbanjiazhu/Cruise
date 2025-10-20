@@ -2,28 +2,28 @@ import { useEffect, useState } from "react";
 import { fetchPost, fetchGet } from "../utils/api";
 import { Rating, RatingButton } from "@/components/ui/rating";
 
-function CreateReview({ pathId, userId }) {
+function CreateReview({ pathId, userId, fetchReviews }) {
   const [review, setReview] = useState("");
   const [rating, setRating] = useState(5);
   const [alreadyReviewed, setReviewed] = useState(false);
   const [reviewId, setReviewID] = useState("");
 
   useEffect(() => {
-    const fetchSingleReview = async () => {
-      try {
-        const data = await fetchGet(`review/${pathId}/user/${userId}`);
-        //console.log(data.data.data.id);
-        setReview(data.data.data.review);
-        setRating(data.data.data.rating);
-        setReviewID(data.data.data.id);
-        setReviewed(true);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
     fetchSingleReview();
   }, [pathId, userId]);
+
+  const fetchSingleReview = async () => {
+    try {
+      const data = await fetchGet(`review/${pathId}/user/${userId}`);
+      //console.log(data.data.data.id);
+      setReview(data.data.data.review);
+      setRating(data.data.data.rating);
+      setReviewID(data.data.data.id);
+      setReviewed(true);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -41,9 +41,7 @@ function CreateReview({ pathId, userId }) {
           user: userId,
         }),
       });
-
-      console.log("Created review:", res);
-      window.location.reload();
+      fetchReviews();
     } catch (err) {
       console.error(err);
     }
@@ -68,6 +66,7 @@ function CreateReview({ pathId, userId }) {
       });
 
       console.log("Edited review:", res);
+      fetchReviews();
     } catch (err) {
       console.error(err);
     }
@@ -77,13 +76,12 @@ function CreateReview({ pathId, userId }) {
     e.preventDefault();
 
     try {
-      //console.log(reviewId)
       const res = await fetchPost(`review/${reviewId}`, {
         method: "DELETE",
       });
 
       console.log("Deleted review:", res);
-      window.location.reload();
+      fetchReviews();
     } catch (err) {
       setReview("");
       setRating(5);
