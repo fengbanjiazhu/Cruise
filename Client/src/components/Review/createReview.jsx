@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchPost, fetchGet } from "../utils/api";
+import { fetchPost, fetchGet } from "../../utils/api";
 import { Rating, RatingButton } from "@/components/ui/rating";
 
 function CreateReview({ pathId, userId, fetchReviews }) {

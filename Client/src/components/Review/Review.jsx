@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 //import toast from "react-hot-toast";
-import { fetchGet } from "../utils/api";
+import { fetchGet } from "../../utils/api";
 import CreateReview from "./createReview";
-import ReviewList from "../components/Review/ReviewList";
+import ReviewList from "./ReviewList";
 
 function Review({ pathId }) {
   const currentUser = useSelector((state) => state.userInfo.user);

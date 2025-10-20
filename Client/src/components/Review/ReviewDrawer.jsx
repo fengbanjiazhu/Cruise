@@ -1,4 +1,4 @@
-import Review from "../../pages/Review";
+import Review from "./Review";
 
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
