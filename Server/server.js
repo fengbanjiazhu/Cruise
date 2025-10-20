@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import mongoSanitize from "express-mongo-sanitize";
 import rateLimit from "express-rate-limit";
+import { xss } from "express-xss-sanitizer";
 
 // Routes
 import userRoute from "./Routes/userRoute.js";
@@ -29,8 +30,8 @@ app.use(
 
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true, limit: "100kb" }));
-
 app.use(mongoSanitize());
+app.use(xss());
 
 app.use(function (req, res, next) {
   console.log("Query:", req.query);

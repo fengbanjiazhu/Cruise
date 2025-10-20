@@ -37,6 +37,7 @@
     "express": "^4.21.2",
     "express-mongo-sanitize": "^2.2.0",
     "express-rate-limit": "^8.1.0",
+    "express-xss-sanitizer": "^2.0.1",
     "framer-motion": "^12.23.22",
     "jsonwebtoken": "^9.0.2",
     "leaflet": "1.9.4",

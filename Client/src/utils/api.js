@@ -1,6 +1,6 @@
-export const API_URL = "http://localhost:8000/api/";
+// export const API_URL = "http://localhost:8000/api/";
 
-// export const API_URL = "https://cruise-7m1b.onrender.com/api/";
+export const API_URL = "https://cruise-7m1b.onrender.com/api/";
 
 const successCodes = [200, 201, 204];
 
