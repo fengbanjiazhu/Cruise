@@ -1,3 +1,4 @@
+// John
 import React, { useState, useEffect } from "react";
 import { API_ROUTES, fetchPost } from "../../../utils/api";
 import { useSelector } from "react-redux";
@@ -110,10 +111,7 @@ function ReportPathModal({ path, isOpen, onClose, onSubmit }) {
             {path.creator?.name || "Unknown"}
           </p>
           <p className="text-gray-500 text-sm mt-2 font-mono">
-            Incident ID:{" "}
-            <span className="bg-gray-100 px-2 py-0.5 rounded">
-              {incidentId}
-            </span>
+            Incident ID: <span className="bg-gray-100 px-2 py-0.5 rounded">{incidentId}</span>
           </p>
         </div>
 
@@ -137,10 +135,7 @@ function ReportPathModal({ path, isOpen, onClose, onSubmit }) {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label
-              htmlFor="title"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
+            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
               Report Title
             </label>
             <input
@@ -155,10 +150,7 @@ function ReportPathModal({ path, isOpen, onClose, onSubmit }) {
           </div>
 
           <div>
-            <label
-              htmlFor="severity"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
+            <label htmlFor="severity" className="block text-sm font-medium text-gray-700 mb-1">
               Severity Level
             </label>
             <div className="relative">
@@ -174,11 +166,7 @@ function ReportPathModal({ path, isOpen, onClose, onSubmit }) {
                 <option value="critical">Critical</option>
               </select>
               <div className=" pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
-                <svg
-                  className="h-5 w-5"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
+                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                   <path
                     fillRule="evenodd"
                     d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"

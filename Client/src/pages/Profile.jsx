@@ -1,3 +1,4 @@
+// Jin
 import { useSelector } from "react-redux";
 import Card from "../components/ui/OldCard";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
@@ -6,15 +7,13 @@ import { Dialog, DialogTrigger, DialogContent } from "../components/ui/dialog";
 import ProfilePage from "../components/Profiles/updateprofile";
 import { Button } from "../components/ui/button";
 
-
 function Profile() {
   const { user } = useSelector((state) => state.userInfo);
-  
+
   if (!user) {
     return <p>Loading...</p>;
   }
   const { name, email, role, savedList } = user;
-
 
   return (
     <div className="flex flex-col md:flex-row md:space-x-10 space-y-10 md:space-y-0">
@@ -29,7 +28,6 @@ function Profile() {
         <p>Email: {email}</p>
         <p>Role: {role}</p>
 
-
         {/* Button to open*/}
         <Dialog>
           <DialogTrigger asChild>
@@ -38,7 +36,7 @@ function Profile() {
           <DialogContent>
             <ProfilePage />
           </DialogContent>
-          </Dialog>
+        </Dialog>
       </Card>
 
       <FavList savedList={savedList} />

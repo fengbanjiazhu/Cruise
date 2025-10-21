@@ -1,11 +1,6 @@
+// Tom
 import Path from "../Models/pathModel.js";
-import {
-  updateOne,
-  getOne,
-  getAll,
-  deleteOne,
-  createOne,
-} from "./centralController.js";
+import { getOne, getAll } from "./centralController.js";
 
 // Existing create
 // export const createOnePath = createOne(Path);
@@ -13,15 +8,7 @@ export const createOnePath = async (req, res, next) => {
   const errors = [];
   // Only allowing logged users to create paths
   const user = req.user;
-  const {
-    name,
-    locations,
-    profile,
-    waypoints,
-    distance,
-    duration,
-    description,
-  } = req.body;
+  const { name, locations, profile, waypoints, distance, duration, description } = req.body;
 
   // Validation from Mongoose Scheme has been updated, could be removed
   if (!name || typeof name !== "string" || name.trim().length < 8) {
@@ -114,9 +101,7 @@ export const updateOnePath = async (req, res, next) => {
     const pathDoc = await Path.findById(req.params.id);
 
     if (!pathDoc) {
-      return res
-        .status(404)
-        .json({ status: "fail", message: "No data found with that ID" });
+      return res.status(404).json({ status: "fail", message: "No data found with that ID" });
     }
 
     if (pathDoc.creator.toString() !== user._id.toString()) {
@@ -159,15 +144,10 @@ export const deleteOnePath = async (req, res, next) => {
     const pathDoc = await Path.findById(req.params.id);
 
     if (!pathDoc) {
-      return res
-        .status(404)
-        .json({ status: "fail", message: "Path not found" });
+      return res.status(404).json({ status: "fail", message: "Path not found" });
     }
 
-    if (
-      pathDoc.creator.toString() !== user._id.toString() &&
-      user.role !== "admin"
-    ) {
+    if (pathDoc.creator.toString() !== user._id.toString() && user.role !== "admin") {
       return res.status(403).json({
         status: "fail",
         message: "You are not allowed to delete this path",
