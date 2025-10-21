@@ -10,6 +10,13 @@
 - **UI Framework**: Tailwind CSS, Shadcn UI, react-icons
 - **Map**: React Leaflet, Leaflet Routing Machine, OSRM API
 
+## Commands
+
+- **Install Dependencies**: `npm i`
+- **Environment Variables**: A `.env` file is required, detail as below
+- **Start Server**: `npm run server`
+- **Start Client**: `npm start`
+
 ## Repository Structure
 
 - **Client/**: Frontend implementation (React)
@@ -26,6 +33,10 @@
   - `Routes/`: API route definitions, mapping endpoints to controllers
   - `utils/`: Reusable utility functions, classes
   - `config.env`: Environment configuration
+    - JWT_SECRET: Secret string for JWT encryption and decryption
+    - JWT_EXPIRES_IN, JWT_COOKIE_EXPIRES_IN: JWT expiration time
+    - DATABASE: Database connection string (MongoDB)
+    - DATABASE_PASSWORD: Database password
   - `server.js`: Entry point of the backend server
 - **README.md**: Project introduction and usage guide
 
