@@ -1,8 +1,9 @@
-/*
 import React from "react";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import PathDetail from "../../pages/PathDetail.jsx";
+// Mock Leaflet Routing Machine to prevent real network requests
+jest.mock("leaflet-routing-machine");
 
 // Mock fetchPost and optionMaker for PATCH/DELETE
 jest.mock("../../utils/api", () => ({
@@ -35,12 +36,13 @@ jest.mock("../../utils/api", () => ({
 
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
+import mapReducer from "../../store/slices/mapSlice";
 import userInfoReducer from "../../store/slices/userInfoSlice";
 import { MemoryRouter } from "react-router-dom";
 
 // Define store for all tests
 const store = configureStore({
-  reducer: { userInfo: userInfoReducer },
+  reducer: { userInfo: userInfoReducer, mapURL: mapReducer },
   preloadedState: {
     userInfo: { user: { _id: "u1" }, token: null, isLoggedIn: true, loadingUser: false },
   },
@@ -162,6 +164,3 @@ describe("PathDetail fetchGet", () => {
     expect(result.data.data.name).toBe("Test Path");
   });
 });
-*/
-
-test.skip("Skip test from different memeber", () => {});
