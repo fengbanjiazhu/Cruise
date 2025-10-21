@@ -1,3 +1,4 @@
+// Tom
 import { Marker, Popup } from "react-leaflet";
 
 function WaypointMarkers({ waypoints, setWaypoints }) {
@@ -12,7 +13,10 @@ function WaypointMarkers({ waypoints, setWaypoints }) {
         eventHandlers={{
           dragend: (e) => {
             const newPos = [e.target.getLatLng().lat, e.target.getLatLng().lng];
-            setWaypoints && setWaypoints((wps) => wps.map((w, i) => (i === idx ? { ...w, position: newPos } : w)));
+            setWaypoints &&
+              setWaypoints((wps) =>
+                wps.map((w, i) => (i === idx ? { ...w, position: newPos } : w))
+              );
           },
         }}
       >

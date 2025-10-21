@@ -1,3 +1,4 @@
+// John
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { API_ROUTES, fetchGet } from "../../../utils/api";
@@ -135,14 +136,10 @@ function PathsTab() {
           {paths.map((path) => (
             <tr key={path._id}>
               <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm font-medium text-gray-900">
-                  {path.name}
-                </div>
+                <div className="text-sm font-medium text-gray-900">{path.name}</div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm text-gray-500">
-                  {path.creator?.name || "Unknown"}
-                </div>
+                <div className="text-sm text-gray-500">{path.creator?.name || "Unknown"}</div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="text-sm text-gray-500">

@@ -1,3 +1,4 @@
+// John Lin
 // AdminReject.test.jsx
 
 import React from "react";
@@ -16,9 +17,7 @@ jest.mock("framer-motion", () => {
     ...actual,
     motion: {
       div: ({ children, ...props }) => <div {...props}>{children}</div>,
-      button: ({ children, ...props }) => (
-        <button {...props}>{children}</button>
-      ),
+      button: ({ children, ...props }) => <button {...props}>{children}</button>,
       tr: ({ children, ...props }) => <tr {...props}>{children}</tr>,
     },
     AnimatePresence: ({ children }) => <>{children}</>,
@@ -147,9 +146,7 @@ describe("Admin Incident Management - Rejection", () => {
     fireEvent.click(rejectButtons[1]);
 
     expect(screen.getByText("Confirm Rejection")).toBeInTheDocument();
-    expect(
-      screen.getByText(/Are you sure you want to reject incident inc2?/)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Are you sure you want to reject incident inc2?/)).toBeInTheDocument();
 
     const confirmButton = screen.getByText("Reject Incident");
     fireEvent.click(confirmButton);
@@ -170,9 +167,7 @@ describe("Admin Incident Management - Rejection", () => {
     const errorMessage = "Server error: Could not reject incident";
     fetchDelete.mockRejectedValue(new Error(errorMessage));
 
-    const consoleSpy = jest
-      .spyOn(console, "error")
-      .mockImplementation(() => {});
+    const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
 
     render(
       <Provider store={createMockStore()}>

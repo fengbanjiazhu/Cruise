@@ -1,12 +1,9 @@
+// John
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { fetchGet, API_ROUTES } from "../../../utils/api";
 import Pill from "./Pill";
-import {
-  formatDate,
-  incidentSeverityClass,
-  incidentStatusClass,
-} from "../utils/formatters";
+import { formatDate, incidentSeverityClass, incidentStatusClass } from "../utils/formatters";
 
 function IncidentDetailModal({ incident, isOpen, onClose }) {
   const [loading, setLoading] = useState(true);
@@ -186,13 +183,8 @@ function IncidentDetailModal({ incident, isOpen, onClose }) {
       >
         {/* Header */}
         <div className="border-b px-6 py-4 flex justify-between items-center sticky top-0 bg-white z-10">
-          <h2 className="text-xl font-semibold text-gray-800">
-            Incident Details
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 transition-colors"
-          >
+          <h2 className="text-xl font-semibold text-gray-800">Incident Details</h2>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 transition-colors">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -201,11 +193,7 @@ function IncidentDetailModal({ incident, isOpen, onClose }) {
               stroke="currentColor"
               className="w-6 h-6"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 18L18 6M6 6l12 12"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
@@ -214,9 +202,7 @@ function IncidentDetailModal({ incident, isOpen, onClose }) {
         <div className="p-6">
           {/* Incident Information */}
           <div className="mb-8">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">
-              Incident Information
-            </h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Incident Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <div>
@@ -245,9 +231,7 @@ function IncidentDetailModal({ incident, isOpen, onClose }) {
                   <span className="text-sm text-gray-500">Severity</span>
                   <div className="mt-1">
                     {incident?.severity ? (
-                      <Pill
-                        className={incidentSeverityClass(incident.severity)}
-                      >
+                      <Pill className={incidentSeverityClass(incident.severity)}>
                         {incident.severity}
                       </Pill>
                     ) : (
@@ -258,17 +242,13 @@ function IncidentDetailModal({ incident, isOpen, onClose }) {
                 <div>
                   <span className="text-sm text-gray-500">Created</span>
                   <p className="font-medium">
-                    {incident?.createdAt
-                      ? formatDate(incident.createdAt)
-                      : "N/A"}
+                    {incident?.createdAt ? formatDate(incident.createdAt) : "N/A"}
                   </p>
                 </div>
                 <div>
                   <span className="text-sm text-gray-500">Updated</span>
                   <p className="font-medium">
-                    {incident?.updatedAt
-                      ? formatDate(incident.updatedAt)
-                      : "N/A"}
+                    {incident?.updatedAt ? formatDate(incident.updatedAt) : "N/A"}
                   </p>
                 </div>
               </div>
@@ -278,9 +258,7 @@ function IncidentDetailModal({ incident, isOpen, onClose }) {
           {/* Path Information */}
           {incident.targetId && (
             <div className="border-t pt-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">
-                Related Path
-              </h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Related Path</h3>
 
               {loading ? (
                 <div className="flex justify-center py-8">
@@ -306,10 +284,7 @@ function IncidentDetailModal({ incident, isOpen, onClose }) {
                       </thead>
                       <tbody>
                         <tr>
-                          <td
-                            style={td_style}
-                            className="font-medium text-gray-900"
-                          >
+                          <td style={td_style} className="font-medium text-gray-900">
                             {pathDetails.name || "Unnamed Path"}
                           </td>
                           <td style={td_style}>
@@ -329,13 +304,10 @@ function IncidentDetailModal({ incident, isOpen, onClose }) {
                             </span>
                           </td>
                           <td style={td_style}>
-                            {pathDetails.description ||
-                              "No description provided"}
+                            {pathDetails.description || "No description provided"}
                           </td>
                           <td style={td_style}>
-                            {pathDetails.duration
-                              ? `${pathDetails.duration} min`
-                              : "N/A"}
+                            {pathDetails.duration ? `${pathDetails.duration} min` : "N/A"}
                           </td>
                           <td style={td_style}>
                             {(() => {
@@ -343,8 +315,7 @@ function IncidentDetailModal({ incident, isOpen, onClose }) {
                               console.log("Rendering creator name with:", {
                                 creator: pathDetails.creator,
                                 creatorType: typeof pathDetails.creator,
-                                isObject:
-                                  typeof pathDetails.creator === "object",
+                                isObject: typeof pathDetails.creator === "object",
                                 name: pathDetails.creator?.name,
                                 calculatedValue: getCreatorName(pathDetails),
                               });
@@ -357,9 +328,7 @@ function IncidentDetailModal({ incident, isOpen, onClose }) {
                   </div>
                 </div>
               ) : (
-                <div className="text-gray-500 py-4">
-                  No path information available
-                </div>
+                <div className="text-gray-500 py-4">No path information available</div>
               )}
             </div>
           )}

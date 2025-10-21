@@ -1,3 +1,4 @@
+// Jeffrey
 function Footer() {
   return (
     <div className="leading-6 bg-[rgba(50,50,50,0.8)] text-[#dad9d9] text-center items-center mt-auto z-10 w-full relative">

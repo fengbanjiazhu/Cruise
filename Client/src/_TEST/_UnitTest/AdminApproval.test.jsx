@@ -1,3 +1,4 @@
+// John Lin
 // IncidentManagement.test.jsx
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
@@ -155,9 +156,7 @@ describe("Admin Incident Management", () => {
     fireEvent.click(rejectButtons[1]);
 
     expect(screen.getByText("Confirm Rejection")).toBeInTheDocument();
-    expect(
-      screen.getByText(/Are you sure you want to reject incident inc2?/)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Are you sure you want to reject incident inc2?/)).toBeInTheDocument();
 
     const confirmButton = screen.getByText("Reject Incident");
     fireEvent.click(confirmButton);
@@ -178,9 +177,7 @@ describe("Admin Incident Management", () => {
     const errorMessage = "Server error: Could not approve incident";
     fetchPost.mockRejectedValue(new Error(errorMessage));
 
-    const consoleSpy = jest
-      .spyOn(console, "error")
-      .mockImplementation(() => {});
+    const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
 
     render(
       <Provider store={createMockStore()}>
@@ -198,9 +195,7 @@ describe("Admin Incident Management", () => {
 
     await waitFor(() => {
       expect(fetchPost).toHaveBeenCalled();
-      expect(
-        screen.getByText(/Failed to approve incident/)
-      ).toBeInTheDocument();
+      expect(screen.getByText(/Failed to approve incident/)).toBeInTheDocument();
     });
 
     consoleSpy.mockRestore();
@@ -210,9 +205,7 @@ describe("Admin Incident Management", () => {
     const errorMessage = "Server error: Could not reject incident";
     fetchDelete.mockRejectedValue(new Error(errorMessage));
 
-    const consoleSpy = jest
-      .spyOn(console, "error")
-      .mockImplementation(() => {});
+    const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
 
     render(
       <Provider store={createMockStore()}>

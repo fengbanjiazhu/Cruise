@@ -1,3 +1,4 @@
+// Tom
 import React, { useEffect, useRef } from "react";
 import L from "leaflet";
 import { useMapEvents } from "react-leaflet";
@@ -13,11 +14,17 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
 });
 
-function RouteBetweenWaypoints({ waypoints, profile = "foot", scenic = true, handleSave, setWaypoints }) {
+function RouteBetweenWaypoints({
+  waypoints,
+  profile = "foot",
+  scenic = true,
+  handleSave,
+  setWaypoints,
+}) {
   // Add waypoint on map click
   const map = useMapEvents({
     click: (e) => {
-      if (typeof setWaypoints === 'function') {
+      if (typeof setWaypoints === "function") {
         setWaypoints((wps) => [
           ...wps,
           {
@@ -51,7 +58,7 @@ function RouteBetweenWaypoints({ waypoints, profile = "foot", scenic = true, han
 
     // Only use waypoints with valid position arrays
     const latLngs = waypoints
-      .filter(w => Array.isArray(w.position) && w.position.length === 2)
+      .filter((w) => Array.isArray(w.position) && w.position.length === 2)
       .map((w) => L.latLng(w.position[0], w.position[1]));
     if (latLngs.length < 2) return;
 
@@ -98,8 +105,8 @@ function RouteBetweenWaypoints({ waypoints, profile = "foot", scenic = true, han
         try {
           map.removeControl(routeRef.current);
         } catch {
-        // Ignore removal errors
-      }
+          // Ignore removal errors
+        }
         routeRef.current = null;
       }
     };

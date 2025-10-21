@@ -1,21 +1,12 @@
+// John
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
 import { triggerPathsRefresh } from "../../../store/slices/adminSlice";
 import Pill from "./Pill";
 import IncidentDetailModal from "./IncidentDetailModal";
-import {
-  formatDate,
-  incidentSeverityClass,
-  incidentStatusClass,
-} from "../utils/formatters";
-import {
-  API_ROUTES,
-  fetchGet,
-  fetchPost,
-  fetchDelete,
-  API_URL,
-} from "../../../utils/api";
+import { formatDate, incidentSeverityClass, incidentStatusClass } from "../utils/formatters";
+import { API_ROUTES, fetchGet, fetchPost, fetchDelete, API_URL } from "../../../utils/api";
 
 function IncidentsTab() {
   const dispatch = useDispatch();
@@ -244,12 +235,9 @@ function IncidentsTab() {
   };
 
   // Filter incidents based on status
-  const activeIncidents = incidents.filter(
-    (incident) => incident.status === "pending"
-  );
+  const activeIncidents = incidents.filter((incident) => incident.status === "pending");
   const lockedIncidents = incidents.filter(
-    (incident) =>
-      incident.status === "approved" || incident.status === "rejected"
+    (incident) => incident.status === "approved" || incident.status === "rejected"
   );
 
   const renderIncidentsTable = (incidentsList, showActions = true) => (
@@ -308,14 +296,10 @@ function IncidentsTab() {
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-800">{i.title}</td>
                   <td className="whitespace-nowrap px-6 py-4">
-                    <Pill className={incidentSeverityClass(i.severity)}>
-                      {i.severity}
-                    </Pill>
+                    <Pill className={incidentSeverityClass(i.severity)}>{i.severity}</Pill>
                   </td>
                   <td className="whitespace-nowrap px-6 py-4">
-                    <Pill className={incidentStatusClass(i.status)}>
-                      {i.status}
-                    </Pill>
+                    <Pill className={incidentStatusClass(i.status)}>{i.status}</Pill>
                   </td>
                   <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-700">
                     {i.assignee}
@@ -346,9 +330,7 @@ function IncidentsTab() {
                           whileTap={{ scale: 0.98 }}
                           transition={{ duration: 0.2, ease: "easeOut" }}
                         >
-                          {processingAction === i.id
-                            ? "Processing..."
-                            : "Approve"}
+                          {processingAction === i.id ? "Processing..." : "Approve"}
                         </motion.button>
                         <motion.button
                           onClick={() => initiateRejectIncident(i.id)}
@@ -358,9 +340,7 @@ function IncidentsTab() {
                           whileTap={{ scale: 0.98 }}
                           transition={{ duration: 0.2, ease: "easeOut" }}
                         >
-                          {processingAction === i.id
-                            ? "Processing..."
-                            : "Reject"}
+                          {processingAction === i.id ? "Processing..." : "Reject"}
                         </motion.button>
                       </div>
                     </td>
@@ -389,13 +369,8 @@ function IncidentsTab() {
 
   return (
     <motion.div initial="hidden" animate="visible" variants={containerVariants}>
-      <motion.div
-        className="flex items-center justify-between mb-6"
-        variants={itemVariants}
-      >
-        <h2 className="text-xl font-semibold text-gray-950">
-          Incident Reports
-        </h2>
+      <motion.div className="flex items-center justify-between mb-6" variants={itemVariants}>
+        <h2 className="text-xl font-semibold text-gray-950">Incident Reports</h2>
         <motion.button
           onClick={testConnection}
           className="rounded-lg bg-gray-600 text-white px-4 py-2 text-sm font-medium shadow-sm hover:bg-gray-700 transition-all duration-300"
@@ -443,12 +418,10 @@ function IncidentsTab() {
                 duration: 0.4,
               }}
             >
-              <h3 className="text-lg font-medium mb-4 text-gray-900">
-                Confirm Rejection
-              </h3>
+              <h3 className="text-lg font-medium mb-4 text-gray-900">Confirm Rejection</h3>
               <p className="mb-6 text-gray-700">
-                Are you sure you want to reject incident {confirmingDelete}?
-                This will mark it as rejected but keep the record.
+                Are you sure you want to reject incident {confirmingDelete}? This will mark it as
+                rejected but keep the record.
               </p>
               <div className="flex justify-end space-x-3">
                 <motion.button
@@ -476,10 +449,7 @@ function IncidentsTab() {
       </AnimatePresence>
 
       {/* Tab Navigation */}
-      <motion.div
-        className="flex border-b gap-5 px-2 py-1 bg-gray-50 mb-6"
-        variants={itemVariants}
-      >
+      <motion.div className="flex border-b gap-5 px-2 py-1 bg-gray-50 mb-6" variants={itemVariants}>
         <motion.button
           className={`px-6 py-3 font-medium text-sm rounded-lg transition-all duration-300 ${
             activeTab === "active"
@@ -542,12 +512,10 @@ function IncidentsTab() {
               transition={{ duration: 0.4, ease: "easeOut" }}
             >
               <motion.div className="mb-6" variants={itemVariants}>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  Active Incidents
-                </h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Active Incidents</h3>
                 <p className="text-sm text-gray-600">
-                  Pending incidents that require your attention. You can approve
-                  or reject these incidents.
+                  Pending incidents that require your attention. You can approve or reject these
+                  incidents.
                 </p>
               </motion.div>
               {renderIncidentsTable(activeIncidents, true)}
@@ -564,12 +532,10 @@ function IncidentsTab() {
               transition={{ duration: 0.4, ease: "easeOut" }}
             >
               <motion.div className="mb-6" variants={itemVariants}>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  Locked Incidents
-                </h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Locked Incidents</h3>
                 <p className="text-sm text-gray-600">
-                  Historical record of approved and rejected incidents. These
-                  are read-only for audit purposes.
+                  Historical record of approved and rejected incidents. These are read-only for
+                  audit purposes.
                 </p>
               </motion.div>
               {renderIncidentsTable(lockedIncidents, false)}
