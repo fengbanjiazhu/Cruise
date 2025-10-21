@@ -31,7 +31,7 @@ function ProfileBtn() {
           </Button>
         </DropdownMenuTrigger>
         {/*  */}
-        <DropdownMenuContent align="end" className="mt-1">
+        <DropdownMenuContent align="end" className="mt-1 z-[1005]">
           <DropdownMenuGroup>
             <DropdownMenuItem>
               <UserPen />
