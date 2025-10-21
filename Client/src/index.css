@@ -45,7 +45,7 @@ header {
   width: 100vw;
   height: 3rem;
   margin: 0 auto;
-  line-height: 3rem;
+  /* line-height: 3rem; */
   background: linear-gradient(
     to bottom,
     rgb(0, 3, 32),

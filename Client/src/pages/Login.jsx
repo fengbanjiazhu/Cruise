@@ -6,7 +6,8 @@ import { fetchPost, optionMaker } from "../utils/api";
 import { useDispatch } from "react-redux";
 import { setUser } from "../store/slices/userInfoSlice";
 import { useNavigate } from "react-router-dom";
-
+import { Spinner } from "@/components/ui/spinner";
+import { Button } from "@/components/ui/button";
 import { emailRegex } from "../utils/helper";
 
 const inputClass = `w-full rounded p-2 text-black focus:border-red-500 focus-ring-2`;
@@ -14,6 +15,7 @@ const inputClass = `w-full rounded p-2 text-black focus:border-red-500 focus-rin
 function Login() {
   const [email, setEmail] = useState("jeff@test.com");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
   const dispatch = useDispatch();
@@ -29,6 +31,7 @@ function Login() {
       return toast.error("Password is not valid");
     }
     try {
+      setIsLoading(true);
       const data = await fetchPost("user/login", optionMaker({ email, password }));
       dispatch(setUser(data));
       window.localStorage.setItem("jwt", data.token);
@@ -36,6 +39,8 @@ function Login() {
       navigate("/profile");
     } catch (error) {
       toast.error(error.message);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -66,12 +71,14 @@ function Login() {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <button
+        <Button
           onClick={onLogin}
-          className="btn text-slate-900 mt-4 w-full hover:bg-transparent hover:text-white hover:border-white"
+          disabled={isLoading}
+          variant="outline"
+          className="btn text-slate-700 mt-4 w-full hover:bg-transparent hover:text-white hover:border-white"
         >
-          Login
-        </button>
+          {isLoading && <Spinner />}Login
+        </Button>
       </Card>
     </div>
   );

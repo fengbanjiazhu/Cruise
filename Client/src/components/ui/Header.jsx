@@ -1,17 +1,12 @@
-import { Link, NavLink, useNavigate } from "react-router-dom";
-import { removeUser } from "../../store/slices/userInfoSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { Link, NavLink } from "react-router-dom";
+import { useSelector } from "react-redux";
+import ProfileBtn from "../Profiles/ProfileBtn";
 import logo from "@/assets/cruise_logo.png";
+import ToggleMap from "../Paths/ToggleMap";
 
 function Header() {
   const { isLoggedIn, user } = useSelector((state) => state.userInfo);
   const isAdmin = user?.role === "admin";
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const logout = () => {
-    dispatch(removeUser());
-    navigate("/");
-  };
 
   return (
     <>
@@ -20,22 +15,18 @@ function Header() {
           <img className="h-[2.5rem] mx-2" src={logo} alt="Logo" />
         </Link>
 
-        <nav className="align-center">
+        <nav className="align-center flex gap-4">
           <NavLink to="/">Home</NavLink>
           <NavLink to="/allpaths">Path</NavLink>
 
           {isLoggedIn && <NavLink to="/createpath">Create Path</NavLink>}
-          {isLoggedIn && <NavLink to="/profile">Profile</NavLink>}
           {isLoggedIn && isAdmin && <NavLink to="/admin">Admin</NavLink>}
-
-          {isLoggedIn && (
-            <a onClick={logout} role="button">
-              Logout
-            </a>
-          )}
 
           {!isLoggedIn && <NavLink to="/login">Login</NavLink>}
           {!isLoggedIn && <NavLink to="/register">Register</NavLink>}
+
+          <ToggleMap />
+          {isLoggedIn && <ProfileBtn />}
         </nav>
       </header>
     </>

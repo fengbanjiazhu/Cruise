@@ -10,6 +10,7 @@ import { fetchPost, optionMaker } from "../utils/api";
 
 function CreatePath() {
   const { user: currentUser, token } = useSelector((state) => state.userInfo);
+  const { urls, currentIndex } = useSelector((state) => state.mapURL);
   const [routeName, setRouteName] = useState("");
   const [description, setDescription] = useState("");
   const [waypoints, setWaypoints] = useState([]);
@@ -44,7 +45,7 @@ function CreatePath() {
   const validateServerSide = async () => {
     setIsValidating(true);
     setServerErrors([]);
-  const token = currentUser?.token || localStorage.getItem('jwt');
+    const token = currentUser?.token || localStorage.getItem("jwt");
     try {
       const payload = buildPayload();
       await fetchPost("path/", optionMaker(payload, "POST", token));
@@ -69,7 +70,7 @@ function CreatePath() {
     }
 
     const sendData = buildPayload();
-  const token = currentUser?.token || localStorage.getItem('jwt');
+    const token = currentUser?.token || localStorage.getItem("jwt");
 
     try {
       await fetchPost("path/", optionMaker(sendData, "POST", token));
@@ -156,8 +157,8 @@ function CreatePath() {
         }}
       >
         <TileLayer
-          url="https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png"
-          attribution="&copy; Stadia Maps, &copy; OpenMapTiles &copy; OpenStreetMap contributors"
+          url={urls[currentIndex]}
+          // attribution="&copy; Stadia Maps, &copy; OpenMapTiles &copy; OpenStreetMap contributors"
         />
         <WaypointMarkers waypoints={waypoints} setWaypoints={setWaypoints} />
         <PendingWaypointHandler />
