@@ -249,3 +249,28 @@ function ProfilePage() {
 }
 
 export default ProfilePage;
+
+export const validatePasswordChange = ({ currentPassword, newPassword }) => {
+  const errors = {};
+  if (!currentPassword || !newPassword) {
+    errors.password = "Please fill in both current and new password";
+  }
+  return errors;
+};
+
+export const updatePasswordAPI = async (oldPassword, newPassword, token) => {
+  return fetchPost(
+    "user/update-password",
+    optionMaker({ oldPassword, newPassword, newPasswordConfirm: newPassword }, "PATCH", token)
+  );
+};
+
+export const validateEmailChange = async (email, currentEmail) => {
+  if (!email) return { error: "Email cannot be empty" };
+  if (email === currentEmail) return { error: "Email unchanged" };
+
+  const result = await checkEmail(email);
+  if (result?.exist) return { error: "This email is already taken" };
+
+  return { error: null };
+};

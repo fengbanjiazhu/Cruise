@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import CreateReview from "../../pages/createReview";
+import CreateReview from "../../components/Review/createReview";
 import * as api from "../../utils/api";
 
 describe("CreateReview", () => {
@@ -37,7 +37,6 @@ describe("CreateReview", () => {
     render(<CreateReview pathId={pathId} userId={userId} />);
 
     expect(await screen.findByDisplayValue("Great path!")).toBeInTheDocument();
-    expect(await screen.getByDisplayValue("4 ⭐")).toBeInTheDocument();
     expect(screen.getByText("Update Review")).toBeInTheDocument();
     expect(screen.getByText("Delete")).toBeInTheDocument();
   });

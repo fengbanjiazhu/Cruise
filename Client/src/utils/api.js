@@ -6,24 +6,7 @@ const successCodes = [200, 201, 204];
 
 export const API_ROUTES = {
   user: {
-    login: "user/login",
-    register: "user/register",
-    checkEmail: "user/checkEmail",
-    getUser: "user/getUser",
-    updateUser: "user/updateUser",
     getAllUsers: "user/admin",
-  },
-  product: {
-    getProducts: "product/getProducts",
-    getProductById: "product/getProductById",
-  },
-  // new supplier route
-  supplier: {
-    create: "supplier/",
-    getAll: "supplier/",
-    getById: (id) => `supplier/${id}`, // Look up item id when delte from data base | Id = dynamic handelling (id) => `supplier/${id}`
-    update: (id) => `supplier/${id}`, //
-    delete: (id) => `supplier/${id}`,
   },
   incident: {
     getAll: "incidents/",
@@ -36,22 +19,6 @@ export const API_ROUTES = {
     getAll: "path/",
     getById: (id) => `path/${id}`,
     create: "path/",
-  },
-  payment: {
-    getPaymentCards: "payment/card/",
-    updatePaymentCard: "payment/card/",
-    removePaymentCard: "payment/card/",
-
-    getPaymentHistory: "payment/history/",
-    addPayment: "payment/addPayment",
-  },
-  order: {
-    getOrderHistory: "order/history",
-    getOrderbyId: (id) => `order/${id}`,
-  },
-  checkout: {
-    checkout: "checkout",
-    guest: "checkout/guest",
   },
 };
 
@@ -83,6 +50,7 @@ export const fetchPost = async (endpoint, options) => {
   }
   return resData;
 };
+
 export const fetchDelete = async (endpoint, options = {}) => {
   try {
     const response = await fetch(urlMaker(endpoint), {
