@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+
 // Service
 import { fetchGet } from "../utils/api";
 // UI
@@ -31,6 +32,8 @@ const td_style = { padding: "0.85rem", color: "#555" };
 // const tr_style = { padding: "2rem", textAlign: "center", color: "#fff" };
 
 function MapWithRoute({ waypoints, profile }) {
+  const { urls, currentIndex } = useSelector((state) => state.mapURL);
+
   // Convert waypoints to expected format for WaypointMarkers/RouteBetweenWaypoints
   const formattedWaypoints = waypoints.map((wp, idx) => ({
     id: wp.id || idx,
@@ -46,8 +49,8 @@ function MapWithRoute({ waypoints, profile }) {
       attributionControl={false}
     >
       <TileLayer
-        url="https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png"
-        attribution="&copy; Stadia Maps, &copy; OpenMapTiles &copy; OpenStreetMap contributors"
+        url={urls[currentIndex]}
+        // attribution="&copy; Stadia Maps, &copy; OpenMapTiles &copy; OpenStreetMap contributors"
       />
       <WaypointMarkers waypoints={formattedWaypoints} setWaypoints={() => {}} />
       <RouteBetweenWaypoints waypoints={formattedWaypoints} profile={profile} scenic={false} />

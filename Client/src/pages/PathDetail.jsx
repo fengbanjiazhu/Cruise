@@ -13,6 +13,7 @@ import NoResult from "../components/Paths/NoResult";
 
 function PathDetail() {
   const { user: currentUser, token } = useSelector((state) => state.userInfo);
+  const { urls, currentIndex } = useSelector((state) => state.mapURL);
   const { pathID } = useParams();
   const [path, setPath] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -358,8 +359,8 @@ function PathDetail() {
             }}
           >
             <TileLayer
-              url="https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png"
-              attribution="&copy; Stadia Maps, &copy; OpenMapTiles &copy; OpenStreetMap contributors"
+              url={urls[currentIndex]}
+              // attribution="&copy; Stadia Maps, &copy; OpenMapTiles &copy; OpenStreetMap contributors"
             />
             {/* Show waypoints as markers */}
             <WaypointMarkers
