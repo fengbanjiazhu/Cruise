@@ -1,6 +1,6 @@
-// export const API_URL = "http://localhost:8000/api/";
+export const API_URL = "http://localhost:8000/api/";
 
-export const API_URL = "https://cruise-7m1b.onrender.com/api/";
+//export const API_URL = "https://cruise-7m1b.onrender.com/api/";
 
 const successCodes = [200, 201, 204];
 
@@ -72,6 +72,7 @@ export const fetchDelete = async (endpoint, options = {}) => {
 
     return resData;
   } catch (err) {
+    err;
     console.error(`Error in fetchDelete for ${endpoint}:`, err);
     throw err;
   }
@@ -79,21 +80,21 @@ export const fetchDelete = async (endpoint, options = {}) => {
 
 export const fetchGet = async (endpoint, options = {}) => {
   try {
-    console.log(`Fetching from: ${API_URL}${endpoint}`);
+    //console.log(`Fetching from: ${API_URL}${endpoint}`);
     const url = urlMaker(endpoint);
 
     // Log the complete request details for debugging
-    console.log("Request details:", {
+    /*console.log("Request details:", {
       url,
       method: options.method || "GET",
       headers: options.headers,
-    });
+    });*/
 
     const response = await fetch(url, options);
 
     // Log the response status and headers
-    console.log(`Response status: ${response.status}`);
-    console.log("Response headers:", Object.fromEntries([...response.headers.entries()]));
+    //console.log(`Response status: ${response.status}`);
+    //console.log("Response headers:", Object.fromEntries([...response.headers.entries()]));
 
     // Handle non-JSON responses
     const contentType = response.headers.get("content-type");
@@ -124,7 +125,7 @@ export const fetchGet = async (endpoint, options = {}) => {
       throw new Error("Failed to parse server response");
     }
 
-    console.log("Response data:", resData);
+    //console.log("Response data:", resData);
 
     if (!successCodes.includes(response.status) || !response.ok) {
       console.error(`API Error: ${response.status} - ${resData.message || "Unknown error"}`);
