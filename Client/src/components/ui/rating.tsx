@@ -97,12 +97,12 @@ export const RatingButton = ({
       {cloneElement(icon, {
         size,
         className: cn(
-          "transition-colors duration-200",
-          isActive && "fill-current",
-          !readOnly && "cursor-pointer"
+            "transition-colors duration-200",
+            isActive ? "fill-yellow-400 text-yellow-400" : "fill-none text-gray-400",
+            !readOnly && "cursor-pointer"
         ),
         "aria-hidden": "true",
-      })}
+        })}
     </button>
   );
 };

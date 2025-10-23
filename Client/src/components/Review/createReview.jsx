@@ -22,7 +22,7 @@ function CreateReview({ pathId, userId, fetchReviews }) {
         setReviewID(data.data.data.id);
         setReviewed(true)
     } catch (err) {
-
+        console.error(err)
     }
   };
 
