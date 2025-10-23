@@ -14,41 +14,40 @@ function CreateReview({ pathId, userId, fetchReviews }) {
   }, [pathId, userId, fetchReviews]);
 
   const fetchSingleReview = async () => {
-
     try {
-        const data = await fetchGet(`review/${pathId}/user/${userId}`);
-        setReview(data.data.data.review);
-        setRating(data.data.data.rating);
-        setReviewID(data.data.data.id);
-        setReviewed(true)
+      const data = await fetchGet(`review/${pathId}/user/${userId}`);
+      setReview(data.data.data.review);
+      setRating(data.data.data.rating);
+      setReviewID(data.data.data.id);
+      setReviewed(true);
     } catch (err) {
-        console.error(err)
+      console.error(err);
     }
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    const data = await fetchPost("review/CreateReview", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        review,
-        rating,
-        path: pathId,
-        user: userId,
-      }),
-    });
+    e.preventDefault();
+    try {
+      const data = await fetchPost("review/CreateReview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          review,
+          rating,
+          path: pathId,
+          user: userId,
+        }),
+      });
 
-    console.log("Submitted review:", data);
-    fetchReviews();
-    setReviewed(true);
-  } catch (err) {
-    // err.message will contain your server error, e.g. "You're injecting code"
-    console.error("Server rejected request:", err);
-    alert(err.message); // show injection error to user
-  }
-};
+      console.log("Submitted review:", data);
+      fetchReviews();
+      setReviewed(true);
+    } catch (err) {
+      // err.message will contain your server error, e.g. "You're injecting code"
+      console.error("Server rejected request:", err);
+      alert(err.message); // show injection error to user
+    }
+  };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -76,8 +75,6 @@ function CreateReview({ pathId, userId, fetchReviews }) {
   };
 
   const handleDelete = async (e) => {
-    
-
     try {
       const res = await fetchPost(`review/${reviewId}`, {
         method: "DELETE",
@@ -111,7 +108,7 @@ function CreateReview({ pathId, userId, fetchReviews }) {
         placeholder="Write your review..."
         required
       />
-      <Rating defaultValue={2} onValueChange={handleSetRate} >
+      <Rating defaultValue={2} value={rating} onValueChange={handleSetRate}>
         {Array.from({ length: 5 }).map((_, index) => (
           <RatingButton key={index} />
         ))}
