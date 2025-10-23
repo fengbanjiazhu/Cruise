@@ -53,7 +53,7 @@ function PathDetail() {
       setError(null);
       try {
         const res = await fetchGet(`path/${pathID}`, {});
-        console.log("Fetched path JSON:", res.data.data);
+        //console.log("Fetched path JSON:", res.data.data);
         setPath(res.data.data);
       } catch (err) {
         setError(err.message || "Failed to fetch path");
@@ -77,14 +77,14 @@ function PathDetail() {
   if (!path) return <div className="mx-auto max-w-7xl px-4 py-6 lg:px-6">No path found.</div>;
   const isCreator = currentUser && path.creator && currentUser._id === path.creator._id;
 
-  console.log(
+  /*console.log(
     "Is current user the creator of this path?",
     isCreator,
     "\nCurrent user:",
     currentUser,
     "\nPath creator:",
     path.creator
-  );
+  );*/
 
   return (
     <div

@@ -68,8 +68,11 @@ app.get("/api/test-incident", async (req, res) => {
 // Rate limiting
 const limiter = rateLimit({
   max: 100,
-  windowMs: 60 * 60 * 1000,
-  message: "Too many requests from this IP, please try again in an hour!",
+  windowMs: 60 * 1000,
+  message: {
+    success: false,
+    message: "Too many requests from this IP, please try again later!",
+  },
 });
 
 app.use("/api", limiter);
