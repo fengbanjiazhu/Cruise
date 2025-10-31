@@ -44,18 +44,16 @@ function Register() {
       passwordConfirmRef.current.focus();
       return toast.error("Passwords do not match");
     }
-
     const result = await checkEmail(email);
     if (!result || result.exist) return toast.error("Email already exist");
 
     const data = { name, email, password, passwordConfirm };
-
     try {
       await fetchPost("user/register", optionMaker(data));
       toast.success("Successfully registered!");
       navigate("/login");
-    } catch (err) {
-      toast.error(err.message || "Registration failed");
+    } catch (error) {
+      toast.error("Registration failed");
     }
   };
 

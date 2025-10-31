@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-hot-toast";
 import { fetchPost, optionMaker, checkEmail } from "../../utils/api";
+import { emailRegex } from "../../utils/helper";
 import { fetchUserInfoUntilSuccess, updateUser } from "../../store/slices/userInfoSlice";
 
 import { DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
@@ -13,7 +14,7 @@ const td_style = { padding: "0.85rem", color: "#555" };
 function ProfilePage() {
   const dispatch = useDispatch();
   const { user, token } = useSelector((state) => state.userInfo);
-
+  
   const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
   const [currentPassword, setCurrentPassword] = useState("");
@@ -42,18 +43,16 @@ function ProfilePage() {
       return;
     }
 
-    if (field === "email") {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        toast.error("Please enter a valid email address");
-        return;
-      }
-    }
-
     if (field === "email" && !email.trim()) {
       toast.error("Please enter an email");
       return;
     }
+
+    if (field === "email" && !emailRegex.test(email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
     try {
       setLoading(true);
       if (field === "email" && email === user.email) {
@@ -251,6 +250,7 @@ function ProfilePage() {
 
 export default ProfilePage;
 
+//export validation taken from the check in handleSavePassword to be used in unit testing
 export const validatePasswordChange = ({ currentPassword, newPassword }) => {
   const errors = {};
   if (!currentPassword || !newPassword) {
@@ -258,7 +258,7 @@ export const validatePasswordChange = ({ currentPassword, newPassword }) => {
   }
   return errors;
 };
-
+//export API password update in handleSavePassword to be used in unit testing
 export const updatePasswordAPI = async (oldPassword, newPassword, token) => {
   return fetchPost(
     "user/update-password",
@@ -266,6 +266,8 @@ export const updatePasswordAPI = async (oldPassword, newPassword, token) => {
   );
 };
 
+
+//export email change validation in handleSave to be used in unit testing
 export const validateEmailChange = async (email, currentEmail) => {
   if (!email) return { error: "Email cannot be empty" };
   if (email === currentEmail) return { error: "Email unchanged" };
