@@ -5,6 +5,7 @@ import { useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { fetchPost, optionMaker, checkEmail } from "../utils/api";
 import { useNavigate } from "react-router-dom";
+import { emailRegex } from "../utils/helper";
 
 const inputClass = `w-full rounded p-2 text-black focus:border-red-500 focus-ring-2`;
 
@@ -20,14 +21,14 @@ function Register() {
   const passwordRef = useRef(null);
   const passwordConfirmRef = useRef(null);
 
-  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  
 
   const handleRegister = async () => {
     if (!name.trim()) {
       nameRef.current.focus();
       return toast.error("Name is required");
     }
-    if (!emailRegex.test(email)) {
+    if (!emailRegex.test(email) || email.trim() === "") {
       emailRef.current.focus();
       return toast.error("Email is not valid");
     }
