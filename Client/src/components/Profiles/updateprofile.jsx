@@ -61,12 +61,12 @@ function ProfilePage() {
         return;
       }
 
-      // Frontend check for email duplication
+      // checking for email duplication
       if (field === "email") {
         const result = await checkEmail(email);
         if (result?.exists) {
           toast.error("This email is already taken");
-          return; // Stop before sending request
+          return; 
         }
       }
       const data = field === "name" ? { name } : { email };
