@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import { fetchPost, optionMaker, checkEmail } from "../utils/api";
 import { useNavigate } from "react-router-dom";
 import { emailRegex } from "../utils/helper";
+import { Button } from "@/components/ui/button";
 
 const inputClass = `w-full rounded p-2 text-black focus:border-red-500 focus-ring-2`;
 
@@ -15,7 +16,6 @@ function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
-
   const nameRef = useRef(null);
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
@@ -44,16 +44,24 @@ function Register() {
       passwordConfirmRef.current.focus();
       return toast.error("Passwords do not match");
     }
-    const result = await checkEmail(email);
-    if (!result || result.exist) return toast.error("Email already exist");
+    // const result = await checkEmail(email);
+    // if (!result || result.exist) return toast.error("Email already exist");
+    //no need check cause BE will check
 
-    const data = { name, email, password, passwordConfirm };
+    const data = { 
+      name, 
+      email, 
+      password, 
+      passwordConfirm
+     };
     try {
-      await fetchPost("user/register", optionMaker(data));
+      const resData = await fetchPost("user/register", optionMaker(data));
+      console.log("success register");
       toast.success("Successfully registered!");
       navigate("/login");
     } catch (error) {
-      toast.error("Registration failed");
+      console.log(error);
+      return toast.error("Registration failed");
     }
   };
 
@@ -107,12 +115,12 @@ function Register() {
           onChange={(e) => setPasswordConfirm(e.target.value)}
         />
 
-        <button
+        <Button
           onClick={handleRegister}
           className="btn text-slate-900 mt-4 w-full hover:bg-transparent hover:text-white hover:border-white"
         >
           Register
-        </button>
+        </Button>
       </Card>
     </div>
   );

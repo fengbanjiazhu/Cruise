@@ -26,7 +26,7 @@ export const checkEmail = catchAsync(async (req, res, next) => {
   const user = await User.findOne({ email });
 
   res.status(200).json({
-    exists: !!user, // true if user exists, false otherwise
+    exists: !!user, 
   });
 });
 
